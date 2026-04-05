@@ -1,261 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Open Horizons | IT Outsourcing</title>
-  <meta name="description" content="IT outsourcing for SMBs. 1C server administration, backup & recovery, virtualization, network security. Yekaterinburg & remote across Russia.">
-  <link rel="stylesheet" href="style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Open Horizons — IT Outsourcing</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
 
-<header class="header" id="top">
-  <div class="container header__inner">
+<!-- NAV -->
+<header class="navbar">
+  <div class="container nav-inner">
     <div class="logo">
-      <span class="logo__icon">⬡</span>
-      <div>
-        <span class="logo__name">Open Horizons</span>
-        <span class="logo__sub">Открытые Горизонты</span>
-      </div>
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">Open <strong>Horizons</strong></span>
     </div>
-    <nav class="nav" id="nav">
+    <nav class="nav-links">
       <a href="#services">Services</a>
       <a href="#pricing">Pricing</a>
       <a href="#about">About</a>
-      <a href="#contact">Contact</a>
-      <a href="index.html" class="nav__lang">RU</a>
+      <a href="#contact" class="btn-nav">Contact</a>
     </nav>
-    <button class="burger" id="burger" aria-label="Menu">&#9776;</button>
+    <a href="index.html" class="lang-switch">RU</a>
   </div>
 </header>
 
+<!-- HERO -->
 <section class="hero">
-  <div class="container hero__inner">
-    <div class="hero__text">
-      <h1>IT Infrastructure<br>that <span class="accent">never goes down</span></h1>
-      <p class="hero__sub">IT outsourcing for companies where 1C is critical and there's no in-house IT team. Server administration, backup & recovery, virtualization, and network security — we handle it all.</p>
-      <div class="hero__cta">
-        <a href="#contact" class="btn btn--primary">Get a Free Audit</a>
-        <a href="#pricing" class="btn btn--ghost">View Pricing</a>
+  <div class="container hero-inner">
+    <div class="hero-text">
+      <p class="hero-tag">IT Outsourcing for Business</p>
+      <h1>Your infrastructure.<br/>Reliable. Always on.</h1>
+      <p class="hero-sub">1C server management, backup & recovery, virtualisation and fractional CTO services for companies of 20–100 employees. No downtime. No chaos.</p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn-primary">Get a Free Audit</a>
+        <a href="#pricing" class="btn-outline">View Pricing</a>
       </div>
-      <div class="hero__badges">
-        <span>✓ SLA guaranteed</span>
-        <span>✓ Remote across Russia</span>
-        <span>✓ 10+ years experience</span>
+      <div class="hero-stats">
+        <div class="stat"><span>98%</span><p>service availability</p></div>
+        <div class="stat"><span>50+</span><p>projects delivered</p></div>
+        <div class="stat"><span>3-2-1</span><p>backup scheme</p></div>
       </div>
     </div>
-    <div class="hero__visual">
-      <div class="hero__card">
-        <div class="hero__stat">98%</div>
-        <div class="hero__stat-label">Service Availability</div>
-      </div>
-      <div class="hero__card hero__card--offset">
-        <div class="hero__stat">3-2-1</div>
-        <div class="hero__stat-label">Backup Strategy</div>
-      </div>
-      <div class="hero__card">
-        <div class="hero__stat">0</div>
-        <div class="hero__stat-label">Lost Databases</div>
+    <div class="hero-visual">
+      <div class="server-card">
+        <div class="server-line"><span class="dot green"></span> 1C Server — Online</div>
+        <div class="server-line"><span class="dot green"></span> Backup — OK (today 03:00)</div>
+        <div class="server-line"><span class="dot yellow"></span> MSSQL — Monitoring</div>
+        <div class="server-line"><span class="dot green"></span> VPN — Active</div>
+        <div class="server-line"><span class="dot green"></span> VMware ESXi — Running</div>
+        <div class="server-footer">All systems go 🟢</div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="problems">
+<!-- SERVICES -->
+<section class="section" id="services">
   <div class="container">
-    <h2 class="section-title">Does this sound familiar?</h2>
-    <div class="problems__grid">
-      <div class="problem-card"><span class="problem-icon">🔥</span><p>1C crashes at the worst possible moment, accounting grinds to a halt</p></div>
-      <div class="problem-card"><span class="problem-icon">💾</span><p>Backups "kind of happen" but nobody ever tested recovery</p></div>
-      <div class="problem-card"><span class="problem-icon">👤</span><p>One "your IT guy" — and everything depends on him alone</p></div>
-      <div class="problem-card"><span class="problem-icon">🔐</span><p>Remote access is via TeamViewer with no control or audit logs</p></div>
-      <div class="problem-card"><span class="problem-icon">📋</span><p>Nobody knows what's in the IT infrastructure or what it costs</p></div>
-      <div class="problem-card"><span class="problem-icon">⚡</span><p>The server sits under a desk and nobody knows what happens if it burns</p></div>
-    </div>
-  </div>
-</section>
+    <p class="section-tag">What we do</p>
+    <h2 class="section-title">Services</h2>
+    <div class="services-grid">
 
-<section class="services" id="services">
-  <div class="container">
-    <h2 class="section-title">What we do</h2>
-    <p class="section-sub">We take full technical responsibility for your business IT infrastructure</p>
-    <div class="services__grid">
-      <div class="service-card service-card--featured">
-        <div class="service-card__icon">🗄️</div>
-        <h3>1C Infrastructure</h3>
-        <p>Administration of 1C and MSSQL servers, platform updates, access rights, exchange configuration, and backup scenarios. Your 1C stays stable.</p>
-        <ul><li>1C Server + MSSQL</li><li>Zero-downtime updates</li><li>Performance diagnostics</li><li>Standard & custom configurations</li></ul>
-      </div>
       <div class="service-card">
-        <div class="service-card__icon">💾</div>
-        <h3>Backup & Recovery</h3>
-        <p>Veeam B&R setup on the 3-2-1 scheme, regular recovery tests, retention policies. Data is safe — and we prove it.</p>
-        <ul><li>Veeam Backup & Replication</li><li>Monthly recovery tests</li><li>RTO/RPO control</li><li>Backup status reports</li></ul>
+        <div class="service-icon">🗄️</div>
+        <h3>1C Infrastructure Management</h3>
+        <p>1C and MSSQL server administration, configuration updates, access rights, data exchange and 24/7 availability monitoring.</p>
       </div>
+
       <div class="service-card">
-        <div class="service-card__icon">🖥️</div>
-        <h3>Virtualization & Servers</h3>
-        <p>Deployment and management of VMware ESXi, Proxmox, Hyper-V. Fault-tolerant architecture, migrations, and transfers.</p>
-        <ul><li>VMware ESXi / Proxmox / Hyper-V</li><li>VM deployment</li><li>Migrations & transfers</li><li>HA architecture design</li></ul>
+        <div class="service-icon">💾</div>
+        <h3>Backup & Disaster Recovery</h3>
+        <p>Veeam B&R deployment with 3-2-1 scheme, recovery testing, retention policies. RTO and RPO under control — zero data loss.</p>
       </div>
+
       <div class="service-card">
-        <div class="service-card__icon">⚙️</div>
+        <div class="service-icon">⚡</div>
+        <h3>Virtualisation & Server Infrastructure</h3>
+        <p>VMware ESXi, Proxmox and Hyper-V deployment and management. High-availability architecture, VM migrations and resource governance.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">🖥️</div>
         <h3>System Administration</h3>
-        <p>Windows/Linux servers, Active Directory, GPO, RDS, monitoring via Zabbix/Grafana. Order in infrastructure and access control.</p>
-        <ul><li>Windows Server / Linux</li><li>Active Directory + GPO</li><li>Zabbix/Grafana monitoring</li><li>RDS, Apache/Nginx, PKI</li></ul>
+        <p>Windows/Linux servers, Active Directory, GPO, RDS, Zabbix/Grafana. Full operational coverage — monitoring, incidents and maintenance.</p>
       </div>
+
       <div class="service-card">
-        <div class="service-card__icon">🛡️</div>
-        <h3>Networks & Security</h3>
-        <p>MikroTik, VPN, VLAN, NGFW, 2FA, Fail2ban, basic security policies. Secure remote access and perimeter protection.</p>
-        <ul><li>MikroTik + VPN + VLAN</li><li>NGFW / SIEM</li><li>2FA for critical systems</li><li>Security policies & procedures</li></ul>
+        <div class="service-icon">🔒</div>
+        <h3>Network Perimeter & Security</h3>
+        <p>MikroTik, VPN, VLAN, NGFW, SIEM, 2FA, Fail2ban. Security perimeter built and maintained to SMB requirements.</p>
       </div>
+
       <div class="service-card">
-        <div class="service-card__icon">👔</div>
-        <h3>Virtual CTO / IT Director</h3>
-        <p>IT strategy, process building, ticketing system, cost optimization. IT leadership without maintaining a full-time department.</p>
-        <ul><li>IT strategy & audit</li><li>Processes & documentation</li><li>IT cost optimization</li><li>Vendor management</li></ul>
+        <div class="service-icon">👔</div>
+        <h3>Fractional IT Director</h3>
+        <p>We act as your Head of IT: build processes, regulations, ticketing and reporting. Manage vendors and optimise your IT budget.</p>
       </div>
+
     </div>
   </div>
 </section>
 
-<section class="audit-cta">
-  <div class="container audit-cta__inner">
-    <div>
-      <h2>Start with a free audit</h2>
-      <p>We'll check your backups, 1C infrastructure, or server environment. Get a report with real risks and recommendations — no sales pressure.</p>
-    </div>
-    <div class="audit-cta__options">
-      <div class="audit-option"><strong>Backup & Recovery Audit</strong><span>Free</span></div>
-      <div class="audit-option"><strong>1C Infrastructure Audit</strong><span>Free</span></div>
-      <div class="audit-option"><strong>Servers & VMs Audit</strong><span>Free</span></div>
-    </div>
-    <a href="#contact" class="btn btn--primary">Book an Audit</a>
-  </div>
-</section>
-
-<section class="pricing" id="pricing">
+<!-- AUDITS -->
+<section class="section section-dark" id="audits">
   <div class="container">
-    <h2 class="section-title">Monthly Plans</h2>
-    <p class="section-sub">Transparent pricing. Clear scope. Fixed monthly payment.</p>
-    <div class="pricing__grid">
+    <p class="section-tag">Entry Product</p>
+    <h2 class="section-title">Start with an Audit</h2>
+    <p class="section-sub">Before making a decision — know the real state of your IT infrastructure.</p>
+    <div class="audit-grid">
+      <div class="audit-card">
+        <h4>Backup & Recovery Audit</h4>
+        <p>We verify whether your data is actually recoverable. In most cases — it isn't.</p>
+        <span class="audit-price">from ₽5,000</span>
+      </div>
+      <div class="audit-card">
+        <h4>1C Infrastructure Audit</h4>
+        <p>Server, MSSQL, permissions, updates, database placement — full analysis.</p>
+        <span class="audit-price">from ₽7,000</span>
+      </div>
+      <div class="audit-card">
+        <h4>Virtualisation & Server Audit</h4>
+        <p>Hypervisor state, VMs, resources, fault tolerance and configuration review.</p>
+        <span class="audit-price">from ₽7,000</span>
+      </div>
+      <div class="audit-card">
+        <h4>Security & Remote Access Audit</h4>
+        <p>Perimeter, accounts, VPN, 2FA, risk assessment — what is exposed and why it matters.</p>
+        <span class="audit-price">from ₽6,000</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="pricing">
+  <div class="container">
+    <p class="section-tag">Managed Services</p>
+    <h2 class="section-title">Pricing</h2>
+    <p class="section-sub">Fixed monthly cost. No surprises — you pay for outcomes, not hours.</p>
+    <div class="pricing-grid">
+
       <div class="pricing-card">
-        <div class="pricing-card__header"><h3>Basic</h3><div class="pricing-card__price">from 15 000 ₽<span>/mo</span></div></div>
-        <ul class="pricing-card__features">
-          <li>✓ 24/7 server monitoring</li><li>✓ 1C availability control</li><li>✓ Backup management</li><li>✓ Incident alerts</li><li>✓ Business hours response</li>
-          <li class="muted">✗ 1C updates</li><li class="muted">✗ SLA guarantees</li><li class="muted">✗ Recovery tests</li>
+        <div class="pricing-header">
+          <h3>Basic</h3>
+          <div class="price">from ₽15,000<span>/mo</span></div>
+        </div>
+        <ul class="pricing-list">
+          <li>✓ Availability monitoring (Zabbix)</li>
+          <li>✓ Backup control</li>
+          <li>✓ Alerting & notifications</li>
+          <li>✓ Incident response within 4 hours</li>
+          <li>✗ Scheduled maintenance</li>
+          <li>✗ Recovery tests</li>
+          <li>✗ SLA guarantee</li>
         </ul>
-        <a href="#contact" class="btn btn--outline">Choose</a>
+        <a href="#contact" class="btn-card">Get in touch</a>
       </div>
-      <div class="pricing-card pricing-card--featured">
-        <div class="pricing-card__badge">Popular</div>
-        <div class="pricing-card__header"><h3>Standard</h3><div class="pricing-card__price">from 30 000 ₽<span>/mo</span></div></div>
-        <ul class="pricing-card__features">
-          <li>✓ Everything in Basic</li><li>✓ 1C server management</li><li>✓ Platform & config updates</li><li>✓ Scheduled maintenance</li><li>✓ MSSQL administration</li><li>✓ Priority response</li>
-          <li class="muted">✗ SLA guarantees</li><li class="muted">✗ Recovery tests</li>
+
+      <div class="pricing-card pricing-featured">
+        <div class="pricing-badge">Most Popular</div>
+        <div class="pricing-header">
+          <h3>Standard</h3>
+          <div class="price">from ₽30,000<span>/mo</span></div>
+        </div>
+        <ul class="pricing-list">
+          <li>✓ Everything in Basic</li>
+          <li>✓ 1C server + MSSQL management</li>
+          <li>✓ Configuration updates</li>
+          <li>✓ Scheduled maintenance</li>
+          <li>✓ Incident response within 2 hours</li>
+          <li>✗ Recovery tests</li>
+          <li>✗ Management reporting</li>
         </ul>
-        <a href="#contact" class="btn btn--primary">Choose</a>
+        <a href="#contact" class="btn-card btn-card-white">Get in touch</a>
       </div>
+
       <div class="pricing-card">
-        <div class="pricing-card__header"><h3>Premium</h3><div class="pricing-card__price">from 55 000 ₽<span>/mo</span></div></div>
-        <ul class="pricing-card__features">
-          <li>✓ Everything in Standard</li><li>✓ SLA with uptime guarantee</li><li>✓ Monthly recovery tests</li><li>✓ Management reporting</li><li>✓ 24/7 priority</li><li>✓ Quarterly security audit</li><li>✓ Virtual CTO (partial)</li><li>✓ IT cost optimization</li>
+        <div class="pricing-header">
+          <h3>Premium</h3>
+          <div class="price">from ₽55,000<span>/mo</span></div>
+        </div>
+        <ul class="pricing-list">
+          <li>✓ Everything in Standard</li>
+          <li>✓ SLA with uptime guarantee</li>
+          <li>✓ Monthly recovery tests</li>
+          <li>✓ Priority support 24/7</li>
+          <li>✓ IT management reporting</li>
+          <li>✓ Fractional IT Director role</li>
         </ul>
-        <a href="#contact" class="btn btn--outline">Choose</a>
+        <a href="#contact" class="btn-card">Get in touch</a>
+      </div>
+
+    </div>
+    <p class="pricing-note">* Pricing depends on number of servers, users and infrastructure complexity. Prices exclude VAT.</p>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section section-dark" id="about">
+  <div class="container about-inner">
+    <div class="about-text">
+      <p class="section-tag">About</p>
+      <h2>Who is behind Open Horizons</h2>
+      <p>Open Horizons is a team of infrastructure engineers with experience building fault-tolerant IT systems for manufacturing, trading and service companies.</p>
+      <p>We specialise in business-critical infrastructure: 1C servers, MSSQL databases, Veeam backup schemes, virtualisation on VMware ESXi / Proxmox / Hyper-V and network perimeters on MikroTik and NGFW.</p>
+      <p>Our principle: IT infrastructure should run like clockwork — and you should never have to think about it.</p>
+      <div class="about-stack">
+        <span>VMware ESXi</span><span>Proxmox</span><span>Hyper-V</span><span>Veeam B&R</span><span>MSSQL</span><span>1C</span><span>MikroTik</span><span>Zabbix</span><span>Active Directory</span><span>Linux</span><span>Windows Server</span><span>NGFW</span>
       </div>
     </div>
-    <div class="pricing__note"><p>Final price depends on number of users, servers, and scope. Calculated after a free audit.</p></div>
-    <div class="onetime">
-      <h3>One-Time Work</h3>
-      <div class="onetime__grid">
-        <div class="onetime-item"><span>Hypervisor deployment</span><span>from 8 000 ₽</span></div>
-        <div class="onetime-item"><span>Veeam B&R setup</span><span>from 6 000 ₽</span></div>
-        <div class="onetime-item"><span>Zabbix/Grafana setup</span><span>from 5 000 ₽</span></div>
-        <div class="onetime-item"><span>MikroTik/VPN setup</span><span>from 4 000 ₽</span></div>
-        <div class="onetime-item"><span>AD/GPO/RDS setup</span><span>from 5 000 ₽</span></div>
-        <div class="onetime-item"><span>VM migration & transfer</span><span>from 7 000 ₽</span></div>
-        <div class="onetime-item"><span>Emergency recovery</span><span>from 10 000 ₽</span></div>
-        <div class="onetime-item"><span>Custom projects</span><span>by agreement</span></div>
-      </div>
+    <div class="about-visual">
+      <div class="kpi-card"><span>98%</span><p>Average SLA uptime</p></div>
+      <div class="kpi-card"><span>&lt; 2h</span><p>Critical incident response</p></div>
+      <div class="kpi-card"><span>3-2-1</span><p>Backup scheme standard</p></div>
+      <div class="kpi-card"><span>0</span><p>Unrecoverable data losses</p></div>
     </div>
   </div>
 </section>
 
-<section class="about" id="about">
-  <div class="container about__inner">
-    <div class="about__text">
-      <h2>Who's behind this</h2>
-      <p>Alexander Matsko — IT infrastructure engineer with 10+ years of experience. Built and operated data centers, implemented Veeam 3-2-1 backup schemes, managed VMware ESXi, Proxmox, and Hyper-V environments. Led IT departments and achieved 98% service availability.</p>
-      <p>Open Horizons is not an agency with account managers and subcontractors. It's direct work with an expert who takes technical responsibility.</p>
-      <div class="about__stack">
-        <span>VMware ESXi</span><span>Proxmox</span><span>Hyper-V</span><span>Veeam B&R</span>
-        <span>1C Server</span><span>MSSQL</span><span>Zabbix</span><span>Grafana</span>
-        <span>MikroTik</span><span>Active Directory</span><span>Linux</span><span>Windows Server</span>
-      </div>
+<!-- CONTACT -->
+<section class="section" id="contact">
+  <div class="container contact-inner">
+    <p class="section-tag">Contact</p>
+    <h2>Ready to talk about your infrastructure?</h2>
+    <p class="section-sub">Write to us — we'll show you what can be improved and suggest the right solution. First audit is free.</p>
+    <div class="contact-options">
+      <a href="mailto:info@o-horizons.com" class="contact-card">
+        <span>✉️</span>
+        <div>
+          <strong>Email</strong>
+          <p>info@o-horizons.com</p>
+        </div>
+      </a>
+      <a href="https://t.me/ohorizons" class="contact-card">
+        <span>✈️</span>
+        <div>
+          <strong>Telegram</strong>
+          <p>@ohorizons</p>
+        </div>
+      </a>
     </div>
-    <div class="about__stats">
-      <div class="stat-box"><div class="stat-box__num">10+</div><div class="stat-box__label">years in IT infrastructure</div></div>
-      <div class="stat-box"><div class="stat-box__num">98%</div><div class="stat-box__label">client service availability</div></div>
-      <div class="stat-box"><div class="stat-box__num">0</div><div class="stat-box__label">lost databases</div></div>
-      <div class="stat-box"><div class="stat-box__num">3-2-1</div><div class="stat-box__label">backup scheme always</div></div>
-    </div>
+    <a href="mailto:info@o-horizons.com" class="btn-primary btn-large">Contact Us</a>
   </div>
 </section>
 
-<section class="contact" id="contact">
-  <div class="container contact__inner">
-    <div class="contact__text">
-      <h2>Get in touch</h2>
-      <p>Tell us about your situation — we'll offer a free audit on the most critical area. No sales pressure.</p>
-      <div class="contact__links">
-        <a href="mailto:info@o-horizons.com" class="contact__link">📧 info@o-horizons.com</a>
-        <a href="https://t.me/alex_matsko" class="contact__link">✈️ Telegram: @alex_matsko</a>
-        <a href="tel:+73432000000" class="contact__link">📞 +7 (343) 200-00-00</a>
-      </div>
-      <p class="contact__geo">📍 Yekaterinburg. Remote work across all of Russia.</p>
-    </div>
-    <form class="contact__form" action="https://formspree.io/f/xwkgzpoj" method="POST">
-      <input type="text" name="name" placeholder="Your name" required>
-      <input type="text" name="company" placeholder="Company">
-      <input type="email" name="email" placeholder="Email" required>
-      <input type="tel" name="phone" placeholder="Phone">
-      <textarea name="message" rows="4" placeholder="Describe your situation or ask a question"></textarea>
-      <button type="submit" class="btn btn--primary">Send Request</button>
-    </form>
-  </div>
-</section>
-
+<!-- FOOTER -->
 <footer class="footer">
-  <div class="container footer__inner">
-    <div class="logo">
-      <span class="logo__icon">⬡</span>
-      <div><span class="logo__name">Open Horizons</span><span class="logo__sub">o-horizons.com</span></div>
+  <div class="container footer-inner">
+    <div class="footer-logo">
+      <span class="logo-icon">⬡</span>
+      <span>Open Horizons</span>
     </div>
-    <nav class="footer__nav">
-      <a href="#services">Services</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
-      <a href="index.html">RU</a>
-    </nav>
-    <p class="footer__copy">© 2026 Open Horizons. IT Outsourcing for Business.</p>
+    <p class="footer-copy">© 2026 Open Horizons. IT Outsourcing for Business.</p>
+    <a href="index.html" class="lang-switch">Переключить на Русский →</a>
   </div>
 </footer>
 
-<script>
-  const burger = document.getElementById('burger');
-  const nav = document.getElementById('nav');
-  burger.addEventListener('click', () => nav.classList.toggle('nav--open'));
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      const target = document.querySelector(a.getAttribute('href'));
-      if (target) { e.preventDefault(); target.scrollIntoView({behavior:'smooth'}); }
-      nav.classList.remove('nav--open');
-    });
-  });
-</script>
 </body>
 </html>
