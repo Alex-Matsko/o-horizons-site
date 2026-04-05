@@ -1,0 +1,7 @@
+services:
+  web:
+    build: .
+    container_name: o-horizons-site
+    ports:
+      - "80:80"
+    restart: unless-stopped
