@@ -6,8 +6,67 @@
   <title>Открытые Горизонты — IT-аутсорсинг</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center;}
+    .modal-overlay.active{display:flex;}
+    .modal{background:#fff;border-radius:12px;padding:40px;width:100%;max-width:480px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+    .modal h2{font-size:1.4rem;margin-bottom:6px;color:#1a1a1a;}
+    .modal p.modal-sub{color:#666;font-size:.95rem;margin-bottom:24px;}
+    .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;line-height:1;}
+    .modal-close:hover{color:#333;}
+    .form-group{margin-bottom:16px;}
+    .form-group label{display:block;font-size:.85rem;font-weight:600;color:#444;margin-bottom:6px;}
+    .form-group input,.form-group textarea,.form-group select{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-family:inherit;font-size:.95rem;color:#1a1a1a;transition:border-color .2s;}
+    .form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:#01696f;}
+    .form-group textarea{resize:vertical;min-height:90px;}
+    .modal-contacts{background:#f7f6f2;border-radius:8px;padding:14px 16px;margin-bottom:20px;font-size:.875rem;color:#555;}
+    .modal-contacts strong{display:block;margin-bottom:6px;color:#1a1a1a;font-size:.85rem;}
+    .modal-contacts a{color:#01696f;text-decoration:none;}
+    .modal-contacts a:hover{text-decoration:underline;}
+    .btn-submit{width:100%;padding:12px;background:#01696f;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:background .2s;}
+    .btn-submit:hover{background:#0c4e54;}
+    .btn-submit:disabled{background:#aaa;cursor:not-allowed;}
+    .form-status{margin-top:12px;text-align:center;font-size:.9rem;}
+    .form-status.success{color:#437a22;}
+    .form-status.error{color:#a12c7b;}
+    @media(max-width:520px){.modal{padding:24px;margin:16px;}}
+  </style>
 </head>
 <body>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="auditModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()" aria-label="Закрыть">✕</button>
+    <h2 id="modalTitle">Получить бесплатный аудит</h2>
+    <p class="modal-sub">Оставьте контакты — свяжемся в течение рабочего дня.</p>
+    <form id="auditForm">
+      <div class="form-group">
+        <label for="name">Ваше имя *</label>
+        <input type="text" id="name" name="name" placeholder="Иван Иванов" required />
+      </div>
+      <div class="form-group">
+        <label for="company">Компания</label>
+        <input type="text" id="company" name="company" placeholder="ООО Пример" />
+      </div>
+      <div class="form-group">
+        <label for="contact">Email или Telegram *</label>
+        <input type="text" id="contact" name="contact" placeholder="email@example.com или @username" required />
+      </div>
+      <div class="form-group">
+        <label for="message">Расскажите о задаче</label>
+        <textarea id="message" name="message" placeholder="Что сейчас болит? Сколько серверов, пользователей?"></textarea>
+      </div>
+      <div class="modal-contacts">
+        <strong>Наши контакты:</strong>
+        <a href="mailto:info@o-horizons.com">info@o-horizons.com</a> &nbsp;·&nbsp;
+        <a href="https://t.me/ohorizons" target="_blank">@ohorizons</a>
+      </div>
+      <button type="submit" class="btn-submit" id="submitBtn">Отправить заявку</button>
+      <div class="form-status" id="formStatus"></div>
+    </form>
+  </div>
+</div>
 
 <!-- NAV -->
 <header class="navbar">
@@ -34,7 +93,7 @@
       <h1>Ваша инфраструктура<br/>под надёжным контролем</h1>
       <p class="hero-sub">Полное сопровождение IT-инфраструктуры вашего бизнеса. Мы берём на себя всё — от серверов до безопасности. Без простоев. Без хаоса.</p>
       <div class="hero-actions">
-        <a href="#contact" class="btn-primary">Получить аудит бесплатно</a>
+        <button class="btn-primary" onclick="openModal()">Получить аудит бесплатно</button>
         <a href="#pricing" class="btn-outline">Смотреть тарифы</a>
       </div>
       <div class="hero-stats">
@@ -62,43 +121,36 @@
     <p class="section-tag">Что мы делаем</p>
     <h2 class="section-title">Услуги</h2>
     <div class="services-grid">
-
       <div class="service-card">
         <div class="service-icon">🗄️</div>
         <h3>Сопровождение 1С-инфраструктуры</h3>
         <p>Администрирование серверов 1С и MSSQL, обновления конфигураций, настройка прав, обмены и контроль работоспособности круглосуточно.</p>
       </div>
-
       <div class="service-card">
         <div class="service-icon">💾</div>
         <h3>Резервное копирование и восстановление</h3>
-        <p>Настройка Veeam B&R по схеме 3-2-1, тесты восстановления, политики хранения. RTO и RPO под контролем — потеря данных исключена.</p>
+        <p>Настройка Veeam B&amp;R по схеме 3-2-1, тесты восстановления, политики хранения. RTO и RPO под контролем — потеря данных исключена.</p>
       </div>
-
       <div class="service-card">
         <div class="service-icon">⚡</div>
         <h3>Виртуализация и серверная инфраструктура</h3>
         <p>Развёртывание и сопровождение VMware ESXi, Proxmox, Hyper-V. Архитектура отказоустойчивости, миграции ВМ, ресурсный контроль.</p>
       </div>
-
       <div class="service-card">
         <div class="service-icon">🖥️</div>
         <h3>Системное администрирование</h3>
         <p>Windows/Linux-серверы, Active Directory, GPO, RDS, Zabbix/Grafana. Мониторинг, инциденты, регламентные работы — полный эксплуатационный контур.</p>
       </div>
-
       <div class="service-card">
         <div class="service-icon">🔒</div>
         <h3>Сетевой контур и ИБ</h3>
         <p>MikroTik, VPN, VLAN, NGFW, SIEM, 2FA, Fail2ban. Настройка и сопровождение периметра безопасности под требования малого и среднего бизнеса.</p>
       </div>
-
       <div class="service-card">
         <div class="service-icon">👔</div>
         <h3>Внешний IT-руководитель</h3>
         <p>Берём на себя роль Head of IT: выстраиваем процессы, регламенты, тикет-системы и отчётность. Управляем подрядчиками и оптимизируем IT-бюджет.</p>
       </div>
-
     </div>
   </div>
 </section>
@@ -141,7 +193,6 @@
     <h2 class="section-title">Тарифы</h2>
     <p class="section-sub">Фиксированная ежемесячная стоимость. Без сюрпризов — вы платите за результат, а не за часы.</p>
     <div class="pricing-grid">
-
       <div class="pricing-card">
         <div class="pricing-header">
           <h3>Базовый</h3>
@@ -156,9 +207,8 @@
           <li>✗ Тесты восстановления</li>
           <li>✗ SLA с гарантиями</li>
         </ul>
-        <a href="#contact" class="btn-card">Обсудить</a>
+        <button class="btn-card" onclick="openModal()">Обсудить</button>
       </div>
-
       <div class="pricing-card pricing-featured">
         <div class="pricing-badge">Популярный</div>
         <div class="pricing-header">
@@ -174,9 +224,8 @@
           <li>✗ Тесты восстановления</li>
           <li>✗ Управленческая отчётность</li>
         </ul>
-        <a href="#contact" class="btn-card btn-card-white">Обсудить</a>
+        <button class="btn-card btn-card-white" onclick="openModal()">Обсудить</button>
       </div>
-
       <div class="pricing-card">
         <div class="pricing-header">
           <h3>Премиум</h3>
@@ -190,9 +239,8 @@
           <li>✓ Управленческая IT-отчётность</li>
           <li>✓ Роль внешнего IT-директора</li>
         </ul>
-        <a href="#contact" class="btn-card">Обсудить</a>
+        <button class="btn-card" onclick="openModal()">Обсудить</button>
       </div>
-
     </div>
     <p class="pricing-note">* Стоимость зависит от количества серверов, пользователей и сложности инфраструктуры. Цены указаны без НДС.</p>
   </div>
@@ -208,7 +256,7 @@
       <p>Мы специализируемся на критичной инфраструктуре: серверы 1С, базы данных MSSQL, схемы резервного копирования Veeam, виртуализация на VMware ESXi / Proxmox / Hyper-V и сетевой периметр на MikroTik и NGFW.</p>
       <p>Наш принцип: IT-инфраструктура должна работать как часы, а вы не должны думать о ней вообще.</p>
       <div class="about-stack">
-        <span>VMware ESXi</span><span>Proxmox</span><span>Hyper-V</span><span>Veeam B&R</span><span>MSSQL</span><span>1С</span><span>MikroTik</span><span>Zabbix</span><span>Active Directory</span><span>Linux</span><span>Windows Server</span><span>NGFW</span>
+        <span>VMware ESXi</span><span>Proxmox</span><span>Hyper-V</span><span>Veeam B&amp;R</span><span>MSSQL</span><span>1С</span><span>MikroTik</span><span>Zabbix</span><span>Active Directory</span><span>Linux</span><span>Windows Server</span><span>NGFW</span>
       </div>
     </div>
     <div class="about-visual">
@@ -234,7 +282,7 @@
           <p>info@o-horizons.com</p>
         </div>
       </a>
-      <a href="https://t.me/ohorizons" class="contact-card">
+      <a href="https://t.me/ohorizons" class="contact-card" target="_blank" rel="noopener">
         <span>✈️</span>
         <div>
           <strong>Telegram</strong>
@@ -242,7 +290,7 @@
         </div>
       </a>
     </div>
-    <a href="mailto:info@o-horizons.com" class="btn-primary btn-large">Написать нам</a>
+    <button class="btn-primary btn-large" onclick="openModal()">Оставить заявку</button>
   </div>
 </section>
 
@@ -258,5 +306,61 @@
   </div>
 </footer>
 
+<script>
+function openModal() {
+  document.getElementById('auditModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('name').focus();
+}
+function closeModal() {
+  document.getElementById('auditModal').classList.remove('active');
+  document.body.style.overflow = '';
+  document.getElementById('formStatus').textContent = '';
+  document.getElementById('auditForm').reset();
+}
+document.getElementById('auditModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
+document.getElementById('auditForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  const status = document.getElementById('formStatus');
+  btn.disabled = true;
+  btn.textContent = 'Отправляем...';
+  status.textContent = '';
+  status.className = 'form-status';
+  const data = {
+    name: document.getElementById('name').value,
+    company: document.getElementById('company').value,
+    contact: document.getElementById('contact').value,
+    message: document.getElementById('message').value,
+    lang: 'ru'
+  };
+  try {
+    const res = await fetch('/api/send', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    });
+    if (res.ok) {
+      status.textContent = '✓ Заявка отправлена! Свяжемся с вами в течение рабочего дня.';
+      status.classList.add('success');
+      this.reset();
+      btn.textContent = 'Отправить заявку';
+      btn.disabled = false;
+    } else {
+      throw new Error('server error');
+    }
+  } catch {
+    status.textContent = '✗ Ошибка отправки. Напишите нам напрямую: info@o-horizons.com';
+    status.classList.add('error');
+    btn.textContent = 'Отправить заявку';
+    btn.disabled = false;
+  }
+});
+</script>
 </body>
 </html>

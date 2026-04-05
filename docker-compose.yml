@@ -1,7 +1,21 @@
 services:
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: o-horizons-site
     ports:
       - "80:80"
+    depends_on:
+      - mailer
     restart: unless-stopped
+
+  mailer:
+    build:
+      context: ./mailer
+      dockerfile: Dockerfile
+    container_name: o-horizons-mailer
+    env_file: .env
+    restart: unless-stopped
+    expose:
+      - "3000"
