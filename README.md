@@ -1,23 +1,22 @@
-# Open Horizons — o-horizons.com
+# Open Horizons — IT Outsourcing
 
-Website for **Open Horizons** (Открытые Горизонты) HR Consulting.
+Website for **o-horizons.com** — IT outsourcing company specializing in 1C infrastructure, backup & recovery, virtualization, and network security for SMBs.
 
-## Features
-- Bilingual: Russian 🇷🇺 + English 🇬🇧 (toggle button)
-- Light / Dark mode
-- Fully responsive (mobile-first)
-- Animated scroll reveals
-- Contact form
-- Pure HTML/CSS/JS — no build tools required
+## Stack
+- Pure HTML/CSS/JS — no framework dependencies
+- Hosted via GitHub Pages
+- Bilingual: Russian (`index.html`) + English (`index-en.html`)
 
-## Deploy
-Enable GitHub Pages (Settings → Pages → Source: main branch / root) to serve on `o-horizons.com`.
+## Services covered
+- 1C Server + MSSQL administration
+- Veeam Backup & Recovery (3-2-1 scheme)
+- VMware ESXi / Proxmox / Hyper-V
+- System administration (Windows/Linux, AD, Zabbix)
+- Networks & security (MikroTik, VPN, NGFW, 2FA)
+- Virtual CTO / External IT Director
 
-## DNS for o-horizons.com
-Add a `CNAME` file with `o-horizons.com` and configure your DNS:
-```
-A 185.199.108.153
-A 185.199.109.153
-A 185.199.110.153
-A 185.199.111.153
-```
+## Pricing
+- Basic: from 15 000 ₽/mo
+- Standard: from 30 000 ₽/mo
+- Premium: from 55 000 ₽/mo
+- One-time work priced separately
