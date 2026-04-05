@@ -1,3 +1,8 @@
+// Disable TLS certificate verification globally (handles expired/self-signed certs)
+if (process.env.SMTP_TLS_REJECT_UNAUTHORIZED === 'false') {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
+
 const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
@@ -5,8 +10,6 @@ const cors = require('cors');
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: process.env.ALLOWED_ORIGIN || '*' }));
-
-const rejectUnauthorized = process.env.SMTP_TLS_REJECT_UNAUTHORIZED !== 'false';
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -17,7 +20,7 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASS,
   },
   tls: {
-    rejectUnauthorized,
+    rejectUnauthorized: false,
   },
 });
 
