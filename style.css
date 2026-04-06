@@ -264,6 +264,42 @@ a { text-decoration: none; color: inherit; }
   margin-top: 4px;
 }
 
+/* === AUDIT OUTCOME === */
+.audit-outcome {
+  margin-top: 32px;
+  padding: 18px 22px 8px;
+  border-radius: 14px;
+  border: 1px solid rgba(148,163,184,0.35);
+  background: #0a0c10;
+  max-width: 880px;
+}
+.audit-outcome .section-sub {
+  margin-bottom: 14px;
+  max-width: none;
+}
+.audit-outcome ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 8px 32px;
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+.audit-outcome li {
+  position: relative;
+  padding-left: 20px;
+}
+.audit-outcome li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #22c55e;
+  font-weight: 600;
+}
+
 /* === PRICING === */
 .pricing-grid {
   display: grid;
