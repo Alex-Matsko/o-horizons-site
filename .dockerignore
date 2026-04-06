@@ -1,0 +1,9 @@
+.git
+.gitignore
+.env
+.env.example
+Dockerfile
+docker-compose.yml
+README.md
+mailer/
+nginx.conf
