@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="IT infrastructure audit and IT outsourcing for businesses. We assess backups, servers, 1C and virtualisation, then keep your infrastructure under reliable control." />
+  <meta name="description" content="IT infrastructure audit and IT outsourcing for businesses. We assess backups, servers and 1C so your infrastructure stays under reliable control." />
   <title>Open Horizons — IT Outsourcing</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="stylesheet" href="style.css" />
@@ -268,7 +268,7 @@
     <p class="section-tag">Entry Product</p>
     <h2 class="section-title">Start with an Audit</h2>
     <p class="section-sub">Before making a decision — know the real state of your IT infrastructure.</p>
-    <p class="section-sub">An IT infrastructure audit reveals where backups silently fail, where servers are hitting resource limits, where remote access is unsafe and which parts of IT make sense to outsource instead of keeping in-house.</p>
+    <p class="section-sub">An IT infrastructure audit reveals where backups silently fail, where servers are hitting resource limits, where remote access is unsafe and which parts of IT make sense to outsource instead of keeping in-house. You can see our audit options below and long-term outsourcing formats in the <a href="#pricing">Pricing</a> section.</p>
     <div class="audit-grid">
       <div class="audit-card">
         <h4>Backup &amp; Recovery Audit</h4>
@@ -405,11 +405,11 @@
     <p class="section-tag">FAQ</p>
     <h2 class="section-title">Common questions about IT audit and outsourcing</h2>
     <h3>When does a company need an IT infrastructure audit?</h3>
-    <p>Most often an IT infrastructure audit is required when incidents pile up, 1C starts slowing down or backups have not been tested for years. We help document the current state, quantify the risks and provide a clear remediation plan.</p>
+    <p>Most often an IT infrastructure audit is required when incidents pile up, 1C starts slowing down or backups have not been tested for years. We help document the current state, quantify the risks and provide a clear remediation plan. To dive deeper, start with the <a href="#audits">Start with an Audit</a> section.</p>
     <h3>How is an audit different from routine administration?</h3>
-    <p>During an audit we do not just put out fires. We look at the whole landscape: architecture, backups, security and processes. The result is a report with prioritised tasks. Afterwards you can either hand over IT outsourcing to us or implement some actions with your internal team.</p>
+    <p>During an audit we do not just put out fires. We look at the whole landscape: architecture, backups, security and processes. The result is a report with prioritised tasks. Afterwards you can either hand over IT outsourcing to us under one of the <a href="#pricing">pricing plans</a> or implement some actions with your internal team.</p>
     <h3>What happens after the audit?</h3>
-    <p>After the IT infrastructure audit we choose a format together: a one-off remediation project for critical issues or long-term IT outsourcing with a fixed monthly fee and a clear SLA.</p>
+    <p>After the IT infrastructure audit we choose a format together: a one-off remediation project for critical issues or long-term IT outsourcing with a fixed monthly fee and a clear SLA. The easiest way to start is via the <a href="#contact">Contact</a> section.</p>
   </div>
 </section>
 
@@ -446,6 +446,11 @@
       <span>Open Horizons</span>
     </div>
     <p class="footer-copy">© 2026 Open Horizons. IT Outsourcing for Business.</p>
+    <div class="footer-share">
+      <a href="https://t.me/share/url?url=https://o-horizons.com&text=IT%20infrastructure%20audit%20and%20outsourcing" target="_blank" rel="noopener">Share on Telegram</a>
+      <span>·</span>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://o-horizons.com" target="_blank" rel="noopener">Share on LinkedIn</a>
+    </div>
     <a href="index.html" class="lang-switch">Переключить на Русский →</a>
   </div>
 </footer>
@@ -472,7 +477,8 @@ document.getElementById('auditForm').addEventListener('submit',async function(e)
   e.preventDefault();
   const btn=document.getElementById('submitBtn'),status=document.getElementById('formStatus');
   btn.disabled=true;btn.textContent='Sending...';
-  status.textContent='';status.className='form-status';
+  status.textContent='';
+  status.className='form-status';
   const data={
     name:document.getElementById('name').value,
     company:document.getElementById('company').value,
