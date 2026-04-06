@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Открытые Горизонты — IT-аутсорсинг</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
@@ -37,7 +38,7 @@
 <!-- MODAL -->
 <div class="modal-overlay" id="auditModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
-    <button class="modal-close" onclick="closeModal()" aria-label="Закрыть">✕</button>
+    <button class="modal-close" onclick="closeModal()" aria-label="Закрыть">&#x2715;</button>
     <h2 id="modalTitle">Получить бесплатный аудит</h2>
     <p class="modal-sub">Оставьте контакты — свяжемся в течение рабочего дня.</p>
     <form id="auditForm">
@@ -59,7 +60,7 @@
       </div>
       <div class="modal-contacts">
         <strong>Наши контакты:</strong>
-        <a href="mailto:info@o-horizons.com">info@o-horizons.com</a> &nbsp;·&nbsp;
+        <a href="mailto:info@o-horizons.com">info@o-horizons.com</a> &nbsp;&middot;&nbsp;
         <a href="https://t.me/ohorizons" target="_blank">@ohorizons</a>
       </div>
       <button type="submit" class="btn-submit" id="submitBtn">Отправить заявку</button>
@@ -72,7 +73,7 @@
 <header class="navbar">
   <div class="container nav-inner">
     <div class="logo">
-      <span class="logo-icon">⬡</span>
+      <span class="logo-icon">&#x2B21;</span>
       <span class="logo-text">Открытые <strong>Горизонты</strong></span>
     </div>
     <nav class="nav-links">
@@ -121,36 +122,12 @@
     <p class="section-tag">Что мы делаем</p>
     <h2 class="section-title">Услуги</h2>
     <div class="services-grid">
-      <div class="service-card">
-        <div class="service-icon">🗄️</div>
-        <h3>Сопровождение 1С-инфраструктуры</h3>
-        <p>Администрирование серверов 1С и MSSQL, обновления конфигураций, настройка прав, обмены и контроль работоспособности круглосуточно.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">💾</div>
-        <h3>Резервное копирование и восстановление</h3>
-        <p>Настройка Veeam B&amp;R по схеме 3-2-1, тесты восстановления, политики хранения. RTO и RPO под контролем — потеря данных исключена.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">⚡</div>
-        <h3>Виртуализация и серверная инфраструктура</h3>
-        <p>Развёртывание и сопровождение VMware ESXi, Proxmox, Hyper-V. Архитектура отказоустойчивости, миграции ВМ, ресурсный контроль.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">🖥️</div>
-        <h3>Системное администрирование</h3>
-        <p>Windows/Linux-серверы, Active Directory, GPO, RDS, Zabbix/Grafana. Мониторинг, инциденты, регламентные работы — полный эксплуатационный контур.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">🔒</div>
-        <h3>Сетевой контур и ИБ</h3>
-        <p>MikroTik, VPN, VLAN, NGFW, SIEM, 2FA, Fail2ban. Настройка и сопровождение периметра безопасности под требования малого и среднего бизнеса.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">👔</div>
-        <h3>Внешний IT-руководитель</h3>
-        <p>Берём на себя роль Head of IT: выстраиваем процессы, регламенты, тикет-системы и отчётность. Управляем подрядчиками и оптимизируем IT-бюджет.</p>
-      </div>
+      <div class="service-card"><div class="service-icon">🗄️</div><h3>Сопровождение 1С-инфраструктуры</h3><p>Администрирование серверов 1С и MSSQL, обновления конфигураций, настройка прав, обмены и контроль работоспособности круглосуточно.</p></div>
+      <div class="service-card"><div class="service-icon">💾</div><h3>Резервное копирование и восстановление</h3><p>Настройка Veeam B&amp;R по схеме 3-2-1, тесты восстановления, политики хранения. RTO и RPO под контролем — потеря данных исключена.</p></div>
+      <div class="service-card"><div class="service-icon">⚡</div><h3>Виртуализация и серверная инфраструктура</h3><p>Развёртывание и сопровождение VMware ESXi, Proxmox, Hyper-V. Архитектура отказоустойчивости, миграции ВМ, ресурсный контроль.</p></div>
+      <div class="service-card"><div class="service-icon">🖥️</div><h3>Системное администрирование</h3><p>Windows/Linux-серверы, Active Directory, GPO, RDS, Zabbix/Grafana. Мониторинг, инциденты, регламентные работы — полный эксплуатационный контур.</p></div>
+      <div class="service-card"><div class="service-icon">🔒</div><h3>Сетевой контур и ИБ</h3><p>MikroTik, VPN, VLAN, NGFW, SIEM, 2FA, Fail2ban. Настройка и сопровождение периметра безопасности под требования малого и среднего бизнеса.</p></div>
+      <div class="service-card"><div class="service-icon">👔</div><h3>Внешний IT-руководитель</h3><p>Берём на себя роль Head of IT: выстраиваем процессы, регламенты, тикет-системы и отчётность. Управляем подрядчиками и оптимизируем IT-бюджет.</p></div>
     </div>
   </div>
 </section>
@@ -162,26 +139,10 @@
     <h2 class="section-title">Начните с аудита</h2>
     <p class="section-sub">Перед тем как принять решение — убедитесь, что вы знаете реальное состояние своей IT-инфраструктуры.</p>
     <div class="audit-grid">
-      <div class="audit-card">
-        <h4>Аудит резервного копирования</h4>
-        <p>Проверим, реально ли восстановимы ваши данные. В большинстве случаев — нет.</p>
-        <span class="audit-price">от 5 000 ₽</span>
-      </div>
-      <div class="audit-card">
-        <h4>Аудит 1С-инфраструктуры</h4>
-        <p>Сервер, MSSQL, права, обновления, схема размещения баз — полный разбор.</p>
-        <span class="audit-price">от 7 000 ₽</span>
-      </div>
-      <div class="audit-card">
-        <h4>Аудит виртуализации и серверов</h4>
-        <p>Состояние гипервизоров, ВМ, ресурсов, отказоустойчивости и конфигурации.</p>
-        <span class="audit-price">от 7 000 ₽</span>
-      </div>
-      <div class="audit-card">
-        <h4>Аудит ИБ и удалённого доступа</h4>
-        <p>Периметр, доступы, VPN, 2FA, риски — что открыто наружу и почему это опасно.</p>
-        <span class="audit-price">от 6 000 ₽</span>
-      </div>
+      <div class="audit-card"><h4>Аудит резервного копирования</h4><p>Проверим, реально ли восстановимы ваши данные. В большинстве случаев — нет.</p><span class="audit-price">от 5 000 ₽</span></div>
+      <div class="audit-card"><h4>Аудит 1С-инфраструктуры</h4><p>Сервер, MSSQL, права, обновления, схема размещения баз — полный разбор.</p><span class="audit-price">от 7 000 ₽</span></div>
+      <div class="audit-card"><h4>Аудит виртуализации и серверов</h4><p>Состояние гипервизоров, ВМ, ресурсов, отказоустойчивости и конфигурации.</p><span class="audit-price">от 7 000 ₽</span></div>
+      <div class="audit-card"><h4>Аудит ИБ и удалённого доступа</h4><p>Периметр, доступы, VPN, 2FA, риски — что открыто наружу и почему это опасно.</p><span class="audit-price">от 6 000 ₽</span></div>
     </div>
   </div>
 </section>
@@ -194,51 +155,19 @@
     <p class="section-sub">Фиксированная ежемесячная стоимость. Без сюрпризов — вы платите за результат, а не за часы.</p>
     <div class="pricing-grid">
       <div class="pricing-card">
-        <div class="pricing-header">
-          <h3>Базовый</h3>
-          <div class="price">от 15 000 ₽<span>/мес</span></div>
-        </div>
-        <ul class="pricing-list">
-          <li>✓ Мониторинг доступности (Zabbix)</li>
-          <li>✓ Контроль бэкапов</li>
-          <li>✓ Алертинг и уведомления</li>
-          <li>✓ Реакция на инциденты до 4 часов</li>
-          <li>✗ Регламентные работы</li>
-          <li>✗ Тесты восстановления</li>
-          <li>✗ SLA с гарантиями</li>
-        </ul>
+        <div class="pricing-header"><h3>Базовый</h3><div class="price">от 15 000 ₽<span>/мес</span></div></div>
+        <ul class="pricing-list"><li>✓ Мониторинг доступности (Zabbix)</li><li>✓ Контроль бэкапов</li><li>✓ Алертинг и уведомления</li><li>✓ Реакция на инциденты до 4 часов</li><li>✗ Регламентные работы</li><li>✗ Тесты восстановления</li><li>✗ SLA с гарантиями</li></ul>
         <button class="btn-card" onclick="openModal()">Обсудить</button>
       </div>
       <div class="pricing-card pricing-featured">
         <div class="pricing-badge">Популярный</div>
-        <div class="pricing-header">
-          <h3>Стандарт</h3>
-          <div class="price">от 30 000 ₽<span>/мес</span></div>
-        </div>
-        <ul class="pricing-list">
-          <li>✓ Всё из Базового</li>
-          <li>✓ Сопровождение сервера 1С + MSSQL</li>
-          <li>✓ Обновления конфигураций</li>
-          <li>✓ Регламентные работы</li>
-          <li>✓ Реакция на инциденты до 2 часов</li>
-          <li>✗ Тесты восстановления</li>
-          <li>✗ Управленческая отчётность</li>
-        </ul>
+        <div class="pricing-header"><h3>Стандарт</h3><div class="price">от 30 000 ₽<span>/мес</span></div></div>
+        <ul class="pricing-list"><li>✓ Всё из Базового</li><li>✓ Сопровождение сервера 1С + MSSQL</li><li>✓ Обновления конфигураций</li><li>✓ Регламентные работы</li><li>✓ Реакция на инциденты до 2 часов</li><li>✗ Тесты восстановления</li><li>✗ Управленческая отчётность</li></ul>
         <button class="btn-card btn-card-white" onclick="openModal()">Обсудить</button>
       </div>
       <div class="pricing-card">
-        <div class="pricing-header">
-          <h3>Премиум</h3>
-          <div class="price">от 55 000 ₽<span>/мес</span></div>
-        </div>
-        <ul class="pricing-list">
-          <li>✓ Всё из Стандарт</li>
-          <li>✓ SLA с гарантией доступности</li>
-          <li>✓ Ежемесячные тесты восстановления</li>
-          <li>✓ Приоритетная поддержка 24/7</li>
-          <li>✓ Управленческая IT-отчётность</li>
-          <li>✓ Роль внешнего IT-директора</li>
-        </ul>
+        <div class="pricing-header"><h3>Премиум</h3><div class="price">от 55 000 ₽<span>/мес</span></div></div>
+        <ul class="pricing-list"><li>✓ Всё из Стандарт</li><li>✓ SLA с гарантией доступности</li><li>✓ Ежемесячные тесты восстановления</li><li>✓ Приоритетная поддержка 24/7</li><li>✓ Управленческая IT-отчётность</li><li>✓ Роль внешнего IT-директора</li></ul>
         <button class="btn-card" onclick="openModal()">Обсудить</button>
       </div>
     </div>
@@ -261,7 +190,7 @@
     </div>
     <div class="about-visual">
       <div class="kpi-card"><span>98%</span><p>Среднее SLA доступности</p></div>
-      <div class="kpi-card"><span>&lt; 1 ч</span><p>Реакция на критичный инцидент</p></div>
+      <div class="kpi-card"><span>&lt; 1 ч</span><p>Реакция на критический инцидент</p></div>
       <div class="kpi-card"><span>3-2-1</span><p>Схема резервного копирования</p></div>
       <div class="kpi-card"><span>0</span><p>Невосстановимых потерь данных</p></div>
     </div>
@@ -275,20 +204,8 @@
     <h2>Готовы обсудить вашу инфраструктуру?</h2>
     <p class="section-sub">Напишите нам — расскажем, что можно улучшить, и предложим подходящее решение. Первичный аудит бесплатно.</p>
     <div class="contact-options">
-      <a href="mailto:info@o-horizons.com" class="contact-card">
-        <span>✉️</span>
-        <div>
-          <strong>Email</strong>
-          <p>info@o-horizons.com</p>
-        </div>
-      </a>
-      <a href="https://t.me/ohorizons" class="contact-card" target="_blank" rel="noopener">
-        <span>✈️</span>
-        <div>
-          <strong>Telegram</strong>
-          <p>@ohorizons</p>
-        </div>
-      </a>
+      <a href="mailto:info@o-horizons.com" class="contact-card"><span>✉️</span><div><strong>Email</strong><p>info@o-horizons.com</p></div></a>
+      <a href="https://t.me/ohorizons" class="contact-card" target="_blank" rel="noopener"><span>✈️</span><div><strong>Telegram</strong><p>@ohorizons</p></div></a>
     </div>
     <button class="btn-primary btn-large" onclick="openModal()">Оставить заявку</button>
   </div>
@@ -297,69 +214,29 @@
 <!-- FOOTER -->
 <footer class="footer">
   <div class="container footer-inner">
-    <div class="footer-logo">
-      <span class="logo-icon">⬡</span>
-      <span>Открытые Горизонты</span>
-    </div>
+    <div class="footer-logo"><span class="logo-icon">&#x2B21;</span><span>Открытые Горизонты</span></div>
     <p class="footer-copy">© 2026 Open Horizons. IT-аутсорсинг для бизнеса.</p>
     <a href="index-en.html" class="lang-switch">Switch to English →</a>
   </div>
 </footer>
 
 <script>
-function openModal() {
-  document.getElementById('auditModal').classList.add('active');
-  document.body.style.overflow = 'hidden';
-  document.getElementById('name').focus();
-}
-function closeModal() {
-  document.getElementById('auditModal').classList.remove('active');
-  document.body.style.overflow = '';
-  document.getElementById('formStatus').textContent = '';
-  document.getElementById('auditForm').reset();
-}
-document.getElementById('auditModal').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeModal();
-});
-document.getElementById('auditForm').addEventListener('submit', async function(e) {
+function openModal(){document.getElementById('auditModal').classList.add('active');document.body.style.overflow='hidden';document.getElementById('name').focus();}
+function closeModal(){document.getElementById('auditModal').classList.remove('active');document.body.style.overflow='';document.getElementById('formStatus').textContent='';document.getElementById('auditForm').reset();}
+document.getElementById('auditModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+document.getElementById('auditForm').addEventListener('submit',async function(e){
   e.preventDefault();
-  const btn = document.getElementById('submitBtn');
-  const status = document.getElementById('formStatus');
-  btn.disabled = true;
-  btn.textContent = 'Отправляем...';
-  status.textContent = '';
-  status.className = 'form-status';
-  const data = {
-    name: document.getElementById('name').value,
-    company: document.getElementById('company').value,
-    contact: document.getElementById('contact').value,
-    message: document.getElementById('message').value,
-    lang: 'ru'
-  };
-  try {
-    const res = await fetch('/api/send', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(data)
-    });
-    if (res.ok) {
-      status.textContent = '✓ Заявка отправлена! Свяжемся с вами в течение рабочего дня.';
-      status.classList.add('success');
-      this.reset();
-      btn.textContent = 'Отправить заявку';
-      btn.disabled = false;
-    } else {
-      throw new Error('server error');
-    }
-  } catch {
-    status.textContent = '✗ Ошибка отправки. Напишите нам напрямую: info@o-horizons.com';
-    status.classList.add('error');
-    btn.textContent = 'Отправить заявку';
-    btn.disabled = false;
-  }
+  const btn=document.getElementById('submitBtn');
+  const status=document.getElementById('formStatus');
+  btn.disabled=true;btn.textContent='Отправляем...';
+  status.textContent='';status.className='form-status';
+  const data={name:document.getElementById('name').value,company:document.getElementById('company').value,contact:document.getElementById('contact').value,message:document.getElementById('message').value,lang:'ru'};
+  try{
+    const res=await fetch('/api/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    if(res.ok){status.textContent='✓ Заявка отправлена! Свяжемся с вами в течение рабочего дня.';status.classList.add('success');this.reset();btn.textContent='Отправить заявку';btn.disabled=false;}
+    else throw new Error('server error');
+  }catch{status.textContent='✗ Ошибка отправки. Напишите нам напрямую: info@o-horizons.com';status.classList.add('error');btn.textContent='Отправить заявку';btn.disabled=false;}
 });
 </script>
 </body>
