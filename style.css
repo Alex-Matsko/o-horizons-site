@@ -80,8 +80,7 @@ a { text-decoration: none; color: inherit; }
 /* === HERO === */
 .hero {
   padding: 80px 0 72px;
-  background: #0a0c10;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: radial-gradient(ellipse at 60% 0%, rgba(59,130,246,0.12) 0%, transparent 60%), #0d0f14;
 }
 .hero-inner {
   display: grid;
@@ -117,42 +116,11 @@ a { text-decoration: none; color: inherit; }
   color: #94a3b8;
   margin-bottom: 26px;
 }
-.hero-sub.hero-sub-main {
-  margin-bottom: 18px;
-}
-.hero-bullets {
-  list-style: none;
-  margin: 0 0 26px;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 0.9rem;
-  color: #cbd5f5;
-}
-.hero-bullets li {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-}
-.hero-bullet-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  margin-top: 7px;
-  flex-shrink: 0;
-  background: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.38);
-}
-.hero-note {
-  font-size: 0.82rem;
-  color: #64748b;
-}
 .hero-actions {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 18px;
+  margin-bottom: 40px;
 }
 .btn-primary {
   background: #3b82f6;
@@ -189,45 +157,6 @@ a { text-decoration: none; color: inherit; }
   color: #3b82f6;
 }
 .stat p { font-size: 0.8rem; color: #64748b; margin-top: 2px; }
-
-/* HERO PANEL */
-.hero-panel {
-  background: #050816;
-  border: 1px solid rgba(148,163,184,0.35);
-  border-radius: 16px;
-  padding: 22px 22px 18px;
-  box-shadow: 0 22px 60px rgba(15,23,42,0.75);
-}
-.hero-panel-title {
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: #e5e7eb;
-  margin-bottom: 12px;
-}
-.hero-panel-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  font-size: 0.86rem;
-  color: #94a3b8;
-}
-.hero-panel-list li {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-}
-.hero-panel-list .dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  margin-top: 7px;
-  background: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.5);
-}
 
 /* SERVER CARD */
 .server-card {
