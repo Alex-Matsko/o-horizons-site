@@ -79,14 +79,17 @@ a { text-decoration: none; color: inherit; }
 
 /* === HERO === */
 .hero {
-  padding: 96px 0 80px;
+  padding: 80px 0 72px;
   background: radial-gradient(ellipse at 60% 0%, rgba(59,130,246,0.12) 0%, transparent 60%), #0d0f14;
 }
 .hero-inner {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 56px;
   align-items: center;
+}
+.hero-text {
+  max-width: 540px;
 }
 .hero-tag {
   display: inline-block;
@@ -102,23 +105,22 @@ a { text-decoration: none; color: inherit; }
   border: 1px solid rgba(59,130,246,0.2);
 }
 .hero h1 {
-  font-size: 2.8rem;
-  font-weight: 700;
+  font-size: 2.25rem;
+  font-weight: 650;
   line-height: 1.18;
-  color: #f1f5f9;
-  margin-bottom: 20px;
+  color: #f9fafb;
+  margin-bottom: 18px;
 }
 .hero-sub {
-  font-size: 1.05rem;
+  font-size: 1rem;
   color: #94a3b8;
-  margin-bottom: 32px;
-  max-width: 480px;
+  margin-bottom: 26px;
 }
 .hero-actions {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 48px;
+  margin-bottom: 40px;
 }
 .btn-primary {
   background: #3b82f6;
@@ -146,12 +148,12 @@ a { text-decoration: none; color: inherit; }
 .btn-outline:hover { border-color: #64748b; color: #e2e8f0; }
 .hero-stats {
   display: flex;
-  gap: 36px;
+  gap: 32px;
 }
 .stat span {
   display: block;
-  font-size: 1.8rem;
-  font-weight: 700;
+  font-size: 1.6rem;
+  font-weight: 650;
   color: #3b82f6;
 }
 .stat p { font-size: 0.8rem; color: #64748b; margin-top: 2px; }
@@ -491,7 +493,8 @@ a { text-decoration: none; color: inherit; }
 /* === RESPONSIVE === */
 @media (max-width: 900px) {
   .hero-inner, .about-inner { grid-template-columns: 1fr; gap: 40px; }
-  .hero h1 { font-size: 2rem; }
+  .hero { padding-top: 72px; }
+  .hero h1 { font-size: 1.9rem; }
   .services-grid { grid-template-columns: 1fr 1fr; }
   .audit-grid { grid-template-columns: 1fr 1fr; }
   .pricing-grid { grid-template-columns: 1fr; }
@@ -500,7 +503,7 @@ a { text-decoration: none; color: inherit; }
 }
 @media (max-width: 600px) {
   .services-grid, .audit-grid { grid-template-columns: 1fr; }
-  .hero h1 { font-size: 1.7rem; }
+  .hero h1 { font-size: 1.6rem; }
   .nav-links { display: none; }
   .hero-stats { gap: 20px; flex-wrap: wrap; }
   .about-visual { grid-template-columns: 1fr 1fr; }
