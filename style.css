@@ -9,6 +9,9 @@ body {
 }
 a { text-decoration: none; color: inherit; }
 
+/* anchor offset for sticky header */
+#services, #pricing, #about, #audits, #contact { scroll-margin-top: 96px; }
+
 /* === CONTAINER === */
 .container {
   max-width: 1160px;

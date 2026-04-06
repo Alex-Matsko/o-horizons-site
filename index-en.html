@@ -8,30 +8,87 @@
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:center;justify-content:center;}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.85);z-index:1000;align-items:center;justify-content:center;}
     .modal-overlay.active{display:flex;}
-    .modal{background:#fff;border-radius:12px;padding:40px;width:100%;max-width:480px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2);}
-    .modal h2{font-size:1.4rem;margin-bottom:6px;color:#1a1a1a;}
-    .modal p.modal-sub{color:#666;font-size:.95rem;margin-bottom:24px;}
-    .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;line-height:1;}
-    .modal-close:hover{color:#333;}
-    .form-group{margin-bottom:16px;}
-    .form-group label{display:block;font-size:.85rem;font-weight:600;color:#444;margin-bottom:6px;}
-    .form-group input,.form-group textarea{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-family:inherit;font-size:.95rem;color:#1a1a1a;transition:border-color .2s;}
-    .form-group input:focus,.form-group textarea:focus{outline:none;border-color:#3b82f6;}
+    .modal{
+      position:relative;
+      background:radial-gradient(circle at top left,rgba(56,189,248,0.12),transparent 55%),#020617;
+      border-radius:18px;
+      padding:32px 32px 28px;
+      width:100%;
+      max-width:520px;
+      box-shadow:0 24px 80px rgba(15,23,42,.9);
+      border:1px solid rgba(148,163,184,0.5);
+      overflow:hidden;
+    }
+    .modal::before{
+      content:"";
+      position:absolute;
+      inset:0 0 auto 0;
+      height:3px;
+      background:linear-gradient(90deg,#3b82f6,#22c55e);
+      opacity:.9;
+    }
+    .modal h2{font-size:1.45rem;margin-bottom:6px;color:#e5e7eb;letter-spacing:0.03em;text-transform:uppercase;}
+    .modal p.modal-sub{color:#9ca3af;font-size:.9rem;margin-bottom:18px;max-width:360px;}
+    .modal-close{position:absolute;top:16px;right:18px;background:none;border:none;font-size:1.25rem;cursor:pointer;color:#6b7280;line-height:1;border-radius:999px;padding:4px;transition:background .15s,color .15s,transform .1s;}
+    .modal-close:hover{color:#e5e7eb;background:rgba(15,23,42,.85);transform:translateY(-1px);}
+    .form-group{margin-bottom:14px;}
+    .form-group label{display:block;font-size:.8rem;font-weight:600;color:#9ca3af;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em;}
+    .form-group input,.form-group textarea{
+      width:100%;
+      padding:9px 12px;
+      border-radius:10px;
+      border:1px solid rgba(148,163,184,0.5);
+      background:#020617;
+      color:#e5e7eb;
+      font-family:inherit;
+      font-size:.92rem;
+      transition:border-color .15s,box-shadow .15s,background .15s;
+    }
+    .form-group input::placeholder,.form-group textarea::placeholder{color:#4b5563;font-size:.9rem;}
+    .form-group input:focus,.form-group textarea:focus{
+      outline:none;
+      border-color:#3b82f6;
+      box-shadow:0 0 0 1px rgba(59,130,246,0.6);
+      background:#020617;
+    }
     .form-group textarea{resize:vertical;min-height:90px;}
-    .modal-contacts{background:#f7f6f2;border-radius:8px;padding:14px 16px;margin-bottom:20px;font-size:.875rem;color:#555;}
-    .modal-contacts strong{display:block;margin-bottom:6px;color:#1a1a1a;font-size:.85rem;}
-    .modal-contacts a{color:#3b82f6;text-decoration:none;}
+    .modal-contacts{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      background:rgba(15,23,42,0.9);
+      border-radius:10px;
+      padding:10px 12px;
+      margin:4px 0 18px;
+      font-size:.82rem;
+      color:#9ca3af;
+      border:1px dashed rgba(55,65,81,0.9);
+    }
+    .modal-contacts strong{color:#e5e7eb;font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;}
+    .modal-contacts a{color:#38bdf8;text-decoration:none;}
     .modal-contacts a:hover{text-decoration:underline;}
-    .btn-submit{width:100%;padding:12px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:background .2s;}
-    .btn-submit:hover{background:#2563eb;}
-    .btn-submit:disabled{background:#aaa;cursor:not-allowed;}
-    .form-status{margin-top:12px;text-align:center;font-size:.9rem;}
-    .form-status.success{color:#437a22;}
-    .form-status.error{color:#c0392b;}
-    a.logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;font-size:1.1rem;font-weight:600;}
-    @media(max-width:520px){.modal{padding:24px;margin:16px;}}
+    .btn-submit{
+      width:100%;
+      padding:11px 16px;
+      background:linear-gradient(135deg,#3b82f6,#2563eb);
+      color:#fff;
+      border:none;
+      border-radius:999px;
+      font-size:.95rem;
+      font-weight:600;
+      cursor:pointer;
+      transition:transform .1s,box-shadow .15s,filter .15s;
+      box-shadow:0 14px 35px rgba(37,99,235,0.45);
+    }
+    .btn-submit:hover{filter:brightness(1.05);transform:translateY(-1px);}
+    .btn-submit:active{transform:translateY(0);box-shadow:0 10px 25px rgba(37,99,235,0.35);}
+    .btn-submit:disabled{background:#4b5563;box-shadow:none;cursor:not-allowed;}
+    .form-status{margin-top:10px;text-align:center;font-size:.85rem;min-height:1.1em;}
+    .form-status.success{color:#4ade80;}
+    .form-status.error{color:#f97373;}
+    @media(max-width:520px){.modal{padding:24px 20px 22px;margin:16px;}}
   </style>
 </head>
 <body>
@@ -49,8 +106,8 @@
       <div class="form-group"><label for="message">Tell us about your task</label><textarea id="message" name="message" placeholder="What's the pain point? How many servers, users?"></textarea></div>
       <div class="modal-contacts">
         <strong>Our contacts:</strong>
-        <a href="mailto:info@o-horizons.com">info@o-horizons.com</a> &nbsp;&middot;&nbsp;
-        <a href="https://t.me/ohorizons" target="_blank">@ohorizons</a>
+        <span><a href="mailto:info@o-horizons.com">info@o-horizons.com</a></span>
+        <span><a href="https://t.me/ohorizons" target="_blank">@ohorizons</a></span>
       </div>
       <button type="submit" class="btn-submit" id="submitBtn">Send request</button>
       <div class="form-status" id="formStatus"></div>
