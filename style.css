@@ -266,12 +266,12 @@ a { text-decoration: none; color: inherit; }
 
 /* === AUDIT OUTCOME === */
 .audit-outcome {
-  margin-top: 32px;
-  padding: 18px 22px 8px;
+  margin-top: 20px;
+  padding: 20px 24px 20px;
   border-radius: 14px;
-  border: 1px solid rgba(148,163,184,0.35);
-  background: #0a0c10;
-  max-width: 880px;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: transparent;
+  width: 100%;
 }
 .audit-outcome .section-sub {
   margin-bottom: 14px;
@@ -283,13 +283,15 @@ a { text-decoration: none; color: inherit; }
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 8px 32px;
+  gap: 10px 32px;
   font-size: 0.9rem;
   color: #94a3b8;
+  padding-bottom: 4px;
 }
 .audit-outcome li {
   position: relative;
   padding-left: 20px;
+  line-height: 1.5;
 }
 .audit-outcome li::before {
   content: "✓";
