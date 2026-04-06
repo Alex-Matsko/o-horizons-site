@@ -388,7 +388,7 @@ a { text-decoration: none; color: inherit; }
 .kpi-card p { font-size: 0.78rem; color: #64748b; }
 
 /* === FAQ (cards baseline) === */
-.faq-wrapper { max-width: 880px; }
+.faq-wrapper { max-width: 100%; }
 .faq-intro { font-size: 0.95rem; color: #64748b; margin-bottom: 28px; max-width: 560px; }
 .faq-grid {
   display: grid;
