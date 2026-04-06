@@ -16,12 +16,15 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://o-horizons.com/" />
   <meta property="og:image" content="https://o-horizons.com/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:locale" content="ru_RU" />
   <meta property="og:locale:alternate" content="en_US" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="IT-аутсорсинг и аудит IT для бизнеса — Open Horizons" />
   <meta name="twitter:description" content="Аудит IT, сопровождение 1С, серверов и безопасности. Первичный аудит бесплатно." />
+  <meta name="twitter:image" content="https://o-horizons.com/og-image.png" />
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="stylesheet" href="style.css?v=3" />
@@ -49,13 +52,13 @@
       "@type": "OfferCatalog",
       "name": "IT-услуги",
       "itemListElement": [
-        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Аудит резервного копирования", "description": "Проверка резервных копий и схемы восстановления данных"}},
-        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Аудит 1С-инфраструктуры", "description": "Проверка серверов 1С, MSSQL, схемы размещения баз"}},
-        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Аудит виртуализации и серверов", "description": "Проверка гипервизоров VMware ESXi, Proxmox, Hyper-V"}},
-        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Аудит ИБ и удалённого доступа", "description": "Проверка периметра безопасности, VPN, 2FA"}},
-        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "IT-аутсорсинг Базовый", "description": "Мониторинг, контроль бэкапов, алертинг. От 15 000 ₽/мес"}},
-        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "IT-аутсорсинг Стандарт", "description": "Сопровождение 1С, серверов, регламентные работы. От 30 000 ₽/мес"}},
-        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "IT-аутсорсинг Премиум", "description": "Полное сопровождение с SLA, 24/7, внешний IT-директор. От 55 000 ₽/мес"}}
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Аудит резервного копирования", "description": "Проверим, реально ли восстановимы ваши данные"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Аудит 1С-инфраструктуры", "description": "Полный разбор серверов 1С, MSSQL и схемы размещения баз"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Аудит виртуализации и серверов", "description": "Состояние гипервизоров, ВМ, ресурсов, отказоустойчивости и конфигурации"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Аудит ИБ и удалённого доступа", "description": "Периметр, доступы, VPN, 2FA — что открыто наружу и почему это опасно"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Базовый IT-аутсорсинг", "description": "Мониторинг, контроль бэкапов, алертинг. От 15 000 ₽/мес"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Стандартный IT-аутсорсинг", "description": "Сопровождение серверов 1С + MSSQL, обслуживание. От 30 000 ₽/мес"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Премиум IT-аутсорсинг", "description": "Полное сопровождение с SLA, 24/7, IT-директор на аутсорсе. От 55 000 ₽/мес"}}
       ]
     }
   }
@@ -69,48 +72,18 @@
     "mainEntity": [
       {
         "@type": "Question",
-        "name": "Когда компании имеет смысл начинать с аудита?",
-        "acceptedAnswer": {"@type": "Answer", "text": "Когда растёт количество инцидентов, 1С и связанные сервисы периодически простаивают, а за резервные копии формально никто не отвечает. В этой точке бизнес опирается на инфраструктуру, которая работает по принципу 'как повезёт'."}
+        "name": "Когда компании нужен аудит IT-инфраструктуры?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Чаще всего — когда начинают накапливаться инциденты, тормозит 1С или бэкапы не проверялись годами. Мы фиксируем текущее состояние, оцениваем риски и расставляем приоритеты задач."}
       },
       {
         "@type": "Question",
-        "name": "Что входит в аудит IT-инфраструктуры?",
-        "acceptedAnswer": {"@type": "Answer", "text": "В аудит входит проверка резервного копирования и восстановления, серверов 1С и баз MSSQL, виртуализации и запаса по ресурсам, удалённого доступа и базовой безопасности, а также организационной части: кто за что отвечает и как фиксируются инциденты."}
+        "name": "Чем аудит отличается от обычного администрирования?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Администрирование — это поддержание работы и тушение пожаров. Аудит — взгляд сверху на архитектуру, бэкапы, безопасность и процессы. Результат — понятный отчёт и дорожная карта."}
       },
       {
         "@type": "Question",
-        "name": "Какой результат вы получаете по итогам аудита?",
-        "acceptedAnswer": {"@type": "Answer", "text": "Структурированный отчёт на понятном языке и перечень задач по приоритетам: что критично, что можно отложить и где быстрый эффект. Отдельно — план работ на 3–6 месяцев."}
-      },
-      {
-        "@type": "Question",
-        "name": "Как аудит связан с аутсорсингом IT?",
-        "acceptedAnswer": {"@type": "Answer", "text": "Аудит — входная точка. Сначала фиксируем текущую ситуацию и закрываем ключевые риски, затем выбираем формат сопровождения по одному из тарифов."}
-      },
-      {
-        "@type": "Question",
-        "name": "Чем IT-аутсорсинг лучше или дополняет штатного админа?",
-        "acceptedAnswer": {"@type": "Answer", "text": "Мы не заменяем человека на месте, а закрываем то, что одному админу физически сложно тянуть: 24/7 мониторинг, бэкапы, виртуализацию, сеть и безопасность."}
-      },
-      {
-        "@type": "Question",
-        "name": "Как вы обеспечиваете SLA по доступности и реакции?",
-        "acceptedAnswer": {"@type": "Answer", "text": "Фиксируем SLA в договоре: время реакции на инциденты, целевую доступность ключевых сервисов и регламентные работы. Мониторинг, алертинг, дежурства и тесты восстановления бэкапов позволяют заранее видеть проблемы."}
-      },
-      {
-        "@type": "Question",
-        "name": "Сколько времени занимает внедрение мониторинга и бэкапов?",
-        "acceptedAnswer": {"@type": "Answer", "text": "Базовый мониторинг ключевых сервисов и контроль бэкапов обычно поднимаем за 3–5 рабочих дней."}
-      },
-      {
-        "@type": "Question",
-        "name": "Что входит в сопровождение 1С-инфраструктуры?",
-        "acceptedAnswer": {"@type": "Answer", "text": "Мы ведём серверы 1С и MSSQL: обновления платформы и конфигураций, настройка прав и обменов, контроль производительности и резервного копирования."}
-      },
-      {
-        "@type": "Question",
-        "name": "Как вы работаете с инцидентами ночью и в выходные?",
-        "acceptedAnswer": {"@type": "Answer", "text": "Для критичных систем организуем дежурства и приоритетную реакцию 24/7 в рамках тарифа. Инциденты попадают в систему мониторинга и тикет-систему, фиксируем время реакции и закрытия."}
+        "name": "Что будет после аудита?",
+        "acceptedAnswer": {"@type": "Answer", "text": "После аудита мы предложим варианты: разовый проект по устранению критических рисков или долгосрочное сопровождение с фиксированной стоимостью и SLA."}
       }
     ]
   }
@@ -125,18 +98,18 @@
     gtag('config', 'G-GK72SBNLF6');
   </script>
 
-  <!-- Yandex.Метрика counter -->
+  <!-- Yandex.Metrika counter -->
   <script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-      m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-      m[i].l=1*new Date();
-      for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-      k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=108408675', 'ym');
-    ym(108408675, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+      (function(m,e,t,r,i,k,a){
+          m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+          m[i].l=1*new Date();
+          for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+          k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+      })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=108408675', 'ym');
+      ym(108408675, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
   </script>
   <noscript><div><img src="https://mc.yandex.ru/watch/108408675" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-  <!-- /Yandex.Метрика counter -->
+  <!-- /Yandex.Metrika counter -->
 
   <style>
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.75);z-index:1000;align-items:center;justify-content:center;}
@@ -231,7 +204,7 @@
   <div class="modal">
     <button class="modal-close" onclick="closeModal()" aria-label="Закрыть">&#x2715;</button>
     <h2 id="modalTitle">Получить бесплатный аудит</h2>
-    <p class="modal-sub">Оставьте контакты — свяжемся в течение рабочего дня.</p>
+    <p class="modal-sub">Оставьте контакт — мы свяжемся в течение одного рабочего дня.</p>
     <form id="auditForm">
       <div class="form-group">
         <label for="name">Ваше имя *</label>
@@ -247,7 +220,7 @@
       </div>
       <div class="form-group">
         <label for="message">Расскажите о задаче</label>
-        <textarea id="message" name="message" placeholder="Что сейчас болит? Сколько серверов, пользователей?"></textarea>
+        <textarea id="message" name="message" placeholder="Что болит? Сколько серверов, пользователей?"></textarea>
       </div>
       <div class="modal-contacts">
         <strong>Наши контакты:</strong>
@@ -263,7 +236,7 @@
 <!-- NAV -->
 <header class="navbar">
   <div class="container nav-inner">
-    <a href="#" class="logo" aria-label="На главную">
+    <a href="#" class="logo" aria-label="Вернуться наверх">
       <span class="logo-icon">&#x2B21;</span>
       <span class="logo-text">Открытые <strong>Горизонты</strong></span>
     </a>
@@ -271,7 +244,7 @@
       <a href="#services">Услуги</a>
       <a href="#pricing">Тарифы</a>
       <a href="#about">О нас</a>
-      <a href="#contact" class="btn-nav">Связаться с инженером</a>
+      <a href="#contact" class="btn-nav">Связаться</a>
     </nav>
     <a href="index-en.html" class="lang-switch">EN</a>
   </div>
@@ -282,31 +255,46 @@
   <div class="container hero-inner">
     <div class="hero-text">
       <p class="hero-tag">IT-аутсорсинг для бизнеса</p>
-      <h1>IT-аутсорсинг и аудит IT-инфраструктуры для стабильной работы бизнеса</h1>
-      <p class="hero-sub">
-        IT-инфраструктура — основа процессов, продаж и работы команды. Мы берём на аутсорсинг серверы, 1С, резервное копирование и безопасность, чтобы бизнес не зависел от случайных сбоев.
-      </p>
-      <p class="hero-sub">
-        Сначала проводим аудит IT: проверяем бэкапы, серверы 1С и MSSQL, виртуализацию, удалённый доступ и периметр безопасности. По итогам даём отчёт с приоритетами и планом работ по снижению рисков.
-      </p>
+      <h1>Ваша инфраструктура.<br/>Надёжно. Всегда.</h1>
+      <p class="hero-sub">Полное IT-сопровождение вашего бизнеса. Мы берём на себя всё — от серверов до безопасности. Без простоев. Без хаоса.</p>
+      <p class="hero-sub">Ваша инфраструктура действительно будет под надёжным контролем: от разового аудита IT-инфраструктуры до полного IT-аутсорсинга и постоянного администрирования.</p>
       <div class="hero-actions">
-        <button class="btn-primary" onclick="openModal()">Получить аудит бесплатно</button>
-        <a href="#pricing" class="btn-outline">Обсудить сопровождение и тарифы</a>
+        <button class="btn-primary" onclick="openModal()">Получить бесплатный аудит</button>
+        <a href="#pricing" class="btn-outline">Смотреть тарифы</a>
       </div>
       <div class="hero-stats">
-        <div class="stat"><span>98%</span><p>доступность сервисов</p></div>
-        <div class="stat"><span>50+</span><p>проектов реализовано</p></div>
-        <div class="stat"><span>&lt; 1 ч</span><p>реакция на инцидент</p></div>
+        <div class="stat">
+          <span>98%</span>
+          <p>доступность сервисов</p>
+        </div>
+        <div class="stat">
+          <span>50+</span>
+          <p>реализованных проектов</p>
+        </div>
+        <div class="stat">
+          <span>&lt; 1ч</span>
+          <p>реакция на инцидент</p>
+        </div>
       </div>
     </div>
     <div class="hero-visual">
       <div class="server-card">
-        <div class="server-line"><span class="dot green"></span> 1С Сервер — Online</div>
-        <div class="server-line"><span class="dot green"></span> Backup — OK (сегодня 03:00)</div>
-        <div class="server-line"><span class="dot green"></span> MSSQL — Мониторинг</div>
-        <div class="server-line"><span class="dot green"></span> VPN — Активен</div>
-        <div class="server-line"><span class="dot green"></span> VMware ESXi — Running</div>
-        <div class="server-footer">Зеленее не бывает 🟢</div>
+        <div class="server-line">
+          <span class="dot green"></span> 1C Server — Online
+        </div>
+        <div class="server-line">
+          <span class="dot green"></span> Backup — OK (сегодня 03:00)
+        </div>
+        <div class="server-line">
+          <span class="dot green"></span> MSSQL — Мониторинг
+        </div>
+        <div class="server-line">
+          <span class="dot green"></span> VPN — Активен
+        </div>
+        <div class="server-line">
+          <span class="dot green"></span> VMware ESXi — Running
+        </div>
+        <div class="server-footer">Все системы работают 🟢</div>
       </div>
     </div>
   </div>
@@ -316,37 +304,37 @@
 <section class="section" id="services">
   <div class="container">
     <p class="section-tag">Что мы делаем</p>
-    <h2 class="section-title">Сопровождение 1С, серверов и виртуализации</h2>
+    <h2 class="section-title">Услуги</h2>
     <div class="services-grid">
       <div class="service-card">
         <div class="service-icon">🗄️</div>
         <h3>Сопровождение 1С-инфраструктуры</h3>
-        <p>Администрирование серверов 1С и MSSQL, обновления конфигураций, настройка прав, обмены и контроль работоспособности круглосуточно.</p>
+        <p>Администрирование серверов 1С и MSSQL, обновление конфигураций, права доступа, обмены данными и круглосуточный мониторинг доступности.</p>
       </div>
       <div class="service-card">
         <div class="service-icon">💾</div>
         <h3>Резервное копирование и восстановление</h3>
-        <p>Настройка Veeam B&amp;R по схеме 3-2-1, тесты восстановления, политики хранения. RTO и RPO под контролем — потеря данных исключена.</p>
+        <p>Внедрение Veeam B&amp;R по схеме 3-2-1, тестирование восстановления, политики хранения. RTO и RPO под контролем — потеря данных исключена.</p>
       </div>
       <div class="service-card">
         <div class="service-icon">⚡</div>
         <h3>Виртуализация и серверная инфраструктура</h3>
-        <p>Развёртывание и сопровождение VMware ESXi, Proxmox, Hyper-V. Архитектура отказоустойчивости, миграции ВМ, ресурсный контроль.</p>
+        <p>Внедрение и управление VMware ESXi, Proxmox и Hyper-V. Архитектура высокой доступности, миграция ВМ и управление ресурсами.</p>
       </div>
       <div class="service-card">
         <div class="service-icon">🖥️</div>
         <h3>Системное администрирование</h3>
-        <p>Windows/Linux-серверы, Active Directory, GPO, RDS, Zabbix/Grafana. Мониторинг, инциденты, регламентные работы — полный эксплуатационный контур.</p>
+        <p>Серверы Windows/Linux, Active Directory, GPO, RDS, Zabbix/Grafana. Полное операционное покрытие — мониторинг, инциденты и обслуживание.</p>
       </div>
       <div class="service-card">
         <div class="service-icon">🔒</div>
-        <h3>Сетевой контур и ИБ</h3>
-        <p>MikroTik, VPN, VLAN, NGFW, SIEM, 2FA, Fail2ban. Настройка и сопровождение периметра безопасности под требования малого и среднего бизнеса.</p>
+        <h3>Сетевой периметр и безопасность</h3>
+        <p>MikroTik, VPN, VLAN, NGFW, SIEM, 2FA, Fail2ban. Периметр безопасности выстроен и поддерживается под требования МСБ.</p>
       </div>
       <div class="service-card">
         <div class="service-icon">👔</div>
-        <h3>Внешний IT-руководитель</h3>
-        <p>Берём на себя роль Head of IT: выстраиваем процессы, регламенты, тикет-системы и отчётность. Управляем подрядчиками и оптимизируем IT-бюджет.</p>
+        <h3>IT-директор на аутсорсе</h3>
+        <p>Мы выступаем вашим руководителем IT: выстраиваем процессы, регламенты, тикетинг и отчётность. Управляем подрядчиками и оптимизируем IT-бюджет.</p>
       </div>
     </div>
   </div>
@@ -358,7 +346,7 @@
     <p class="section-tag">Входной продукт</p>
     <h2 class="section-title">Комплексный аудит IT-инфраструктуры перед аутсорсингом</h2>
     <p class="section-sub">Перед тем как принять решение — убедитесь, что вы знаете реальное состояние своей IT-инфраструктуры.</p>
-    <p class="section-sub">Аудит IT-инфраструктуры помогает увидеть риски: где резервное копирование не работает, где сервера упираются в ресурсы, где небезопасен удалённый доступ и что стоит передать на аутсорсинг IT, чтобы снизить нагрузку на команду. Подробнее об аудитах — в этом разделе, а о форматах сопровождения — в блоке <a href="#pricing" style="color:#3b82f6;">«Тарифы»</a>.</p>
+    <p class="section-sub">Аудит IT-инфраструктуры помогает увидеть риски: где резервное копирование не работает, где сервера упираются в ресурсы, где небезопасен удалённый доступ и что стоит передать на аутсорсинг IT, чтобы снизить нагрузку на команду. Подробнее об аудитах — в этом разделе, а о форматах сопровождения — в блоке «Тарифы».</p>
     <div class="audit-grid">
       <div class="audit-card">
         <h4>Аудит резервного копирования</h4>
@@ -382,11 +370,11 @@
       </div>
     </div>
     <div class="audit-outcome">
-      <p class="section-sub"><strong>Что вы получите по итогам аудита:</strong></p>
-      <ul>
+      <p class="audit-outcome-title">Что вы получите по итогам аудита:</p>
+      <ul class="audit-outcome-list">
         <li>Отчёт с текущим состоянием инфраструктуры и выявленными рисками на понятном языке.</li>
-        <li>Приоритизированный список задач: что критично, что можно отложить, где быстрый эффект.</li>
         <li>План работ на 3–6 месяцев по приведению инфраструктуры к нормативному состоянию.</li>
+        <li>Приоритизированный список задач: что критично, что можно отложить, где быстрый эффект.</li>
         <li>Рекомендации, какие зоны имеет смысл передать на IT-аутсорсинг, а какие оставить внутри.</li>
       </ul>
     </div>
@@ -396,7 +384,7 @@
 <!-- PRICING -->
 <section class="section" id="pricing">
   <div class="container">
-    <p class="section-tag">Абонентское сопровождение</p>
+    <p class="section-tag">Управляемые сервисы</p>
     <h2 class="section-title">Тарифы</h2>
     <p class="section-sub">Фиксированная ежемесячная стоимость. Без сюрпризов — вы платите за результат, а не за часы.</p>
     <div class="pricing-grid">
@@ -409,10 +397,10 @@
           <li>✓ Мониторинг доступности (Zabbix)</li>
           <li>✓ Контроль бэкапов</li>
           <li>✓ Алертинг и уведомления</li>
-          <li>✓ Реакция на инциденты до 4 часов</li>
-          <li>✗ Регламентные работы</li>
+          <li>✓ Реакция на инцидент в течение 4 часов</li>
+          <li>✗ Плановое обслуживание</li>
           <li>✗ Тесты восстановления</li>
-          <li>✗ SLA с гарантиями</li>
+          <li>✗ Гарантия SLA</li>
         </ul>
         <button class="btn-card" onclick="openModal()">Обсудить</button>
       </div>
@@ -424,10 +412,10 @@
         </div>
         <ul class="pricing-list">
           <li>✓ Всё из Базового</li>
-          <li>✓ Сопровождение сервера 1С + MSSQL</li>
-          <li>✓ Обновления конфигураций</li>
-          <li>✓ Регламентные работы</li>
-          <li>✓ Реакция на инциденты до 2 часов</li>
+          <li>✓ Сопровождение серверов 1С + MSSQL</li>
+          <li>✓ Обновление конфигураций</li>
+          <li>✓ Плановое обслуживание</li>
+          <li>✓ Реакция на инцидент в течение 2 часов</li>
           <li>✗ Тесты восстановления</li>
           <li>✗ Управленческая отчётность</li>
         </ul>
@@ -439,12 +427,12 @@
           <div class="price">от 55 000 ₽<span>/мес</span></div>
         </div>
         <ul class="pricing-list">
-          <li>✓ Всё из Стандарт</li>
-          <li>✓ SLA с гарантией доступности</li>
+          <li>✓ Всё из Стандарта</li>
+          <li>✓ SLA с гарантией uptime</li>
           <li>✓ Ежемесячные тесты восстановления</li>
           <li>✓ Приоритетная поддержка 24/7</li>
           <li>✓ Управленческая IT-отчётность</li>
-          <li>✓ Роль внешнего IT-директора</li>
+          <li>✓ IT-директор на аутсорсе</li>
         </ul>
         <button class="btn-card" onclick="openModal()">Обсудить</button>
       </div>
@@ -457,18 +445,18 @@
 <section class="section section-dark" id="about">
   <div class="container about-inner">
     <div class="about-text">
-      <p class="section-tag">О компании</p>
+      <p class="section-tag">О нас</p>
       <h2>Кто стоит за Открытыми Горизонтами</h2>
-      <p>Открытые Горизонты — это команда инфраструктурных инженеров с опытом построения отказоустойчивых IT-систем для производственных, торговых и сервисных компаний.</p>
-      <p>Мы специализируемся на критичной инфраструктуре: серверы 1С, базы данных MSSQL, схемы резервного копирования Veeam, виртуализация на VMware ESXi / Proxmox / Hyper-V и сетевой периметр на MikroTik и NGFW.</p>
-      <p>Наш принцип: IT-инфраструктура должна работать как часы, а вы не должны думать о ней вообще.</p>
+      <p>Открытые Горизонты — команда инженеров инфраструктуры с опытом построения отказоустойчивых IT-систем для производственных, торговых и сервисных компаний.</p>
+      <p>Специализируемся на бизнес-критичной инфраструктуре: серверы 1С, базы данных MSSQL, схемы резервного копирования Veeam, виртуализация на VMware ESXi / Proxmox / Hyper-V и сетевые периметры на MikroTik и NGFW.</p>
+      <p>Наш принцип: IT-инфраструктура должна работать как часы — и вы никогда не должны думать о ней.</p>
       <div class="about-stack">
         <span>VMware ESXi</span>
         <span>Proxmox</span>
         <span>Hyper-V</span>
         <span>Veeam B&amp;R</span>
         <span>MSSQL</span>
-        <span>1С</span>
+        <span>1C</span>
         <span>MikroTik</span>
         <span>Zabbix</span>
         <span>Active Directory</span>
@@ -480,15 +468,15 @@
     <div class="about-visual">
       <div class="kpi-card">
         <span>98%</span>
-        <p>Среднее SLA доступности</p>
+        <p>Средний SLA uptime</p>
       </div>
       <div class="kpi-card">
-        <span>&lt; 1 ч</span>
+        <span>&lt; 1ч</span>
         <p>Реакция на критический инцидент</p>
       </div>
       <div class="kpi-card">
         <span>3-2-1</span>
-        <p>Схема резервного копирования</p>
+        <p>Стандарт схемы резервирования</p>
       </div>
       <div class="kpi-card">
         <span>0</span>
@@ -503,99 +491,36 @@
   <div class="container">
     <p class="section-tag">FAQ</p>
     <div class="faq-wrapper">
-      <h2 class="section-title">Частые вопросы про аудит и аутсорсинг IT</h2>
+      <h2 class="section-title">Частые вопросы об аудите и аутсорсинге IT</h2>
+      <p class="faq-intro">Коротко и по делу. Разверните вопросы, которые вас интересуют, вместо того чтобы читать длинные стены текста.</p>
       <div class="faq-list" role="list">
-
-        <div class="faq-item open" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="true">
-            <span class="label">Когда компании имеет смысл начинать с аудита?</span>
-            <span class="faq-icon">›</span>
-          </button>
-          <div class="faq-answer">
-            <p>Когда растёт количество инцидентов, 1С и связанные сервисы периодически простаивают, а за резервные копии формально никто не отвечает. В этой точке бизнес опирается на инфраструктуру, которая работает по принципу «как повезёт».</p>
-          </div>
-        </div>
-
         <div class="faq-item" role="listitem">
           <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Что входит в аудит IT-инфраструктуры?</span>
+            <span class="label">Когда компании нужен аудит IT-инфраструктуры?</span>
             <span class="faq-icon">›</span>
           </button>
           <div class="faq-answer">
-            <p>В аудит входит проверка резервного копирования и восстановления, серверов 1С и баз MSSQL, виртуализации и запаса по ресурсам, удалённого доступа и базовой безопасности, а также организационной части: кто за что отвечает и как фиксируются инциденты.</p>
+            <p>Чаще всего — когда начинают накапливаться инциденты, тормозит 1С или бэкапы не проверялись годами. Мы фиксируем текущее состояние, оцениваем риски и расставляем приоритеты задач. Чтобы глубже разобраться, начните с раздела <a href="#audits">Аудиты</a>.</p>
           </div>
         </div>
-
         <div class="faq-item" role="listitem">
           <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Какой результат вы получаете по итогам?</span>
+            <span class="label">Чем аудит отличается от обычного администрирования?</span>
             <span class="faq-icon">›</span>
           </button>
           <div class="faq-answer">
-            <p>Вы получаете структурированный отчёт на понятном языке и перечень задач по приоритетам: что критично, что можно отложить и где быстрый эффект. Отдельно формируем план работ на 3–6 месяцев по приведению инфраструктуры к нормативному состоянию.</p>
+            <p>Администрирование — это поддержание работы и тушение пожаров. Аудит — взгляд сверху на архитектуру, бэкапы, безопасность и процессы. Результат — понятный отчёт и дорожная карта: что исправить в первую очередь и какие зоны есть смысл перевести на IT-аутсорсинг по нашим <a href="#pricing">тарифам</a>.</p>
           </div>
         </div>
-
         <div class="faq-item" role="listitem">
           <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Как аудит связан с аутсорсингом IT?</span>
+            <span class="label">Что будет после аудита?</span>
             <span class="faq-icon">›</span>
           </button>
           <div class="faq-answer">
-            <p>Аудит — входная точка. Сначала фиксируем текущую ситуацию и закрываем ключевые риски, затем выбираем формат сопровождения по одному из тарифов. В результате вы понимаете, какие зоны остаются внутри компании, а какие разумно передать на внешний контур.</p>
+            <p>После аудита мы предложим варианты: разовый проект по устранению критических рисков или долгосрочное сопровождение с фиксированной стоимостью и SLA. Проще всего начать через раздел <a href="#contact">Контакты</a> — обсудим ваш случай и предложим формат.</p>
           </div>
         </div>
-
-        <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Чем IT-аутсорсинг лучше или дополняет штатного админа?</span>
-            <span class="faq-icon">›</span>
-          </button>
-          <div class="faq-answer">
-            <p>Мы не заменяем человека на месте, а закрываем то, что одному админу физически сложно тянуть: 24/7 мониторинг, бэкапы, виртуализацию, сеть и безопасность. В итоге у вас есть и человек в офисе, и команда, которая отвечает за инфраструктурный контур и SLA.</p>
-          </div>
-        </div>
-
-        <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Как вы обеспечиваете SLA по доступности и реакции?</span>
-            <span class="faq-icon">›</span>
-          </button>
-          <div class="faq-answer">
-            <p>Мы фиксируем SLA в договоре: время реакции на инциденты, целевую доступность ключевых сервисов и регламентные работы. Мониторинг, алертинг, дежурства и тесты восстановления бэкапов позволяют заранее видеть проблемы и не доводить до простоя бизнеса.</p>
-          </div>
-        </div>
-
-        <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Сколько времени занимает внедрение мониторинга и бэкапов?</span>
-            <span class="faq-icon">›</span>
-          </button>
-          <div class="faq-answer">
-            <p>Базовый мониторинг ключевых сервисов и контроль бэкапов обычно поднимаем за 3–5 рабочих дней. Далее донастраиваем алерты, отчётность и тесты восстановления, чтобы вы видели не только «зелёные лампочки», но и реальную способность восстановиться после сбоя.</p>
-          </div>
-        </div>
-
-        <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Что входит в сопровождение 1С-инфраструктуры?</span>
-            <span class="faq-icon">›</span>
-          </button>
-          <div class="faq-answer">
-            <p>Мы ведём серверы 1С и MSSQL: обновления платформы и конфигураций, настройка прав и обменов, контроль производительности и резервного копирования. Наша задача — чтобы 1С была доступна и работала предсказуемо, без ночных падений и утренних зависаний.</p>
-          </div>
-        </div>
-
-        <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Как вы работаете с инцидентами ночью и в выходные?</span>
-            <span class="faq-icon">›</span>
-          </button>
-          <div class="faq-answer">
-            <p>Для критичных систем мы организуем дежурства и приоритетную реакцию 24/7 в рамках тарифа. Инциденты попадают в систему мониторинга и тикет-систему, мы фиксируем время реакции и закрытия, чтобы в отчётах вы видели реальную картину по SLA, а не только обещания.</p>
-          </div>
-        </div>
-
       </div>
     </div>
   </div>
@@ -604,9 +529,9 @@
 <!-- CONTACT -->
 <section class="section" id="contact">
   <div class="container contact-inner">
-    <p class="section-tag">Связаться</p>
-    <h2>Готовы обсудить вашу инфраструктуру?</h2>
-    <p class="section-sub">Напишите нам — расскажем, что можно улучшить, и предложим подходящее решение. Первичный аудит бесплатно.</p>
+    <p class="section-tag">Контакты</p>
+    <h2>Готовы поговорить о вашей инфраструктуре?</h2>
+    <p class="section-sub">Напишите нам — покажем, что можно улучшить, и предложим подходящее решение. Первый аудит бесплатно.</p>
     <div class="contact-options">
       <a href="mailto:info@o-horizons.com" class="contact-card">
         <span>✉️</span>
@@ -623,7 +548,7 @@
         </div>
       </a>
     </div>
-    <button class="btn-primary btn-large" onclick="openModal()">Связаться с инженером по инфраструктуре</button>
+    <button class="btn-primary btn-large" onclick="openModal()">Связаться с нами</button>
   </div>
 </section>
 
@@ -633,9 +558,9 @@
       <span class="logo-icon">&#x2B21;</span>
       <span>Открытые Горизонты</span>
     </div>
-    <p class="footer-copy">© 2026 Open Horizons. IT-аутсорсинг для бизнеса.</p>
+    <p class="footer-copy">&#169; 2026 Открытые Горизонты. IT-аутсорсинг для бизнеса.</p>
     <div class="footer-share">
-      <a href="https://t.me/share/url?url=https://o-horizons.com&text=Аудит%20IT-инфраструктуры%20и%20аутсорсинг%20IT" target="_blank" rel="noopener">Поделиться в Telegram</a>
+      <a href="https://t.me/share/url?url=https://o-horizons.com&text=IT-аутсорсинг%20и%20аудит%20инфраструктуры" target="_blank" rel="noopener">Поделиться в Telegram</a>
       <span>·</span>
       <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://o-horizons.com" target="_blank" rel="noopener">Поделиться в LinkedIn</a>
     </div>
@@ -672,7 +597,7 @@ document.getElementById('auditForm').addEventListener('submit',async function(e)
     company:document.getElementById('company').value,
     contact:document.getElementById('contactField').value,
     message:document.getElementById('message').value,
-    lang:'ру'
+    lang:'ru'
   };
   try{
     const res=await fetch('/api/send',{
@@ -681,34 +606,33 @@ document.getElementById('auditForm').addEventListener('submit',async function(e)
       body:JSON.stringify(data)
     });
     if(res.ok){
-      status.textContent='✓ Заявка отправлена! Свяжемся с вами в течение рабочего дня.';
+      status.textContent='✓ Заявка отправлена! Свяжемся в течение одного рабочего дня.';
       status.classList.add('success');
       this.reset();
       btn.textContent='Отправить заявку';
       btn.disabled=false;
     }else throw new Error();
   }catch{
-    status.textContent='✗ Ошибка. Напишите напрямую: info@o-horizons.com';
+    status.textContent='✗ Не удалось отправить. Напишите нам: info@o-horizons.com';
     status.classList.add('error');
     btn.textContent='Отправить заявку';
     btn.disabled=false;
   }
 });
 
-// FAQ accordion с анимацией
-const faqItems = document.querySelectorAll('.faq-item');
-faqItems.forEach(item => {
-  const btn = item.querySelector('.faq-question');
-  btn.addEventListener('click', () => {
-    const isOpen = item.classList.contains('open');
-    faqItems.forEach(i => {
+const faqItems=document.querySelectorAll('.faq-item');
+faqItems.forEach(item=>{
+  const btn=item.querySelector('.faq-question');
+  btn.addEventListener('click',()=>{
+    const isOpen=item.classList.contains('open');
+    faqItems.forEach(i=>{
       i.classList.remove('open');
-      const b = i.querySelector('.faq-question');
-      if (b) b.setAttribute('aria-expanded', 'false');
+      const b=i.querySelector('.faq-question');
+      if(b) b.setAttribute('aria-expanded','false');
     });
-    if (!isOpen) {
+    if(!isOpen){
       item.classList.add('open');
-      btn.setAttribute('aria-expanded', 'true');
+      btn.setAttribute('aria-expanded','true');
     }
   });
 });
