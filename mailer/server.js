@@ -6,10 +6,24 @@ if (process.env.SMTP_TLS_REJECT_UNAUTHORIZED === 'false') {
 const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
-app.use(express.json());
-app.use(cors({ origin: process.env.ALLOWED_ORIGIN || '*' }));
+app.use(express.json({ limit: '16kb' }));
+
+// CORS — only allow own domain
+const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://o-horizons.com';
+app.use(cors({ origin: allowedOrigin }));
+
+// Rate limiting — max 10 requests per 15 min per IP
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' },
+});
+app.use('/api/send', limiter);
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -29,8 +43,15 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }));
 app.post('/api/send', async (req, res) => {
   const { name, company, contact, message, lang } = req.body;
 
+  // Basic validation
   if (!name || !contact) {
     return res.status(400).json({ error: 'name and contact are required' });
+  }
+  if (typeof name !== 'string' || typeof contact !== 'string') {
+    return res.status(400).json({ error: 'invalid fields' });
+  }
+  if (name.length > 100 || contact.length > 200 || (message && message.length > 2000)) {
+    return res.status(400).json({ error: 'fields too long' });
   }
 
   const isRu = lang !== 'en';
