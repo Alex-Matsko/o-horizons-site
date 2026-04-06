@@ -90,6 +90,26 @@
         "@type": "Question",
         "name": "What happens after the audit?",
         "acceptedAnswer": {"@type": "Answer", "text": "After the audit we offer options: a one-off remediation project for critical risks or long-term managed services with a fixed fee and SLA."}
+      },
+      {
+        "@type": "Question",
+        "name": "How long does the audit take?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Typically 3 to 5 business days, depending on infrastructure size: number of servers, VMs and areas to review. Smaller companies usually take 2 to 3 days."}
+      },
+      {
+        "@type": "Question",
+        "name": "Do you need physical access to the servers?",
+        "acceptedAnswer": {"@type": "Answer", "text": "No. In most cases remote access is sufficient. We work via VPN or a secure tunnel without an on-site visit. On-site visits are available on request."}
+      },
+      {
+        "@type": "Question",
+        "name": "What does IT outsourcing include?",
+        "acceptedAnswer": {"@type": "Answer", "text": "It depends on the plan: from monitoring and backup control through to full management of infrastructure, 1C, security and a fractional IT director role."}
+      },
+      {
+        "@type": "Question",
+        "name": "Can we hand over only part of the tasks?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Yes. We can tailor the scope flexibly: monitoring and backups only, 1C infrastructure only, or specific areas. The final scope is fixed in the contract."}
       }
     ]
   }
@@ -210,7 +230,7 @@
   <div class="modal">
     <button class="modal-close" onclick="closeModal()" aria-label="Close">&#x2715;</button>
     <h2 id="modalTitle">Get a Free Audit</h2>
-    <p class="modal-sub">Leave your contact — we'll get back to you within one business day.</p>
+    <p class="modal-sub">Leave your contact — we will get back to you within one business day.</p>
     <form id="auditForm">
       <div class="form-group">
         <label for="name">Your name *</label>
@@ -218,14 +238,14 @@
       </div>
       <div class="form-group">
         <label for="company">Company</label>
-        <input type="text" id="company" name="company" placeholder="Acme Ltd" />
+        <input type="text" id="company" name="company" placeholder="Example LLC" />
       </div>
       <div class="form-group">
         <label for="contactField">Email or Telegram *</label>
         <input type="text" id="contactField" name="contact" placeholder="email@example.com or @username" required />
       </div>
       <div class="form-group">
-        <label for="message">Tell us about your task</label>
+        <label for="message">Tell us about your challenge</label>
         <textarea id="message" name="message" placeholder="What's the pain point? How many servers, users?"></textarea>
       </div>
       <div class="modal-contacts">
@@ -250,7 +270,7 @@
       <a href="#services">Services</a>
       <a href="#pricing">Pricing</a>
       <a href="#about">About</a>
-      <a href="#contact" class="btn-nav">Contact</a>
+      <a href="#contact" class="btn-nav">Contact us</a>
     </nav>
     <a href="index.html" class="lang-switch">RU</a>
   </div>
@@ -260,18 +280,18 @@
 <section class="hero">
   <div class="container hero-inner">
     <div class="hero-text">
-      <p class="hero-tag">IT Outsourcing for Business</p>
-      <h1>Your infrastructure.<br/>Reliable. Always on.</h1>
-      <p class="hero-sub">Full-service IT management for your business. We handle everything — from servers to security. No downtime. No chaos.</p>
-      <p class="hero-sub">Your infrastructure really will be under reliable control: from one-off IT infrastructure audit to full IT outsourcing and ongoing system administration.</p>
+      <p class="hero-tag">IT outsourcing for business</p>
+      <h1>Your infrastructure<br/>under reliable control</h1>
+      <p class="hero-sub">Complete management of your business IT infrastructure. We take care of everything — from servers to security. No downtime. No chaos.</p>
+      <p class="hero-sub">We start with an audit: check backups, servers, 1C and remote access, show risks in monetary terms and provide a clear action plan to keep your infrastructure from letting the business down.</p>
       <div class="hero-actions">
-        <button class="btn-primary" onclick="openModal()">Get a Free Audit</button>
-        <a href="#pricing" class="btn-outline">View Pricing</a>
+        <button class="btn-primary" onclick="openModal()">Get a free audit</button>
+        <a href="#pricing" class="btn-outline">View pricing</a>
       </div>
       <div class="hero-stats">
         <div class="stat">
           <span>98%</span>
-          <p>service availability</p>
+          <p>service uptime</p>
         </div>
         <div class="stat">
           <span>50+</span>
@@ -300,7 +320,7 @@
         <div class="server-line">
           <span class="dot green"></span> VMware ESXi — Running
         </div>
-        <div class="server-footer">All systems go 🟢</div>
+        <div class="server-footer">All systems operational 🟢</div>
       </div>
     </div>
   </div>
@@ -315,17 +335,17 @@
       <div class="service-card">
         <div class="service-icon">🗄️</div>
         <h3>1C Infrastructure Management</h3>
-        <p>1C and MSSQL server administration, configuration updates, access rights, data exchange and 24/7 availability monitoring.</p>
+        <p>Administration of 1C and MSSQL servers, configuration updates, access rights, data exchange and round-the-clock availability monitoring.</p>
       </div>
       <div class="service-card">
         <div class="service-icon">💾</div>
-        <h3>Backup &amp; Disaster Recovery</h3>
-        <p>Veeam B&amp;R deployment with 3-2-1 scheme, recovery testing, retention policies. RTO and RPO under control — zero data loss.</p>
+        <h3>Backup &amp; Recovery</h3>
+        <p>Veeam B&amp;R deployment using the 3-2-1 scheme, recovery testing, retention policies. RTO and RPO under control — data loss is excluded.</p>
       </div>
       <div class="service-card">
         <div class="service-icon">⚡</div>
         <h3>Virtualisation &amp; Server Infrastructure</h3>
-        <p>VMware ESXi, Proxmox and Hyper-V deployment and management. High-availability architecture, VM migrations and resource governance.</p>
+        <p>Deployment and management of VMware ESXi, Proxmox and Hyper-V. High-availability architecture, VM migration and resource management.</p>
       </div>
       <div class="service-card">
         <div class="service-icon">🖥️</div>
@@ -340,7 +360,7 @@
       <div class="service-card">
         <div class="service-icon">👔</div>
         <h3>Fractional IT Director</h3>
-        <p>We act as your Head of IT: build processes, regulations, ticketing and reporting. Manage vendors and optimise your IT budget.</p>
+        <p>We act as your IT leadership: build processes, regulations, ticketing and reporting. Manage vendors and optimise the IT budget.</p>
       </div>
     </div>
   </div>
@@ -349,31 +369,40 @@
 <!-- AUDITS -->
 <section class="section section-dark" id="audits">
   <div class="container">
-    <p class="section-tag">Entry Product</p>
-    <h2 class="section-title">Start with an Audit</h2>
-    <p class="section-sub">Before making a decision — know the real state of your IT infrastructure.</p>
-    <p class="section-sub">An IT infrastructure audit reveals where backups silently fail, where servers are hitting resource limits, where remote access is unsafe and which parts of IT make sense to outsource instead of keeping in-house. You can see our audit options below and long-term outsourcing formats in the <a href="#pricing">Pricing</a> section.</p>
+    <p class="section-tag">Entry product</p>
+    <h2 class="section-title">Comprehensive IT Infrastructure Audit before Outsourcing</h2>
+    <p class="section-sub">Before making a decision — make sure you know the real state of your IT infrastructure.</p>
+    <p class="section-sub">An IT infrastructure audit uncovers the risks: where backups are not working, where servers are hitting resource limits, where remote access is insecure and what is worth handing over to IT outsourcing to reduce the load on your team. More on audits in this section; managed service formats are in the Pricing block.</p>
     <div class="audit-grid">
       <div class="audit-card">
         <h4>Backup &amp; Recovery Audit</h4>
-        <p>We verify whether your data is actually recoverable. In most cases — it isn't.</p>
-        <span class="audit-price">from &#8381;5,000</span>
+        <p>We verify whether your data is actually recoverable. In most cases — it is not.</p>
+        <span class="audit-price">from ₽5,000</span>
       </div>
       <div class="audit-card">
         <h4>1C Infrastructure Audit</h4>
-        <p>Server, MSSQL, permissions, updates, database placement — full analysis.</p>
-        <span class="audit-price">from &#8381;7,000</span>
+        <p>Server, MSSQL, permissions, updates, database placement scheme — full analysis.</p>
+        <span class="audit-price">from ₽7,000</span>
       </div>
       <div class="audit-card">
         <h4>Virtualisation &amp; Server Audit</h4>
         <p>Hypervisor state, VMs, resources, fault tolerance and configuration review.</p>
-        <span class="audit-price">from &#8381;7,000</span>
+        <span class="audit-price">from ₽7,000</span>
       </div>
       <div class="audit-card">
         <h4>Security &amp; Remote Access Audit</h4>
-        <p>Perimeter, accounts, VPN, 2FA, risk assessment — what is exposed and why it matters.</p>
-        <span class="audit-price">from &#8381;6,000</span>
+        <p>Perimeter, access, VPN, 2FA, risks — what is exposed and why it is dangerous.</p>
+        <span class="audit-price">from ₽6,000</span>
       </div>
+    </div>
+    <div class="audit-outcome">
+      <p class="audit-outcome-title">What you get after the audit:</p>
+      <ul class="audit-outcome-list">
+        <li>A plain-language report on the current infrastructure state and identified risks.</li>
+        <li>A 3–6 month work plan to bring the infrastructure up to standard.</li>
+        <li>A prioritised task list: what is critical, what can wait, where quick wins are.</li>
+        <li>Recommendations on which areas make sense to hand over to IT outsourcing and which to keep in-house.</li>
+      </ul>
     </div>
   </div>
 </section>
@@ -381,14 +410,14 @@
 <!-- PRICING -->
 <section class="section" id="pricing">
   <div class="container">
-    <p class="section-tag">Managed Services</p>
+    <p class="section-tag">Managed services</p>
     <h2 class="section-title">Pricing</h2>
-    <p class="section-sub">Fixed monthly cost. No surprises — you pay for outcomes, not hours.</p>
+    <p class="section-sub">Fixed monthly cost. No surprises — you pay for results, not hours.</p>
     <div class="pricing-grid">
       <div class="pricing-card">
         <div class="pricing-header">
           <h3>Basic</h3>
-          <div class="price">from &#8381;15,000<span>/mo</span></div>
+          <div class="price">from ₽15,000<span>/mo</span></div>
         </div>
         <ul class="pricing-list">
           <li>✓ Availability monitoring (Zabbix)</li>
@@ -399,13 +428,13 @@
           <li>✗ Recovery tests</li>
           <li>✗ SLA guarantee</li>
         </ul>
-        <button class="btn-card" onclick="openModal()">Get in touch</button>
+        <button class="btn-card" onclick="openModal()">Discuss</button>
       </div>
       <div class="pricing-card pricing-featured">
-        <div class="pricing-badge">Most Popular</div>
+        <div class="pricing-badge">Popular</div>
         <div class="pricing-header">
           <h3>Standard</h3>
-          <div class="price">from &#8381;30,000<span>/mo</span></div>
+          <div class="price">from ₽30,000<span>/mo</span></div>
         </div>
         <ul class="pricing-list">
           <li>✓ Everything in Basic</li>
@@ -416,12 +445,12 @@
           <li>✗ Recovery tests</li>
           <li>✗ Management reporting</li>
         </ul>
-        <button class="btn-card btn-card-white" onclick="openModal()">Get in touch</button>
+        <button class="btn-card btn-card-white" onclick="openModal()">Discuss</button>
       </div>
       <div class="pricing-card">
         <div class="pricing-header">
           <h3>Premium</h3>
-          <div class="price">from &#8381;55,000<span>/mo</span></div>
+          <div class="price">from ₽55,000<span>/mo</span></div>
         </div>
         <ul class="pricing-list">
           <li>✓ Everything in Standard</li>
@@ -429,12 +458,12 @@
           <li>✓ Monthly recovery tests</li>
           <li>✓ Priority support 24/7</li>
           <li>✓ IT management reporting</li>
-          <li>✓ Fractional IT Director role</li>
+          <li>✓ Fractional IT director</li>
         </ul>
-        <button class="btn-card" onclick="openModal()">Get in touch</button>
+        <button class="btn-card" onclick="openModal()">Discuss</button>
       </div>
     </div>
-    <p class="pricing-note">* Pricing depends on number of servers, users and infrastructure complexity. Prices exclude VAT.</p>
+    <p class="pricing-note">* Cost depends on the number of servers, users and infrastructure complexity. Prices are VAT-exclusive.</p>
   </div>
 </section>
 
@@ -442,11 +471,11 @@
 <section class="section section-dark" id="about">
   <div class="container about-inner">
     <div class="about-text">
-      <p class="section-tag">About</p>
+      <p class="section-tag">About us</p>
       <h2>Who is behind Open Horizons</h2>
-      <p>Open Horizons is a team of infrastructure engineers with experience building fault-tolerant IT systems for manufacturing, trading and service companies.</p>
-      <p>We specialise in business-critical infrastructure: 1C servers, MSSQL databases, Veeam backup schemes, virtualisation on VMware ESXi / Proxmox / Hyper-V and network perimeters on MikroTik and NGFW.</p>
-      <p>Our principle: IT infrastructure should run like clockwork — and you should never have to think about it.</p>
+      <p>Open Horizons is a team of infrastructure engineers experienced in building fault-tolerant IT systems for manufacturing, retail and service companies.</p>
+      <p>We specialise in business-critical infrastructure: 1C servers, MSSQL databases, Veeam backup schemes, virtualisation on VMware ESXi / Proxmox / Hyper-V, and network perimeters on MikroTik and NGFW.</p>
+      <p>Our principle: IT infrastructure must run like clockwork — and you should never have to think about it.</p>
       <div class="about-stack">
         <span>VMware ESXi</span>
         <span>Proxmox</span>
@@ -469,7 +498,7 @@
       </div>
       <div class="kpi-card">
         <span>&lt; 1h</span>
-        <p>Critical incident response</p>
+        <p>Response to a critical incident</p>
       </div>
       <div class="kpi-card">
         <span>3-2-1</span>
@@ -488,8 +517,8 @@
   <div class="container">
     <p class="section-tag">FAQ</p>
     <div class="faq-wrapper">
-      <h2 class="section-title">Common questions about IT audit and outsourcing</h2>
-      <p class="faq-intro">Short and to the point. Expand the questions you care about instead of scrolling through walls of text.</p>
+      <h2 class="section-title">Frequently asked questions about IT audit and outsourcing</h2>
+      <p class="faq-intro">Short and to the point. Expand the questions that interest you instead of reading long walls of text.</p>
       <div class="faq-list" role="list">
         <div class="faq-item" role="listitem">
           <button class="faq-question" type="button" aria-expanded="false">
@@ -497,7 +526,7 @@
             <span class="faq-icon">›</span>
           </button>
           <div class="faq-answer">
-            <p>Most often when incidents start piling up, 1C slows down or backups have not been tested for years. We document the current state, quantify the risks and prioritise tasks. To dive deeper, start with the <a href="#audits">Start with an Audit</a> section.</p>
+            <p>Most often when incidents start piling up, 1C slows down or backups have not been tested for years. We document the current state, quantify the risks and prioritise tasks. To go deeper, start with the <a href="#audits">Audits</a> section.</p>
           </div>
         </div>
         <div class="faq-item" role="listitem">
@@ -515,7 +544,43 @@
             <span class="faq-icon">›</span>
           </button>
           <div class="faq-answer">
-            <p>After the audit we offer options: a one-off remediation project for critical risks or long-term managed services with a fixed fee and SLA. The easiest way to start is via the <a href="#contact">Contact</a> section — we will discuss your case and suggest a format.</p>
+            <p>We offer options: a one-off remediation project for critical risks or long-term managed services with a fixed fee and SLA. The easiest way to start is through the <a href="#contact">Contact</a> section — we will discuss your case and suggest a format.</p>
+          </div>
+        </div>
+        <div class="faq-item" role="listitem">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="label">How long does the audit take?</span>
+            <span class="faq-icon">›</span>
+          </button>
+          <div class="faq-answer">
+            <p>Typically 3 to 5 business days, depending on infrastructure size: number of servers, VMs and areas to review. Smaller companies usually take 2 to 3 days.</p>
+          </div>
+        </div>
+        <div class="faq-item" role="listitem">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="label">Do you need physical access to the servers?</span>
+            <span class="faq-icon">›</span>
+          </button>
+          <div class="faq-answer">
+            <p>No. In most cases remote access is sufficient. We work via VPN or a secure tunnel — no on-site visit required. An on-site visit is available on request.</p>
+          </div>
+        </div>
+        <div class="faq-item" role="listitem">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="label">What does IT outsourcing include?</span>
+            <span class="faq-icon">›</span>
+          </button>
+          <div class="faq-answer">
+            <p>It depends on the plan: from monitoring and backup control through to full management of infrastructure, 1C, security and a fractional IT director role. See the <a href="#pricing">Pricing</a> section for details.</p>
+          </div>
+        </div>
+        <div class="faq-item" role="listitem">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="label">Can we hand over only part of the tasks?</span>
+            <span class="faq-icon">›</span>
+          </button>
+          <div class="faq-answer">
+            <p>Yes. We can tailor the scope flexibly: monitoring and backups only, 1C infrastructure only, or specific areas. The final scope is fixed in the contract. Write to us — we will work out your case.</p>
           </div>
         </div>
       </div>
@@ -528,7 +593,7 @@
   <div class="container contact-inner">
     <p class="section-tag">Contact</p>
     <h2>Ready to talk about your infrastructure?</h2>
-    <p class="section-sub">Write to us — we'll show you what can be improved and suggest the right solution. First audit is free.</p>
+    <p class="section-sub">Write to us — we will show what can be improved and suggest the right solution. First audit free.</p>
     <div class="contact-options">
       <a href="mailto:info@o-horizons.com" class="contact-card">
         <span>✉️</span>
@@ -545,7 +610,7 @@
         </div>
       </a>
     </div>
-    <button class="btn-primary btn-large" onclick="openModal()">Contact Us</button>
+    <button class="btn-primary btn-large" onclick="openModal()">Contact us</button>
   </div>
 </section>
 
@@ -555,13 +620,13 @@
       <span class="logo-icon">&#x2B21;</span>
       <span>Open Horizons</span>
     </div>
-    <p class="footer-copy">&#169; 2026 Open Horizons. IT Outsourcing for Business.</p>
+    <p class="footer-copy">&#169; 2026 Open Horizons. IT outsourcing for business.</p>
     <div class="footer-share">
-      <a href="https://t.me/share/url?url=https://o-horizons.com&text=IT%20infrastructure%20audit%20and%20outsourcing" target="_blank" rel="noopener">Share on Telegram</a>
-      <span>·</span>
-      <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://o-horizons.com" target="_blank" rel="noopener">Share on LinkedIn</a>
+      <a href="https://t.me/share/url?url=https://o-horizons.com/index-en.html&text=IT%20outsourcing%20and%20infrastructure%20audit" target="_blank" rel="noopener">Share on Telegram</a>
+      <span>&middot;</span>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://o-horizons.com/index-en.html" target="_blank" rel="noopener">Share on LinkedIn</a>
     </div>
-    <a href="index.html" class="lang-switch">Переключить на Русский →</a>
+    <a href="index.html" class="lang-switch">Смотреть на русском →</a>
   </div>
 </footer>
 
@@ -603,14 +668,14 @@ document.getElementById('auditForm').addEventListener('submit',async function(e)
       body:JSON.stringify(data)
     });
     if(res.ok){
-      status.textContent='✓ Request sent! We will contact you within one business day.';
+      status.textContent='✓ Request sent! We will be in touch within one business day.';
       status.classList.add('success');
       this.reset();
       btn.textContent='Send request';
       btn.disabled=false;
     }else throw new Error();
   }catch{
-    status.textContent='✗ Failed to send. Contact us: info@o-horizons.com';
+    status.textContent='✗ Could not send. Please write to us: info@o-horizons.com';
     status.classList.add('error');
     btn.textContent='Send request';
     btn.disabled=false;
