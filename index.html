@@ -264,36 +264,87 @@
 </footer>
 
 <script>
-function openModal(){document.getElementById('auditModal').classList.add('active');document.body.style.overflow='hidden';document.getElementById('name').focus();}
-function closeModal(){document.getElementById('auditModal').classList.remove('active');document.body.style.overflow='';document.getElementById('formStatus').textContent='';document.getElementById('auditForm').reset();}
-document.getElementById('auditModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+function openModal(){
+  document.getElementById('auditModal').classList.add('active');
+  document.body.style.overflow='hidden';
+  document.getElementById('name').focus();
+}
+function closeModal(){
+  document.getElementById('auditModal').classList.remove('active');
+  document.body.style.overflow='';
+  document.getElementById('formStatus').textContent='';
+  document.getElementById('auditForm').reset();
+}
+document.getElementById('auditModal').addEventListener('click',function(e){
+  if(e.target===this)closeModal();
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape')closeModal();
+});
 document.getElementById('auditForm').addEventListener('submit',async function(e){
   e.preventDefault();
   const btn=document.getElementById('submitBtn'),status=document.getElementById('formStatus');
   btn.disabled=true;btn.textContent='Отправляем...';
   status.textContent='';status.className='form-status';
-  const data={name:document.getElementById('name').value,company:document.getElementById('company').value,contact:document.getElementById('contact').value,message:document.getElementById('message').value,lang:'ru'};
+  const data={
+    name:document.getElementById('name').value,
+    company:document.getElementById('company').value,
+    contact:document.getElementById('contact').value,
+    message:document.getElementById('message').value,
+    lang:'ru'
+  };
   try{
-    const res=await fetch('/api/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-    if(res.ok){status.textContent='✓ Заявка отправлена! Свяжемся с вами в течение рабочего дня.';status.classList.add('success');this.reset();btn.textContent='Отправить заявку';btn.disabled=false;}
-    else throw new Error();
-  }catch{status.textContent='✗ Ошибка. Напишите напрямую: info@o-horizons.com';status.classList.add('error');btn.textContent='Отправить заявку';btn.disabled=false;}
+    const res=await fetch('/api/send',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(data)
+    });
+    if(res.ok){
+      status.textContent='✓ Заявка отправлена! Свяжемся с вами в течение рабочего дня.';
+      status.classList.add('success');
+      this.reset();
+      btn.textContent='Отправить заявку';
+      btn.disabled=false;
+    }else throw new Error();
+  }catch{
+    status.textContent='✗ Ошибка. Напишите напрямую: info@o-horizons.com';
+    status.classList.add('error');
+    btn.textContent='Отправить заявку';
+    btn.disabled=false;
+  }
 });
 
-// Якорное пролистывание к блоку "Связаться" с учётом высоты шапки
+// Скролл к блоку "Связаться" для всех случаев (#contact в ссылке, URL, hashchange)
 window.addEventListener('DOMContentLoaded',function(){
   const contactSection=document.getElementById('contact');
   if(!contactSection)return;
+
+  function scrollToContact(){
+    const headerOffset=96;
+    const rect=contactSection.getBoundingClientRect();
+    const offset=window.scrollY+rect.top-headerOffset;
+    window.scrollTo({top:offset,behavior:'smooth'});
+  }
+
+  // Клики по ссылкам href="#contact"
   document.querySelectorAll('a[href="#contact"]').forEach(function(link){
     link.addEventListener('click',function(e){
       e.preventDefault();
-      const headerOffset=96;
-      const rect=contactSection.getBoundingClientRect();
-      const offset=window.scrollY+rect.top-headerOffset;
-      window.scrollTo({top:offset,behavior:'smooth'});
+      scrollToContact();
       history.replaceState(null,'','#contact');
     });
+  });
+
+  // Если страница сразу открыта с #contact
+  if(location.hash==='#contact'){
+    scrollToContact();
+  }
+
+  // Если hash меняется вручную (в адресной строке)
+  window.addEventListener('hashchange',function(){
+    if(location.hash==='#contact'){
+      scrollToContact();
+    }
   });
 });
 </script>
