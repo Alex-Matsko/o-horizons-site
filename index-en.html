@@ -18,18 +18,19 @@
     .form-group{margin-bottom:16px;}
     .form-group label{display:block;font-size:.85rem;font-weight:600;color:#444;margin-bottom:6px;}
     .form-group input,.form-group textarea{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-family:inherit;font-size:.95rem;color:#1a1a1a;transition:border-color .2s;}
-    .form-group input:focus,.form-group textarea:focus{outline:none;border-color:#01696f;}
+    .form-group input:focus,.form-group textarea:focus{outline:none;border-color:#3b82f6;}
     .form-group textarea{resize:vertical;min-height:90px;}
     .modal-contacts{background:#f7f6f2;border-radius:8px;padding:14px 16px;margin-bottom:20px;font-size:.875rem;color:#555;}
     .modal-contacts strong{display:block;margin-bottom:6px;color:#1a1a1a;font-size:.85rem;}
-    .modal-contacts a{color:#01696f;text-decoration:none;}
+    .modal-contacts a{color:#3b82f6;text-decoration:none;}
     .modal-contacts a:hover{text-decoration:underline;}
-    .btn-submit{width:100%;padding:12px;background:#01696f;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:background .2s;}
-    .btn-submit:hover{background:#0c4e54;}
+    .btn-submit{width:100%;padding:12px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:background .2s;}
+    .btn-submit:hover{background:#2563eb;}
     .btn-submit:disabled{background:#aaa;cursor:not-allowed;}
     .form-status{margin-top:12px;text-align:center;font-size:.9rem;}
     .form-status.success{color:#437a22;}
-    .form-status.error{color:#a12c7b;}
+    .form-status.error{color:#c0392b;}
+    a.logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;font-size:1.1rem;font-weight:600;}
     @media(max-width:520px){.modal{padding:24px;margin:16px;}}
   </style>
 </head>
@@ -60,7 +61,10 @@
 <!-- NAV -->
 <header class="navbar">
   <div class="container nav-inner">
-    <div class="logo"><span class="logo-icon">&#x2B21;</span><span class="logo-text">Open <strong>Horizons</strong></span></div>
+    <a href="#" class="logo" aria-label="Back to top">
+      <span class="logo-icon">&#x2B21;</span>
+      <span class="logo-text">Open <strong>Horizons</strong></span>
+    </a>
     <nav class="nav-links">
       <a href="#services">Services</a>
       <a href="#pricing">Pricing</a>
@@ -169,9 +173,7 @@
       <p>Open Horizons is a team of infrastructure engineers with experience building fault-tolerant IT systems for manufacturing, trading and service companies.</p>
       <p>We specialise in business-critical infrastructure: 1C servers, MSSQL databases, Veeam backup schemes, virtualisation on VMware ESXi / Proxmox / Hyper-V and network perimeters on MikroTik and NGFW.</p>
       <p>Our principle: IT infrastructure should run like clockwork — and you should never have to think about it.</p>
-      <div class="about-stack">
-        <span>VMware ESXi</span><span>Proxmox</span><span>Hyper-V</span><span>Veeam B&amp;R</span><span>MSSQL</span><span>1C</span><span>MikroTik</span><span>Zabbix</span><span>Active Directory</span><span>Linux</span><span>Windows Server</span><span>NGFW</span>
-      </div>
+      <div class="about-stack"><span>VMware ESXi</span><span>Proxmox</span><span>Hyper-V</span><span>Veeam B&amp;R</span><span>MSSQL</span><span>1C</span><span>MikroTik</span><span>Zabbix</span><span>Active Directory</span><span>Linux</span><span>Windows Server</span><span>NGFW</span></div>
     </div>
     <div class="about-visual">
       <div class="kpi-card"><span>98%</span><p>Average SLA uptime</p></div>
@@ -196,7 +198,6 @@
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer class="footer">
   <div class="container footer-inner">
     <div class="footer-logo"><span class="logo-icon">&#x2B21;</span><span>Open Horizons</span></div>
@@ -212,16 +213,15 @@ document.getElementById('auditModal').addEventListener('click',function(e){if(e.
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
 document.getElementById('auditForm').addEventListener('submit',async function(e){
   e.preventDefault();
-  const btn=document.getElementById('submitBtn');
-  const status=document.getElementById('formStatus');
+  const btn=document.getElementById('submitBtn'),status=document.getElementById('formStatus');
   btn.disabled=true;btn.textContent='Sending...';
   status.textContent='';status.className='form-status';
   const data={name:document.getElementById('name').value,company:document.getElementById('company').value,contact:document.getElementById('contact').value,message:document.getElementById('message').value,lang:'en'};
   try{
     const res=await fetch('/api/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
     if(res.ok){status.textContent='✓ Request sent! We will contact you within one business day.';status.classList.add('success');this.reset();btn.textContent='Send request';btn.disabled=false;}
-    else throw new Error('server error');
-  }catch{status.textContent='✗ Failed to send. Contact us directly: info@o-horizons.com';status.classList.add('error');btn.textContent='Send request';btn.disabled=false;}
+    else throw new Error();
+  }catch{status.textContent='✗ Failed to send. Contact us: info@o-horizons.com';status.classList.add('error');btn.textContent='Send request';btn.disabled=false;}
 });
 </script>
 </body>
