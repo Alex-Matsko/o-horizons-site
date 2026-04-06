@@ -88,7 +88,9 @@
     .form-status{margin-top:10px;text-align:center;font-size:.85rem;min-height:1.1em;}
     .form-status.success{color:#4ade80;}
     .form-status.error{color:#f97373;}
-    @media(max-width:520px){.modal{padding:24px 20px 22px;margin:16px;}}
+    @media(max-width:520px){
+      .modal{padding:24px 20px 22px;margin:16px;}
+    }
   </style>
 </head>
 <body>
@@ -100,10 +102,22 @@
     <h2 id="modalTitle">Get a Free Audit</h2>
     <p class="modal-sub">Leave your contact — we'll get back to you within one business day.</p>
     <form id="auditForm">
-      <div class="form-group"><label for="name">Your name *</label><input type="text" id="name" name="name" placeholder="John Smith" required /></div>
-      <div class="form-group"><label for="company">Company</label><input type="text" id="company" name="company" placeholder="Acme Ltd" /></div>
-      <div class="form-group"><label for="contact">Email or Telegram *</label><input type="text" id="contact" name="contact" placeholder="email@example.com or @username" required /></div>
-      <div class="form-group"><label for="message">Tell us about your task</label><textarea id="message" name="message" placeholder="What's the pain point? How many servers, users?"></textarea></div>
+      <div class="form-group">
+        <label for="name">Your name *</label>
+        <input type="text" id="name" name="name" placeholder="John Smith" required />
+      </div>
+      <div class="form-group">
+        <label for="company">Company</label>
+        <input type="text" id="company" name="company" placeholder="Acme Ltd" />
+      </div>
+      <div class="form-group">
+        <label for="contact">Email or Telegram *</label>
+        <input type="text" id="contact" name="contact" placeholder="email@example.com or @username" required />
+      </div>
+      <div class="form-group">
+        <label for="message">Tell us about your task</label>
+        <textarea id="message" name="message" placeholder="What's the pain point? How many servers, users?"></textarea>
+      </div>
       <div class="modal-contacts">
         <strong>Our contacts:</strong>
         <span><a href="mailto:info@o-horizons.com">info@o-horizons.com</a></span>
@@ -144,18 +158,37 @@
         <a href="#pricing" class="btn-outline">View Pricing</a>
       </div>
       <div class="hero-stats">
-        <div class="stat"><span>98%</span><p>service availability</p></div>
-        <div class="stat"><span>50+</span><p>projects delivered</p></div>
-        <div class="stat"><span>&lt; 1h</span><p>incident response</p></div>
+        <div class="stat">
+          <span>98%</span>
+          <p>service availability</p>
+        </div>
+        <div class="stat">
+          <span>50+</span>
+          <p>projects delivered</p>
+        </div>
+        <div class="stat">
+          <span>&lt; 1h</span>
+          <p>incident response</p>
+        </div>
       </div>
     </div>
     <div class="hero-visual">
       <div class="server-card">
-        <div class="server-line"><span class="dot green"></span> 1C Server — Online</div>
-        <div class="server-line"><span class="dot green"></span> Backup — OK (today 03:00)</div>
-        <div class="server-line"><span class="dot green"></span> MSSQL — Monitoring</div>
-        <div class="server-line"><span class="dot green"></span> VPN — Active</div>
-        <div class="server-line"><span class="dot green"></span> VMware ESXi — Running</div>
+        <div class="server-line">
+          <span class="dot green"></span> 1C Server — Online
+        </div>
+        <div class="server-line">
+          <span class="dot green"></span> Backup — OK (today 03:00)
+        </div>
+        <div class="server-line">
+          <span class="dot green"></span> MSSQL — Monitoring
+        </div>
+        <div class="server-line">
+          <span class="dot green"></span> VPN — Active
+        </div>
+        <div class="server-line">
+          <span class="dot green"></span> VMware ESXi — Running
+        </div>
         <div class="server-footer">All systems go 🟢</div>
       </div>
     </div>
@@ -168,12 +201,36 @@
     <p class="section-tag">What we do</p>
     <h2 class="section-title">Services</h2>
     <div class="services-grid">
-      <div class="service-card"><div class="service-icon">🗄️</div><h3>1C Infrastructure Management</h3><p>1C and MSSQL server administration, configuration updates, access rights, data exchange and 24/7 availability monitoring.</p></div>
-      <div class="service-card"><div class="service-icon">💾</div><h3>Backup &amp; Disaster Recovery</h3><p>Veeam B&amp;R deployment with 3-2-1 scheme, recovery testing, retention policies. RTO and RPO under control — zero data loss.</p></div>
-      <div class="service-card"><div class="service-icon">⚡</div><h3>Virtualisation &amp; Server Infrastructure</h3><p>VMware ESXi, Proxmox and Hyper-V deployment and management. High-availability architecture, VM migrations and resource governance.</p></div>
-      <div class="service-card"><div class="service-icon">🖥️</div><h3>System Administration</h3><p>Windows/Linux servers, Active Directory, GPO, RDS, Zabbix/Grafana. Full operational coverage — monitoring, incidents and maintenance.</p></div>
-      <div class="service-card"><div class="service-icon">🔒</div><h3>Network Perimeter &amp; Security</h3><p>MikroTik, VPN, VLAN, NGFW, SIEM, 2FA, Fail2ban. Security perimeter built and maintained to SMB requirements.</p></div>
-      <div class="service-card"><div class="service-icon">👔</div><h3>Fractional IT Director</h3><p>We act as your Head of IT: build processes, regulations, ticketing and reporting. Manage vendors and optimise your IT budget.</p></div>
+      <div class="service-card">
+        <div class="service-icon">🗄️</div>
+        <h3>1C Infrastructure Management</h3>
+        <p>1C and MSSQL server administration, configuration updates, access rights, data exchange and 24/7 availability monitoring.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">💾</div>
+        <h3>Backup &amp; Disaster Recovery</h3>
+        <p>Veeam B&amp;R deployment with 3-2-1 scheme, recovery testing, retention policies. RTO and RPO under control — zero data loss.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">⚡</div>
+        <h3>Virtualisation &amp; Server Infrastructure</h3>
+        <p>VMware ESXi, Proxmox and Hyper-V deployment and management. High-availability architecture, VM migrations and resource governance.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🖥️</div>
+        <h3>System Administration</h3>
+        <p>Windows/Linux servers, Active Directory, GPO, RDS, Zabbix/Grafana. Full operational coverage — monitoring, incidents and maintenance.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🔒</div>
+        <h3>Network Perimeter &amp; Security</h3>
+        <p>MikroTik, VPN, VLAN, NGFW, SIEM, 2FA, Fail2ban. Security perimeter built and maintained to SMB requirements.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">👔</div>
+        <h3>Fractional IT Director</h3>
+        <p>We act as your Head of IT: build processes, regulations, ticketing and reporting. Manage vendors and optimise your IT budget.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -185,10 +242,26 @@
     <h2 class="section-title">Start with an Audit</h2>
     <p class="section-sub">Before making a decision — know the real state of your IT infrastructure.</p>
     <div class="audit-grid">
-      <div class="audit-card"><h4>Backup &amp; Recovery Audit</h4><p>We verify whether your data is actually recoverable. In most cases — it isn't.</p><span class="audit-price">from ₽5,000</span></div>
-      <div class="audit-card"><h4>1C Infrastructure Audit</h4><p>Server, MSSQL, permissions, updates, database placement — full analysis.</p><span class="audit-price">from ₽7,000</span></div>
-      <div class="audit-card"><h4>Virtualisation &amp; Server Audit</h4><p>Hypervisor state, VMs, resources, fault tolerance and configuration review.</p><span class="audit-price">from ₽7,000</span></div>
-      <div class="audit-card"><h4>Security &amp; Remote Access Audit</h4><p>Perimeter, accounts, VPN, 2FA, risk assessment — what is exposed and why it matters.</p><span class="audit-price">from ₽6,000</span></div>
+      <div class="audit-card">
+        <h4>Backup &amp; Recovery Audit</h4>
+        <p>We verify whether your data is actually recoverable. In most cases — it isn't.</p>
+        <span class="audit-price">from ₽5,000</span>
+      </div>
+      <div class="audit-card">
+        <h4>1C Infrastructure Audit</h4>
+        <p>Server, MSSQL, permissions, updates, database placement — full analysis.</p>
+        <span class="audit-price">from ₽7,000</span>
+      </div>
+      <div class="audit-card">
+        <h4>Virtualisation &amp; Server Audit</h4>
+        <p>Hypervisor state, VMs, resources, fault tolerance and configuration review.</p>
+        <span class="audit-price">from ₽7,000</span>
+      </div>
+      <div class="audit-card">
+        <h4>Security &amp; Remote Access Audit</h4>
+        <p>Perimeter, accounts, VPN, 2FA, risk assessment — what is exposed and why it matters.</p>
+        <span class="audit-price">from ₽6,000</span>
+      </div>
     </div>
   </div>
 </section>
@@ -201,19 +274,51 @@
     <p class="section-sub">Fixed monthly cost. No surprises — you pay for outcomes, not hours.</p>
     <div class="pricing-grid">
       <div class="pricing-card">
-        <div class="pricing-header"><h3>Basic</h3><div class="price">from ₽15,000<span>/mo</span></div></div>
-        <ul class="pricing-list"><li>✓ Availability monitoring (Zabbix)</li><li>✓ Backup control</li><li>✓ Alerting &amp; notifications</li><li>✓ Incident response within 4 hours</li><li>✗ Scheduled maintenance</li><li>✗ Recovery tests</li><li>✗ SLA guarantee</li></ul>
+        <div class="pricing-header">
+          <h3>Basic</h3>
+          <div class="price">from ₽15,000<span>/mo</span></div>
+        </div>
+        <ul class="pricing-list">
+          <li>✓ Availability monitoring (Zabbix)</li>
+          <li>✓ Backup control</li>
+          <li>✓ Alerting &amp; notifications</li>
+          <li>✓ Incident response within 4 hours</li>
+          <li>✗ Scheduled maintenance</li>
+          <li>✗ Recovery tests</li>
+          <li>✗ SLA guarantee</li>
+        </ul>
         <button class="btn-card" onclick="openModal()">Get in touch</button>
       </div>
       <div class="pricing-card pricing-featured">
         <div class="pricing-badge">Most Popular</div>
-        <div class="pricing-header"><h3>Standard</h3><div class="price">from ₽30,000<span>/mo</span></div></div>
-        <ul class="pricing-list"><li>✓ Everything in Basic</li><li>✓ 1C server + MSSQL management</li><li>✓ Configuration updates</li><li>✓ Scheduled maintenance</li><li>✓ Incident response within 2 hours</li><li>✗ Recovery tests</li><li>✗ Management reporting</li></ul>
+        <div class="pricing-header">
+          <h3>Standard</h3>
+          <div class="price">from ₽30,000<span>/mo</span></div>
+        </div>
+        <ul class="pricing-list">
+          <li>✓ Everything in Basic</li>
+          <li>✓ 1C server + MSSQL management</li>
+          <li>✓ Configuration updates</li>
+          <li>✓ Scheduled maintenance</li>
+          <li>✓ Incident response within 2 hours</li>
+          <li>✗ Recovery tests</li>
+          <li>✗ Management reporting</li>
+        </ul>
         <button class="btn-card btn-card-white" onclick="openModal()">Get in touch</button>
       </div>
       <div class="pricing-card">
-        <div class="pricing-header"><h3>Premium</h3><div class="price">from ₽55,000<span>/mo</span></div></div>
-        <ul class="pricing-list"><li>✓ Everything in Standard</li><li>✓ SLA with uptime guarantee</li><li>✓ Monthly recovery tests</li><li>✓ Priority support 24/7</li><li>✓ IT management reporting</li><li>✓ Fractional IT Director role</li></ul>
+        <div class="pricing-header">
+          <h3>Premium</h3>
+          <div class="price">from ₽55,000<span>/mo</span></div>
+        </div>
+        <ul class="pricing-list">
+          <li>✓ Everything in Standard</li>
+          <li>✓ SLA with uptime guarantee</li>
+          <li>✓ Monthly recovery tests</li>
+          <li>✓ Priority support 24/7</li>
+          <li>✓ IT management reporting</li>
+          <li>✓ Fractional IT Director role</li>
+        </ul>
         <button class="btn-card" onclick="openModal()">Get in touch</button>
       </div>
     </div>
@@ -230,13 +335,38 @@
       <p>Open Horizons is a team of infrastructure engineers with experience building fault-tolerant IT systems for manufacturing, trading and service companies.</p>
       <p>We specialise in business-critical infrastructure: 1C servers, MSSQL databases, Veeam backup schemes, virtualisation on VMware ESXi / Proxmox / Hyper-V and network perimeters on MikroTik and NGFW.</p>
       <p>Our principle: IT infrastructure should run like clockwork — and you should never have to think about it.</p>
-      <div class="about-stack"><span>VMware ESXi</span><span>Proxmox</span><span>Hyper-V</span><span>Veeam B&amp;R</span><span>MSSQL</span><span>1C</span><span>MikroTik</span><span>Zabbix</span><span>Active Directory</span><span>Linux</span><span>Windows Server</span><span>NGFW</span></div>
+      <div class="about-stack">
+        <span>VMware ESXi</span>
+        <span>Proxmox</span>
+        <span>Hyper-V</span>
+        <span>Veeam B&amp;R</span>
+        <span>MSSQL</span>
+        <span>1C</span>
+        <span>MikroTik</span>
+        <span>Zabbix</span>
+        <span>Active Directory</span>
+        <span>Linux</span>
+        <span>Windows Server</span>
+        <span>NGFW</span>
+      </div>
     </div>
     <div class="about-visual">
-      <div class="kpi-card"><span>98%</span><p>Average SLA uptime</p></div>
-      <div class="kpi-card"><span>&lt; 1h</span><p>Critical incident response</p></div>
-      <div class="kpi-card"><span>3-2-1</span><p>Backup scheme standard</p></div>
-      <div class="kpi-card"><span>0</span><p>Unrecoverable data losses</p></div>
+      <div class="kpi-card">
+        <span>98%</span>
+        <p>Average SLA uptime</p>
+      </div>
+      <div class="kpi-card">
+        <span>&lt; 1h</span>
+        <p>Critical incident response</p>
+      </div>
+      <div class="kpi-card">
+        <span>3-2-1</span>
+        <p>Backup scheme standard</p>
+      </div>
+      <div class="kpi-card">
+        <span>0</span>
+        <p>Unrecoverable data losses</p>
+      </div>
     </div>
   </div>
 </section>
@@ -248,8 +378,20 @@
     <h2>Ready to talk about your infrastructure?</h2>
     <p class="section-sub">Write to us — we'll show you what can be improved and suggest the right solution. First audit is free.</p>
     <div class="contact-options">
-      <a href="mailto:info@o-horizons.com" class="contact-card"><span>✉️</span><div><strong>Email</strong><p>info@o-horizons.com</p></div></a>
-      <a href="https://t.me/ohorizons" class="contact-card" target="_blank" rel="noopener"><span>✈️</span><div><strong>Telegram</strong><p>@ohorizons</p></div></a>
+      <a href="mailto:info@o-horizons.com" class="contact-card">
+        <span>✉️</span>
+        <div>
+          <strong>Email</strong>
+          <p>info@o-horizons.com</p>
+        </div>
+      </a>
+      <a href="https://t.me/ohorizons" class="contact-card" target="_blank" rel="noopener">
+        <span>✈️</span>
+        <div>
+          <strong>Telegram</strong>
+          <p>@ohorizons</p>
+        </div>
+      </a>
     </div>
     <button class="btn-primary btn-large" onclick="openModal()">Contact Us</button>
   </div>
@@ -257,7 +399,10 @@
 
 <footer class="footer">
   <div class="container footer-inner">
-    <div class="footer-logo"><span class="logo-icon">&#x2B21;</span><span>Open Horizons</span></div>
+    <div class="footer-logo">
+      <span class="logo-icon">&#x2B21;</span>
+      <span>Open Horizons</span>
+    </div>
     <p class="footer-copy">© 2026 Open Horizons. IT Outsourcing for Business.</p>
     <a href="index.html" class="lang-switch">Переключить на Русский →</a>
   </div>
@@ -320,10 +465,10 @@ window.addEventListener('DOMContentLoaded',function(){
   if(!contactSection)return;
 
   function scrollToContact(){
-    const headerOffset=96;
-    const rect=contactSection.getBoundingClientRect();
-    const offset=window.scrollY+rect.top-headerOffset;
-    window.scrollTo({top:offset,behavior:'smooth'});
+    const header=document.querySelector('.navbar');
+    const headerOffset=header?header.offsetHeight:0;
+    const target=Math.max(contactSection.offsetTop-headerOffset-16,0);
+    window.scrollTo({top:target,behavior:'smooth'});
   }
 
   document.querySelectorAll('a[href="#contact"]').forEach(function(link){
