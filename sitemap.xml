@@ -6,6 +6,7 @@
     <loc>https://o-horizons.com/</loc>
     <xhtml:link rel="alternate" hreflang="ru" href="https://o-horizons.com/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://o-horizons.com/index-en.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://o-horizons.com/"/>
     <lastmod>2026-04-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
@@ -15,6 +16,7 @@
     <loc>https://o-horizons.com/index-en.html</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://o-horizons.com/index-en.html"/>
     <xhtml:link rel="alternate" hreflang="ru" href="https://o-horizons.com/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://o-horizons.com/"/>
     <lastmod>2026-04-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

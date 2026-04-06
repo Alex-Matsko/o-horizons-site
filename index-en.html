@@ -3,11 +3,97 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="IT infrastructure audit and IT outsourcing for businesses. We assess backups, servers and 1C so your infrastructure stays under reliable control." />
-  <title>Open Horizons — IT Outsourcing</title>
+
+  <title>Open Horizons — IT Outsourcing &amp; IT Infrastructure Audit for Business</title>
+  <meta name="description" content="IT infrastructure audit and IT outsourcing for businesses. We manage backups, 1C servers, virtualisation and security so your infrastructure stays reliable 24/7." />
+  <meta name="keywords" content="IT outsourcing, IT infrastructure audit, 1C server support, backup and recovery, VMware ESXi, Proxmox, Zabbix monitoring, IT managed services" />
+
+  <link rel="canonical" href="https://o-horizons.com/index-en.html" />
+  <link rel="alternate" hreflang="en" href="https://o-horizons.com/index-en.html" />
+  <link rel="alternate" hreflang="ru" href="https://o-horizons.com/" />
+  <link rel="alternate" hreflang="x-default" href="https://o-horizons.com/" />
+
+  <meta property="og:title" content="Open Horizons — IT Outsourcing &amp; Infrastructure Audit" />
+  <meta property="og:description" content="IT infrastructure audit and managed IT services for SMB. Backups, 1C, virtualisation, security — all under control. First audit free." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://o-horizons.com/index-en.html" />
+  <meta property="og:image" content="https://o-horizons.com/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="ru_RU" />
+  <meta property="og:site_name" content="Open Horizons" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Open Horizons — IT Outsourcing &amp; Infrastructure Audit" />
+  <meta name="twitter:description" content="IT infrastructure audit and managed IT services. First audit free." />
+  <meta name="twitter:image" content="https://o-horizons.com/og-image.png" />
+
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#3b82f6" />
+
   <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Schema.org: Organization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "Open Horizons",
+    "alternateName": "Открытые Горизонты",
+    "url": "https://o-horizons.com",
+    "email": "info@o-horizons.com",
+    "sameAs": ["https://t.me/ohorizons"],
+    "description": "IT outsourcing and IT infrastructure audit for business: 1C servers, backups, virtualisation, security.",
+    "serviceType": "IT outsourcing",
+    "areaServed": {
+      "@type": "Country",
+      "name": "Russia"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "IT Services",
+      "itemListElement": [
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Backup & Recovery Audit", "description": "Verify whether your backups are actually recoverable"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "1C Infrastructure Audit", "description": "Full analysis of 1C servers, MSSQL and database placement"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Virtualisation & Server Audit", "description": "Hypervisor state, VMs, resources and fault tolerance review"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Security & Remote Access Audit", "description": "Perimeter, VPN, 2FA risk assessment"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Basic IT Outsourcing", "description": "Monitoring, backup control, alerting. From ₽15,000/mo"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Standard IT Outsourcing", "description": "1C server + MSSQL management, maintenance. From ₽30,000/mo"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Premium IT Outsourcing", "description": "Full managed services with SLA, 24/7, fractional IT director. From ₽55,000/mo"}}
+      ]
+    }
+  }
+  </script>
+
+  <!-- Schema.org: FAQPage -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "When does a company need an IT infrastructure audit?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Most often when incidents start piling up, 1C slows down or backups have not been tested for years. We document the current state, quantify the risks and prioritise tasks."}
+      },
+      {
+        "@type": "Question",
+        "name": "How is an audit different from routine administration?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Routine administration is about keeping systems running and putting out fires. An audit is a higher-level look at architecture, backups, security and processes. The outcome is a clear report and roadmap."}
+      },
+      {
+        "@type": "Question",
+        "name": "What happens after the audit?",
+        "acceptedAnswer": {"@type": "Answer", "text": "After the audit we offer options: a one-off remediation project for critical risks or long-term managed services with a fixed fee and SLA."}
+      }
+    ]
+  }
+  </script>
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GK72SBNLF6"></script>
@@ -15,7 +101,6 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-GK72SBNLF6');
   </script>
 
@@ -27,7 +112,6 @@
           for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
           k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
       })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=108408675', 'ym');
-
       ym(108408675, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
   </script>
   <noscript><div><img src="https://mc.yandex.ru/watch/108408675" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
@@ -273,22 +357,22 @@
       <div class="audit-card">
         <h4>Backup &amp; Recovery Audit</h4>
         <p>We verify whether your data is actually recoverable. In most cases — it isn't.</p>
-        <span class="audit-price">from ₽5,000</span>
+        <span class="audit-price">from &#8381;5,000</span>
       </div>
       <div class="audit-card">
         <h4>1C Infrastructure Audit</h4>
         <p>Server, MSSQL, permissions, updates, database placement — full analysis.</p>
-        <span class="audit-price">from ₽7,000</span>
+        <span class="audit-price">from &#8381;7,000</span>
       </div>
       <div class="audit-card">
         <h4>Virtualisation &amp; Server Audit</h4>
         <p>Hypervisor state, VMs, resources, fault tolerance and configuration review.</p>
-        <span class="audit-price">from ₽7,000</span>
+        <span class="audit-price">from &#8381;7,000</span>
       </div>
       <div class="audit-card">
         <h4>Security &amp; Remote Access Audit</h4>
         <p>Perimeter, accounts, VPN, 2FA, risk assessment — what is exposed and why it matters.</p>
-        <span class="audit-price">from ₽6,000</span>
+        <span class="audit-price">from &#8381;6,000</span>
       </div>
     </div>
   </div>
@@ -304,7 +388,7 @@
       <div class="pricing-card">
         <div class="pricing-header">
           <h3>Basic</h3>
-          <div class="price">from ₽15,000<span>/mo</span></div>
+          <div class="price">from &#8381;15,000<span>/mo</span></div>
         </div>
         <ul class="pricing-list">
           <li>✓ Availability monitoring (Zabbix)</li>
@@ -321,7 +405,7 @@
         <div class="pricing-badge">Most Popular</div>
         <div class="pricing-header">
           <h3>Standard</h3>
-          <div class="price">from ₽30,000<span>/mo</span></div>
+          <div class="price">from &#8381;30,000<span>/mo</span></div>
         </div>
         <ul class="pricing-list">
           <li>✓ Everything in Basic</li>
@@ -337,7 +421,7 @@
       <div class="pricing-card">
         <div class="pricing-header">
           <h3>Premium</h3>
-          <div class="price">from ₽55,000<span>/mo</span></div>
+          <div class="price">from &#8381;55,000<span>/mo</span></div>
         </div>
         <ul class="pricing-list">
           <li>✓ Everything in Standard</li>
@@ -471,7 +555,7 @@
       <span class="logo-icon">&#x2B21;</span>
       <span>Open Horizons</span>
     </div>
-    <p class="footer-copy">© 2026 Open Horizons. IT Outsourcing for Business.</p>
+    <p class="footer-copy">&#169; 2026 Open Horizons. IT Outsourcing for Business.</p>
     <div class="footer-share">
       <a href="https://t.me/share/url?url=https://o-horizons.com&text=IT%20infrastructure%20audit%20and%20outsourcing" target="_blank" rel="noopener">Share on Telegram</a>
       <span>·</span>
@@ -533,7 +617,6 @@ document.getElementById('auditForm').addEventListener('submit',async function(e)
   }
 });
 
-// FAQ accordion
 const faqItems=document.querySelectorAll('.faq-item');
 faqItems.forEach(item=>{
   const btn=item.querySelector('.faq-question');

@@ -1,0 +1,17 @@
+{
+  "name": "Open Horizons — IT Outsourcing",
+  "short_name": "Open Horizons",
+  "description": "IT infrastructure audit and outsourcing for business",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#0a0c10",
+  "theme_color": "#3b82f6",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
