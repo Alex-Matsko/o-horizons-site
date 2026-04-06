@@ -111,8 +111,8 @@
         <input type="text" id="company" name="company" placeholder="ООО Пример" />
       </div>
       <div class="form-group">
-        <label for="contact">Email или Telegram *</label>
-        <input type="text" id="contact" name="contact" placeholder="email@example.com или @username" required />
+        <label for="contactField">Email или Telegram *</label>
+        <input type="text" id="contactField" name="contact" placeholder="email@example.com или @username" required />
       </div>
       <div class="form-group">
         <label for="message">Расскажите о задаче</label>
@@ -415,7 +415,7 @@ document.getElementById('auditForm').addEventListener('submit',async function(e)
   const data={
     name:document.getElementById('name').value,
     company:document.getElementById('company').value,
-    contact:document.getElementById('contact').value,
+    contact:document.getElementById('contactField').value,
     message:document.getElementById('message').value,
     lang:'ru'
   };
