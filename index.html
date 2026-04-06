@@ -16,7 +16,7 @@
   <meta property="og:image" content="https://o-horizons.com/og-image.png" />
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="stylesheet" href="style.css?v=2" />
+  <link rel="stylesheet" href="style.css?v=3" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <!-- Google tag (gtag.js) -->
@@ -25,20 +25,18 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-GK72SBNLF6');
   </script>
 
   <!-- Yandex.Метрика counter -->
   <script type="text/javascript">
-      (function(m,e,t,r,i,k,a){
-          m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-          m[i].l=1*new Date();
-          for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-          k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-      })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=108408675', 'ym');
-
-      ym(108408675, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    (function(m,e,t,r,i,k,a){
+      m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+      m[i].l=1*new Date();
+      for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+      k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=108408675', 'ym');
+    ym(108408675, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
   </script>
   <noscript><div><img src="https://mc.yandex.ru/watch/108408675" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
   <!-- /Yandex.Метрика counter -->
@@ -102,7 +100,7 @@
       color:#9ca3af;
       border:1px dashed rgba(55,65,81,0.9);
     }
-    .modal-contacts strong{color:#e5e7eb;font-size:.78rem;text-transform:uppercase;letter-spacing:.08ем;}
+    .modal-contacts strong{color:#e5e7eb;font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;}
     .modal-contacts a{color:#38bdf8;text-decoration:none;}
     .modal-contacts a:hover{text-decoration:underline;}
     .btn-submit{
@@ -116,16 +114,16 @@
       font-weight:600;
       cursor:pointer;
       transition:transform .1s,box-shadow .15s,filter .15s;
-      box-shadow:0 14px 35pxrgba(37,99,235,0.45);
+      box-shadow:0 14px 35px rgba(37,99,235,0.45);
     }
     .btn-submit:hover{filter:brightness(1.05);transform:translateY(-1px);}
-    .btn-submit:active{transform:translateY(0);box-shadow:0 10px 25pxrgba(37,99,235,0.35);}
+    .btn-submit:active{transform:translateY(0);box-shadow:0 10px 25px rgba(37,99,235,0.35);}
     .btn-submit:disabled{background:#4b5563;box-shadow:none;cursor:not-allowed;}
     .form-status{margin-top:10px;text-align:center;font-size:.85rem;min-height:1.1em;}
     .form-status.success{color:#4ade80;}
     .form-status.error{color:#f97373;}
     @media(max-width:520px){
-      .modal{padding:24px20px22px;margin:16px;}
+      .modal{padding:24px 20px 22px;margin:16px;}
     }
   </style>
 </head>
@@ -263,7 +261,7 @@
     <p class="section-tag">Входной продукт</p>
     <h2 class="section-title">Комплексный аудит IT-инфраструктуры перед аутсорсингом</h2>
     <p class="section-sub">Перед тем как принять решение — убедитесь, что вы знаете реальное состояние своей IT-инфраструктуры.</p>
-    <p class="section-sub">Аудит IT-инфраструктуры помогает увидеть риски: где резервное копирование не работает, где сервера упираются в ресурсы, где небезопасен удалённый доступ и что стоит передать на аутсорсинг IT, чтобы снизить нагрузку на команду. Подробнее об аудитах — в этом разделе, а о форматах сопровождения — в блоке <a href="#pricing">«Тарифы»</a>.</p>
+    <p class="section-sub">Аудит IT-инфраструктуры помогает увидеть риски: где резервное копирование не работает, где сервера упираются в ресурсы, где небезопасен удалённый доступ и что стоит передать на аутсорсинг IT, чтобы снизить нагрузку на команду. Подробнее об аудитах — в этом разделе, а о форматах сопровождения — в блоке <a href="#pricing" style="color:#3b82f6;">«Тарифы»</a>.</p>
     <div class="audit-grid">
       <div class="audit-card">
         <h4>Аудит резервного копирования</h4>
@@ -290,7 +288,7 @@
       <p class="section-sub"><strong>Что вы получите по итогам аудита:</strong></p>
       <ul>
         <li>Отчёт с текущим состоянием инфраструктуры и выявленными рисками на понятном языке.</li>
-        <li>Приоритезированный список задач: что критично, что можно отложить, где быстрый эффект.</li>
+        <li>Приоритизированный список задач: что критично, что можно отложить, где быстрый эффект.</li>
         <li>План работ на 3–6 месяцев по приведению инфраструктуры к нормативному состоянию.</li>
         <li>Рекомендации, какие зоны имеет смысл передать на IT-аутсорсинг, а какие оставить внутри.</li>
       </ul>
@@ -322,7 +320,7 @@
         <button class="btn-card" onclick="openModal()">Обсудить</button>
       </div>
       <div class="pricing-card pricing-featured">
-        <div class="pricing-бadge">Популярный</div>
+        <div class="pricing-badge">Популярный</div>
         <div class="pricing-header">
           <h3>Стандарт</h3>
           <div class="price">от 30 000 ₽<span>/мес</span></div>
@@ -410,6 +408,7 @@
     <div class="faq-wrapper">
       <h2 class="section-title">Частые вопросы про аудит и аутсорсинг IT</h2>
       <div class="faq-list" role="list">
+
         <div class="faq-item open" role="listitem">
           <button class="faq-question" type="button" aria-expanded="true">
             <span class="label">Когда компании имеет смысл начинать с аудита?</span>
@@ -499,6 +498,7 @@
             <p>Для критичных систем мы организуем дежурства и приоритетную реакцию 24/7 в рамках тарифа. Инциденты попадают в систему мониторинга и тикет-систему, мы фиксируем время реакции и закрытия, чтобы в отчётах вы видели реальную картину по SLA, а не только обещания.</p>
           </div>
         </div>
+
       </div>
     </div>
   </div>
@@ -598,20 +598,20 @@ document.getElementById('auditForm').addEventListener('submit',async function(e)
   }
 });
 
-// FAQ accordion
-const faqItems=document.querySelectorAll('.faq-item');
-faqItems.forEach(item=>{
-  const btn=item.querySelector('.faq-question');
-  btn.addEventListener('click',()=>{
-    const isOpen=item.classList.contains('open');
-    faqItems.forEach(i=>{
+// FAQ accordion с анимацией
+const faqItems = document.querySelectorAll('.faq-item');
+faqItems.forEach(item => {
+  const btn = item.querySelector('.faq-question');
+  btn.addEventListener('click', () => {
+    const isOpen = item.classList.contains('open');
+    faqItems.forEach(i => {
       i.classList.remove('open');
-      const b=i.querySelector('.faq-question');
-      if(b) b.setAttribute('aria-expanded','false');
+      const b = i.querySelector('.faq-question');
+      if (b) b.setAttribute('aria-expanded', 'false');
     });
-    if(!isOpen){
+    if (!isOpen) {
       item.classList.add('open');
-      btn.setAttribute('aria-expanded','true');
+      btn.setAttribute('aria-expanded', 'true');
     }
   });
 });
