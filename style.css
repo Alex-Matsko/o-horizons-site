@@ -387,7 +387,7 @@ a { text-decoration: none; color: inherit; }
 }
 .kpi-card p { font-size: 0.78rem; color: #64748b; }
 
-/* === FAQ === */
+/* === FAQ (cards baseline) === */
 .faq-wrapper { max-width: 880px; }
 .faq-intro { font-size: 0.95rem; color: #64748b; margin-bottom: 28px; max-width: 560px; }
 .faq-grid {
@@ -445,6 +445,61 @@ a { text-decoration: none; color: inherit; }
   margin-top: 6px;
 }
 .faq-note a { color: #3b82f6; }
+
+/* === FAQ ACCORDION (list) === */
+.faq-list {
+  border-radius: 16px;
+  border: 1px solid rgba(148,163,184,0.35);
+  background: #0a0c10;
+  overflow: hidden;
+}
+.faq-item + .faq-item {
+  border-top: 1px solid rgba(15,23,42,0.9);
+}
+.faq-question {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  cursor: pointer;
+  color: #e2e8f0;
+  font-size: 0.95rem;
+}
+.faq-question span.label {
+  font-weight: 500;
+}
+.faq-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: 1px solid #334155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: #94a3b8;
+  transition: transform 0.15s, background 0.15s, color 0.15s, border-color 0.15s;
+}
+.faq-item.open .faq-icon {
+  transform: rotate(90deg);
+  background: rgba(59,130,246,0.15);
+  color: #3b82f6;
+  border-color: rgba(59,130,246,0.5);
+}
+.faq-answer {
+  padding: 0 20px 18px;
+  font-size: 0.9rem;
+  color: #94a3b8;
+  display: none;
+}
+.faq-answer p { margin: 0; }
+.faq-item.open .faq-answer { display: block; }
 
 /* === CONTACT === */
 .contact-inner { text-align: center; max-width: 600px; margin: 0 auto; }
