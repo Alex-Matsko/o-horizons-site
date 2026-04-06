@@ -280,6 +280,22 @@ document.getElementById('auditForm').addEventListener('submit',async function(e)
     else throw new Error();
   }catch{status.textContent='✗ Ошибка. Напишите напрямую: info@o-horizons.com';status.classList.add('error');btn.textContent='Отправить заявку';btn.disabled=false;}
 });
+
+// Якорное пролистывание к блоку "Связаться" с учётом высоты шапки
+window.addEventListener('DOMContentLoaded',function(){
+  const contactSection=document.getElementById('contact');
+  if(!contactSection)return;
+  document.querySelectorAll('a[href="#contact"]').forEach(function(link){
+    link.addEventListener('click',function(e){
+      e.preventDefault();
+      const headerOffset=96;
+      const rect=contactSection.getBoundingClientRect();
+      const offset=window.scrollY+rect.top-headerOffset;
+      window.scrollTo({top:offset,behavior:'smooth'});
+      history.replaceState(null,'','#contact');
+    });
+  });
+});
 </script>
 </body>
 </html>
