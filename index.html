@@ -384,13 +384,39 @@
 <section class="section" id="faq">
   <div class="container">
     <p class="section-tag">FAQ</p>
-    <h2 class="section-title">Частые вопросы про аудит и аутсорсинг IT</h2>
-    <h3>Когда компании нужен аудит IT-инфраструктуры?</h3>
-    <p>Чаще всего аудит IT-инфраструктуры нужен, когда растёт количество инцидентов, появляются простои 1С или резервные копии никто не проверял годами. Мы помогаем зафиксировать текущее состояние, показать риски в деньгах и дать план по их устранению. Если хотите подробно разобраться, начните с блока <a href="#audits">«Начните с аудита»</a>.</p>
-    <h3>Чем аудит отличается от обычного администрирования?</h3>
-    <p>В рамках аудита мы не тушим пожары, а смотрим на инфраструктуру сверху: архитектура, резервное копирование, безопасность, процессы. Результат — отчёт с приоритизированным списком задач. Дальше вы либо отдаёте сопровождение нам на аутсорсинг IT по одному из <a href="#pricing">тарифов</a>, либо делаете часть работ своими силами.</p>
-    <h3>Что происходит после аудита?</h3>
-    <p>После аудита IT-инфраструктуры мы вместе с вами выбираем формат: разовый проект по исправлению критичных проблем или долгосрочный аутсорсинг IT с фиксированной месячной ставкой и понятным SLA. Связаться с нами можно через раздел <a href="#contact">«Связаться»</a>.</p>
+    <div class="faq-wrapper">
+      <h2 class="section-title">Частые вопросы про аудит и аутсорсинг IT</h2>
+      <p class="faq-intro">Коротко — только самое важное. Разверните интересующий вопрос, чтобы не тонуть в текстах.</p>
+      <div class="faq-list" role="list">
+        <div class="faq-item" role="listitem">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="label">Когда компании нужен аудит IT-инфраструктуры?</span>
+            <span class="faq-icon">›</span>
+          </button>
+          <div class="faq-answer">
+            <p>Чаще всего — когда растёт количество инцидентов, появляются простои 1С или резервные копии никто не проверял годами. Мы фиксируем текущее состояние, показываем риски в деньгах и даём список приоритизированных задач. Подробнее об аудитах — в блоке <a href="#audits">«Начните с аудита»</a>.</p>
+          </div>
+        </div>
+        <div class="faq-item" role="listitem">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="label">Чем аудит отличается от обычного администрирования?</span>
+            <span class="faq-icon">›</span>
+          </button>
+          <div class="faq-answer">
+            <p>При администрировании мы тушим пожары и держим системы в рабочем состоянии. Аудит — это взгляд сверху: архитектура, резервное копирование, безопасность, процессы. Результат — понятный отчёт и дорожная карта: что исправить в первую очередь и какие зоны разумно отдать на аутсорсинг IT по одному из <a href="#pricing">тарифов</a>.</p>
+          </div>
+        </div>
+        <div class="faq-item" role="listitem">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="label">Что происходит после аудита?</span>
+            <span class="faq-icon">›</span>
+          </button>
+          <div class="faq-answer">
+            <p>После аудита мы предлагаем несколько вариантов: разовый проект по закрытию критичных рисков или долгосрочное сопровождение с фиксированной ставкой и SLA. Начать проще всего с заявки в блоке <a href="#contact">«Связаться»</a> — обсудим ваш кейс и предложим формат.</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -486,6 +512,24 @@ document.getElementById('auditForm').addEventListener('submit',async function(e)
     btn.textContent='Отправить заявку';
     btn.disabled=false;
   }
+});
+
+// FAQ accordion
+const faqItems=document.querySelectorAll('.faq-item');
+faqItems.forEach(item=>{
+  const btn=item.querySelector('.faq-question');
+  btn.addEventListener('click',()=>{
+    const isOpen=item.classList.contains('open');
+    faqItems.forEach(i=>{
+      i.classList.remove('open');
+      const b=i.querySelector('.faq-question');
+      if(b) b.setAttribute('aria-expanded','false');
+    });
+    if(!isOpen){
+      item.classList.add('open');
+      btn.setAttribute('aria-expanded','true');
+    }
+  });
 });
 </script>
 </body>

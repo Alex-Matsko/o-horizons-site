@@ -403,13 +403,39 @@
 <section class="section" id="faq">
   <div class="container">
     <p class="section-tag">FAQ</p>
-    <h2 class="section-title">Common questions about IT audit and outsourcing</h2>
-    <h3>When does a company need an IT infrastructure audit?</h3>
-    <p>Most often an IT infrastructure audit is required when incidents pile up, 1C starts slowing down or backups have not been tested for years. We help document the current state, quantify the risks and provide a clear remediation plan. To dive deeper, start with the <a href="#audits">Start with an Audit</a> section.</p>
-    <h3>How is an audit different from routine administration?</h3>
-    <p>During an audit we do not just put out fires. We look at the whole landscape: architecture, backups, security and processes. The result is a report with prioritised tasks. Afterwards you can either hand over IT outsourcing to us under one of the <a href="#pricing">pricing plans</a> or implement some actions with your internal team.</p>
-    <h3>What happens after the audit?</h3>
-    <p>After the IT infrastructure audit we choose a format together: a one-off remediation project for critical issues or long-term IT outsourcing with a fixed monthly fee and a clear SLA. The easiest way to start is via the <a href="#contact">Contact</a> section.</p>
+    <div class="faq-wrapper">
+      <h2 class="section-title">Common questions about IT audit and outsourcing</h2>
+      <p class="faq-intro">Short and to the point. Expand the questions you care about instead of scrolling through walls of text.</p>
+      <div class="faq-list" role="list">
+        <div class="faq-item" role="listitem">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="label">When does a company need an IT infrastructure audit?</span>
+            <span class="faq-icon">›</span>
+          </button>
+          <div class="faq-answer">
+            <p>Most often when incidents start piling up, 1C slows down or backups have not been tested for years. We document the current state, quantify the risks and prioritise tasks. To dive deeper, start with the <a href="#audits">Start with an Audit</a> section.</p>
+          </div>
+        </div>
+        <div class="faq-item" role="listitem">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="label">How is an audit different from routine administration?</span>
+            <span class="faq-icon">›</span>
+          </button>
+          <div class="faq-answer">
+            <p>Routine administration is about keeping systems running and putting out fires. An audit is a higher-level look at architecture, backups, security and processes. The outcome is a clear report and roadmap: what to fix first and which areas make sense to move to IT outsourcing under our <a href="#pricing">pricing plans</a>.</p>
+          </div>
+        </div>
+        <div class="faq-item" role="listitem">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span class="label">What happens after the audit?</span>
+            <span class="faq-icon">›</span>
+          </button>
+          <div class="faq-answer">
+            <p>After the audit we offer options: a one-off remediation project for critical risks or long-term managed services with a fixed fee and SLA. The easiest way to start is via the <a href="#contact">Contact</a> section — we will discuss your case and suggest a format.</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -505,6 +531,24 @@ document.getElementById('auditForm').addEventListener('submit',async function(e)
     btn.textContent='Send request';
     btn.disabled=false;
   }
+});
+
+// FAQ accordion
+const faqItems=document.querySelectorAll('.faq-item');
+faqItems.forEach(item=>{
+  const btn=item.querySelector('.faq-question');
+  btn.addEventListener('click',()=>{
+    const isOpen=item.classList.contains('open');
+    faqItems.forEach(i=>{
+      i.classList.remove('open');
+      const b=i.querySelector('.faq-question');
+      if(b) b.setAttribute('aria-expanded','false');
+    });
+    if(!isOpen){
+      item.classList.add('open');
+      btn.setAttribute('aria-expanded','true');
+    }
+  });
 });
 </script>
 </body>
