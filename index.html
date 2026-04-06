@@ -8,16 +8,113 @@
   <title>IT-аутсорсинг и аудит IT-инфраструктуры для бизнеса — Открытые Горизонты</title>
 
   <link rel="canonical" href="https://o-horizons.com/" />
+  <link rel="alternate" hreflang="ru" href="https://o-horizons.com/" />
+  <link rel="alternate" hreflang="en" href="https://o-horizons.com/index-en.html" />
 
   <meta property="og:title" content="IT-аутсорсинг и аудит IT для бизнеса — Open Horizons" />
   <meta property="og:description" content="Аудит IT, сопровождение 1С, серверов и безопасности. Полный контроль IT-инфраструктуры и готовые тарифы аутсорсинга." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://o-horizons.com/" />
   <meta property="og:image" content="https://o-horizons.com/og-image.png" />
+  <meta property="og:locale" content="ru_RU" />
+  <meta property="og:locale:alternate" content="en_US" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="IT-аутсорсинг и аудит IT для бизнеса — Open Horizons" />
+  <meta name="twitter:description" content="Аудит IT, сопровождение 1С, серверов и безопасности. Первичный аудит бесплатно." />
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="stylesheet" href="style.css?v=3" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Schema.org: Organization + LocalBusiness -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "Открытые Горизонты",
+    "alternateName": "Open Horizons",
+    "url": "https://o-horizons.com",
+    "email": "info@o-horizons.com",
+    "sameAs": ["https://t.me/ohorizons"],
+    "description": "IT-аутсорсинг и аудит IT-инфраструктуры для бизнеса: серверы 1С, резервное копирование, виртуализация, безопасность.",
+    "serviceType": "IT outsourcing",
+    "areaServed": {
+      "@type": "Country",
+      "name": "Россия"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "IT-услуги",
+      "itemListElement": [
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Аудит резервного копирования", "description": "Проверка резервных копий и схемы восстановления данных"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Аудит 1С-инфраструктуры", "description": "Проверка серверов 1С, MSSQL, схемы размещения баз"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Аудит виртуализации и серверов", "description": "Проверка гипервизоров VMware ESXi, Proxmox, Hyper-V"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Аудит ИБ и удалённого доступа", "description": "Проверка периметра безопасности, VPN, 2FA"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "IT-аутсорсинг Базовый", "description": "Мониторинг, контроль бэкапов, алертинг. От 15 000 ₽/мес"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "IT-аутсорсинг Стандарт", "description": "Сопровождение 1С, серверов, регламентные работы. От 30 000 ₽/мес"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "IT-аутсорсинг Премиум", "description": "Полное сопровождение с SLA, 24/7, внешний IT-директор. От 55 000 ₽/мес"}}
+      ]
+    }
+  }
+  </script>
+
+  <!-- Schema.org: FAQPage -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Когда компании имеет смысл начинать с аудита?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Когда растёт количество инцидентов, 1С и связанные сервисы периодически простаивают, а за резервные копии формально никто не отвечает. В этой точке бизнес опирается на инфраструктуру, которая работает по принципу 'как повезёт'."}
+      },
+      {
+        "@type": "Question",
+        "name": "Что входит в аудит IT-инфраструктуры?",
+        "acceptedAnswer": {"@type": "Answer", "text": "В аудит входит проверка резервного копирования и восстановления, серверов 1С и баз MSSQL, виртуализации и запаса по ресурсам, удалённого доступа и базовой безопасности, а также организационной части: кто за что отвечает и как фиксируются инциденты."}
+      },
+      {
+        "@type": "Question",
+        "name": "Какой результат вы получаете по итогам аудита?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Структурированный отчёт на понятном языке и перечень задач по приоритетам: что критично, что можно отложить и где быстрый эффект. Отдельно — план работ на 3–6 месяцев."}
+      },
+      {
+        "@type": "Question",
+        "name": "Как аудит связан с аутсорсингом IT?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Аудит — входная точка. Сначала фиксируем текущую ситуацию и закрываем ключевые риски, затем выбираем формат сопровождения по одному из тарифов."}
+      },
+      {
+        "@type": "Question",
+        "name": "Чем IT-аутсорсинг лучше или дополняет штатного админа?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Мы не заменяем человека на месте, а закрываем то, что одному админу физически сложно тянуть: 24/7 мониторинг, бэкапы, виртуализацию, сеть и безопасность."}
+      },
+      {
+        "@type": "Question",
+        "name": "Как вы обеспечиваете SLA по доступности и реакции?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Фиксируем SLA в договоре: время реакции на инциденты, целевую доступность ключевых сервисов и регламентные работы. Мониторинг, алертинг, дежурства и тесты восстановления бэкапов позволяют заранее видеть проблемы."}
+      },
+      {
+        "@type": "Question",
+        "name": "Сколько времени занимает внедрение мониторинга и бэкапов?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Базовый мониторинг ключевых сервисов и контроль бэкапов обычно поднимаем за 3–5 рабочих дней."}
+      },
+      {
+        "@type": "Question",
+        "name": "Что входит в сопровождение 1С-инфраструктуры?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Мы ведём серверы 1С и MSSQL: обновления платформы и конфигураций, настройка прав и обменов, контроль производительности и резервного копирования."}
+      },
+      {
+        "@type": "Question",
+        "name": "Как вы работаете с инцидентами ночью и в выходные?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Для критичных систем организуем дежурства и приоритетную реакцию 24/7 в рамках тарифа. Инциденты попадают в систему мониторинга и тикет-систему, фиксируем время реакции и закрытия."}
+      }
+    ]
+  }
+  </script>
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GK72SBNLF6"></script>
