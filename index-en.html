@@ -458,37 +458,6 @@ document.getElementById('auditForm').addEventListener('submit',async function(e)
     btn.disabled=false;
   }
 });
-
-// Scroll to "Contact" section for all cases (#contact in link/URL/hashchange)
-window.addEventListener('DOMContentLoaded',function(){
-  const contactSection=document.getElementById('contact');
-  if(!contactSection)return;
-
-  function scrollToContact(){
-    const header=document.querySelector('.navbar');
-    const headerOffset=header?header.offsetHeight:0;
-    const target=Math.max(contactSection.offsetTop-headerOffset-16,0);
-    window.scrollTo({top:target,behavior:'smooth'});
-  }
-
-  document.querySelectorAll('a[href="#contact"]').forEach(function(link){
-    link.addEventListener('click',function(e){
-      e.preventDefault();
-      scrollToContact();
-      history.replaceState(null,'','#contact');
-    });
-  });
-
-  if(location.hash==='#contact'){
-    scrollToContact();
-  }
-
-  window.addEventListener('hashchange',function(){
-    if(location.hash==='#contact'){
-      scrollToContact();
-    }
-  });
-});
 </script>
 </body>
 </html>
