@@ -31,7 +31,7 @@
       ym(108408675, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
   </script>
   <noscript><div><img src="https://mc.yandex.ru/watch/108408675" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-  <!-- /Yandex.Metrika counter -->
+  <!-- /Yandex.Метрика counter -->
 
   <style>
     .modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.75);z-index:1000;align-items:center;justify-content:center;}
@@ -92,7 +92,7 @@
       color:#9ca3af;
       border:1px dashed rgba(55,65,81,0.9);
     }
-    .modal-contacts strong{color:#e5e7eb;font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;}
+    .modal-contacts strong{color:#e5e7eb;font-size:.78rem;text-transform:uppercase;letter-spacing:.08ем;}
     .modal-contacts a{color:#38bdf8;text-decoration:none;}
     .modal-contacts a:hover{text-decoration:underline;}
     .btn-submit{
@@ -106,16 +106,16 @@
       font-weight:600;
       cursor:pointer;
       transition:transform .1s,box-shadow .15s,filter .15s;
-      box-shadow:0 14px 35px rgba(37,99,235,0.45);
+      box-shadow:0 14px 35pxrgba(37,99,235,0.45);
     }
     .btn-submit:hover{filter:brightness(1.05);transform:translateY(-1px);}
-    .btn-submit:active{transform:translateY(0);box-shadow:0 10px 25px rgba(37,99,235,0.35);}
+    .btn-submit:active{transform:translateY(0);box-shadow:0 10px 25pxrgba(37,99,235,0.35);}
     .btn-submit:disabled{background:#4b5563;box-shadow:none;cursor:not-allowed;}
     .form-status{margin-top:10px;text-align:center;font-size:.85rem;min-height:1.1em;}
     .form-status.success{color:#4ade80;}
     .form-status.error{color:#f97373;}
     @media(max-width:520px){
-      .modal{padding:24px 20px 22px;margin:16px;}
+      .modal{padding:24px20px22px;margin:16px;}
     }
   </style>
 </head>
@@ -299,7 +299,7 @@
         <button class="btn-card" onclick="openModal()">Обсудить</button>
       </div>
       <div class="pricing-card pricing-featured">
-        <div class="pricing-badge">Популярный</div>
+        <div class="pricing-бadge">Популярный</div>
         <div class="pricing-header">
           <h3>Стандарт</h3>
           <div class="price">от 30 000 ₽<span>/мес</span></div>
@@ -386,35 +386,50 @@
     <p class="section-tag">FAQ</p>
     <div class="faq-wrapper">
       <h2 class="section-title">Частые вопросы про аудит и аутсорсинг IT</h2>
-      <p class="faq-intro">Коротко — только самое важное. Разверните интересующий вопрос, чтобы не тонуть в текстах.</p>
-      <div class="faq-list" role="list">
-        <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Когда компании нужен аудит IT-инфраструктуры?</span>
-            <span class="faq-icon">›</span>
-          </button>
-          <div class="faq-answer">
-            <p>Чаще всего — когда растёт количество инцидентов, появляются простои 1С или резервные копии никто не проверял годами. Мы фиксируем текущее состояние, показываем риски в деньгах и даём список приоритизированных задач. Подробнее об аудитах — в блоке <a href="#audits">«Начните с аудита»</a>.</p>
-          </div>
-        </div>
-        <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Чем аудит отличается от обычного администрирования?</span>
-            <span class="faq-icon">›</span>
-          </button>
-          <div class="faq-answer">
-            <p>При администрировании мы тушим пожары и держим системы в рабочем состоянии. Аудит — это взгляд сверху: архитектура, резервное копирование, безопасность, процессы. Результат — понятный отчёт и дорожная карта: что исправить в первую очередь и какие зоны разумно отдать на аутсорсинг IT по одному из <a href="#pricing">тарифов</a>.</p>
-          </div>
-        </div>
-        <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Что происходит после аудита?</span>
-            <span class="faq-icon">›</span>
-          </button>
-          <div class="faq-answer">
-            <p>После аудита мы предлагаем несколько вариантов: разовый проект по закрытию критичных рисков или долгосрочное сопровождение с фиксированной ставкой и SLA. Начать проще всего с заявки в блоке <a href="#contact">«Связаться»</a> — обсудим ваш кейс и предложим формат.</p>
-          </div>
-        </div>
+      <p class="faq-intro">Ответили на ключевые вопросы: когда нужен аудит, что именно мы смотрим и какие форматы сопровождения предлагаем.</p>
+      <div class="faq-grid">
+        <article class="faq-card">
+          <h3>Когда компании имеет смысл начинать с аудита?</h3>
+          <p>
+            Когда растёт количество инцидентов, 1С и связанные сервисы периодически простаивают,
+            а за резервные копии формально никто не отвечает.
+          </p>
+          <p>
+            В этой точке бизнес опирается на инфраструктуру, которая работает по принципу «как повезёт».
+          </p>
+        </article>
+
+        <article class="faq-card">
+          <h3>Что входит в аудит IT-инфраструктуры?</h3>
+          <ul class="faq-bullets">
+            <li>резервное копирование и проверки восстановления;</li>
+            <li>серверы 1С, базы MSSQL, виртуализация и запас по ресурсам;</li>
+            <li>удалённый доступ, VPN, учётные записи, базовая безопасность;</li>
+            <li>организационная часть: кто за что отвечает и как фиксируются инциденты.</li>
+          </ul>
+        </article>
+
+        <article class="faq-card">
+          <h3>Какой результат вы получаете по итогам?</h3>
+          <p>
+            Структурированный отчёт на понятном языке и перечень задач по приоритетам:
+            что критично, что можно отложить, где быстрый эффект.
+          </p>
+          <p>
+            Отдельно формируем план работ на 3–6 месяцев по приведению инфраструктуры к нормативному состоянию.
+          </p>
+        </article>
+
+        <article class="faq-card">
+          <h3>Как аудит связан с аутсорсингом IT?</h3>
+          <p>
+            Аудит — входная точка. Сначала фиксируем текущую ситуацию и закрываем ключевые риски,
+            затем выбираем формат сопровождения по одному из <a href="#pricing">тарифов</a>.
+          </p>
+          <p>
+            В результате вы понимаете, какие зоны остаются внутри компании, а какие разумно передать на внешний контур.
+          </p>
+        </article>
       </div>
     </div>
   </div>
@@ -491,7 +506,7 @@ document.getElementById('auditForm').addEventListener('submit',async function(e)
     company:document.getElementById('company').value,
     contact:document.getElementById('contactField').value,
     message:document.getElementById('message').value,
-    lang:'ru'
+    lang:'ру'
   };
   try{
     const res=await fetch('/api/send',{
