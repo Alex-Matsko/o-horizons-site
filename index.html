@@ -178,8 +178,8 @@
     <div class="hero-text">
       <p class="hero-tag">IT-аутсорсинг для бизнеса</p>
       <h1>Ваша инфраструктура<br/>под надёжным контролем</h1>
-      <p class="hero-sub">Мы берём на себя эксплуатацию вашей IT-инфраструктуры: серверы, 1С, резервное копирование, доступы и мониторинг. У вас один ответственный за стабильность и понятные SLA.</p>
-      <p class="hero-sub">Начинаем с короткого аудита: проверяем бэкапы, серверы, 1С и удалённый доступ, показываем риски в деньгах и предлагаем план — что исправить сейчас и что разумно отдать нам на аутсорсинг.</p>
+      <p class="hero-sub">Полное сопровождение IT-инфраструктуры вашего бизнеса. Мы берём на себя всё — от серверов до безопасности. Без простоев. Без хаоса.</p>
+      <p class="hero-sub">На входе проводим аудит: проверяем бэкапы, серверы, 1С и удалённый доступ, показываем риски в деньгах и даём чёткий план, что нужно сделать, чтобы инфраструктура не подводила бизнес.</p>
       <div class="hero-actions">
         <button class="btn-primary" onclick="openModal()">Получить аудит бесплатно</button>
         <a href="#pricing" class="btn-outline">Смотреть тарифы</a>
@@ -458,7 +458,8 @@ document.getElementById('auditForm').addEventListener('submit',async function(e)
   e.preventDefault();
   const btn=document.getElementById('submitBtn'),status=document.getElementById('formStatus');
   btn.disabled=true;btn.textContent='Отправляем...';
-  status.textContent='';status.className='form-status';
+  status.textContent='';
+  status.className='form-status';
   const data={
     name:document.getElementById('name').value,
     company:document.getElementById('company').value,
