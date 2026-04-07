@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <meta name="description" content="Аудит IT и сопровождение 1С, серверов и безопасности. Полный контроль инфраструктуры без простоев и рисков. Первичный аудит бесплатно." />
+  <meta name="description" content="Аудит IT и сопровождение 1С, серверов и безопасности. Полный контроль инфраструктуры без простоев и рисков. Комплексный аудит IT-инфраструктуры от 10 000 ₽." />
   <title>IT-аутсорсинг и аудит инфраструктуры — Открытые Горизонты</title>
 
   <link rel="canonical" href="https://o-horizons.com/" />
@@ -24,7 +24,7 @@
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="IT-аутсорсинг и аудит IT для бизнеса — Open Horizons" />
-  <meta name="twitter:description" content="Аудит IT, сопровождение 1С, серверов и безопасности. Первичный аудит бесплатно." />
+  <meta name="twitter:description" content="Аудит IT, сопровождение 1С, серверов и безопасности. Комплексный аудит IT-инфраструктуры от 10 000 ₽." />
   <meta name="twitter:image" content="https://o-horizons.com/og-image.jpg" />
 
   <link rel="icon" type="image/png" href="/favicon.png" />
@@ -53,6 +53,7 @@
       "@type": "OfferCatalog",
       "name": "IT-услуги",
       "itemListElement": [
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Комплексный аудит IT-инфраструктуры", "description": "Полная проверка бэкапов, серверов, 1С и удалённого доступа. От 10 000 ₽, стоимость зачтётся в первый месяц сопровождения"}},
         {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Аудит резервного копирования", "description": "Проверим, реально ли восстановимы ваши данные"}},
         {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Аудит 1С-инфраструктуры", "description": "Полный разбор серверов 1С, MSSQL и схемы размещения баз"}},
         {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Аудит виртуализации и серверов", "description": "Состояние гипервизоров, ВМ, ресурсов, отказоустойчивости и конфигурации"}},
@@ -121,8 +122,8 @@
 <div class="modal-overlay" id="auditModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()" aria-label="Закрыть">&#x2715;</button>
-    <h2 id="modalTitle">Получить бесплатный аудит</h2>
-    <p class="modal-sub">Оставьте контакт — мы свяжемся в течение одного рабочего дня.</p>
+    <h2 id="modalTitle">Заказать аудит IT-инфраструктуры</h2>
+    <p class="modal-sub">Оставьте контакт — свяжемся в течение одного рабочего дня и обсудим детали.</p>
     <form id="auditForm">
       <div class="form-group">
         <label for="name">Ваше имя *</label>
@@ -187,8 +188,8 @@
       <p class="hero-sub">Полное сопровождение IT-инфраструктуры вашего бизнеса. Мы берём на себя всё — от серверов до безопасности. Без простоев. Без хаоса.</p>
       <p class="hero-sub">На входе проводим аудит: проверяем бэкапы, серверы, 1С и удалённый доступ, показываем риски в деньгах и даём чёткий план, что нужно сделать, чтобы инфраструктура не подводила бизнес.</p>
       <div class="hero-actions">
-        <button class="btn-primary" onclick="openModal()">Получить аудит бесплатно</button>
-        <a href="#pricing" class="btn-outline">Смотреть тарифы</a>
+        <button class="btn-primary" onclick="openModal()">Заказать аудит</button>
+        <a href="#audits" class="btn-outline">Об аудите</a>
       </div>
       <div class="hero-stats">
         <div class="stat"><span>98%</span><p>доступность сервисов</p></div>
@@ -253,9 +254,21 @@
 <section class="section section-dark" id="audits">
   <div class="container">
     <p class="section-tag">Входной продукт</p>
-    <h2 class="section-title">Комплексный аудит IT-инфраструктуры перед аутсорсингом</h2>
+    <h2 class="section-title">Комплексный аудит IT-инфраструктуры</h2>
     <p class="section-sub">Перед тем как принять решение — убедитесь, что вы знаете реальное состояние своей IT-инфраструктуры.</p>
-    <p class="section-sub">Аудит IT-инфраструктуры помогает увидеть риски: где резервное копирование не работает, где серверов упираются в ресурсы, где небезопасен удалённый доступ и что стоит передать на аутсорсинг IT, чтобы снизить нагрузку на команду. Подробнее об аудитах — в этом разделе, а о форматах сопровождения — в блоке «Тарифы».</p>
+    <p class="section-sub">Аудит IT-инфраструктуры помогает увидеть риски: где резервное копирование не работает, где серверы упираются в ресурсы, где небезопасен удалённый доступ и что стоит передать на аутсорсинг IT, чтобы снизить нагрузку на команду.</p>
+
+    <div class="audit-card audit-card-featured" style="margin-bottom: 2rem; padding: 2rem; border-radius: 12px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);">
+      <h4 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Комплексный аудит IT-инфраструктуры</h4>
+      <p style="margin-bottom: 1rem;">Полная проверка бэкапов, серверов, 1С и удалённого доступа — в одном отчёте. Итог: детальная картина текущего состояния и конкретный план действий.</p>
+      <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+        <span class="audit-price" style="font-size: 1.4rem;">от 10 000 ₽</span>
+        <span style="opacity: 0.75; font-size: 0.9rem;">Стоимость зачтётся в первый месяц сопровождения</span>
+        <button class="btn-primary" onclick="openModal()" style="margin-left: auto;">Заказать аудит</button>
+      </div>
+    </div>
+
+    <p class="section-sub" style="margin-bottom: 1rem;">Или выберите отдельное направление:</p>
     <div class="audit-grid">
       <div class="audit-card">
         <h4>Аудит резервного копирования</h4>
@@ -395,6 +408,10 @@
           <div class="faq-answer"><p>После аудита мы предложим варианты: разовый проект по устранению критических рисков или долгосрочное сопровождение с фиксированной стоимостью и SLA. Проще всего начать через раздел <a href="#contact">Контакты</a> — обсудим ваш случай и предложим формат.</p></div>
         </div>
         <div class="faq-item" role="listitem">
+          <button class="faq-question" type="button" aria-expanded="false"><span class="label">Сколько стоит комплексный аудит?</span><span class="faq-icon">›</span></button>
+          <div class="faq-answer"><p>Комплексный аудит IT-инфраструктуры стоит от 10 000 ₽ — итоговая сумма зависит от размера инфраструктуры. Если вы решите перейти на регулярное сопровождение, стоимость аудита зачтётся в первый месяц обслуживания.</p></div>
+        </div>
+        <div class="faq-item" role="listitem">
           <button class="faq-question" type="button" aria-expanded="false"><span class="label">Сколько длится аудит?</span><span class="faq-icon">›</span></button>
           <div class="faq-answer"><p>Как правило, 3–5 рабочих дней. Зависит от масштаба инфраструктуры: количества серверов, виртуальных машин и зон проверки. Для небольших компаний — чаще 2–3 дня.</p></div>
         </div>
@@ -420,7 +437,7 @@
   <div class="container contact-inner">
     <p class="section-tag">Контакты</p>
     <h2>Готовы поговорить о вашей инфраструктуре?</h2>
-    <p class="section-sub">Напишите нам — покажем, что можно улучшить, и предложим подходящее решение. Первый аудит бесплатно.</p>
+    <p class="section-sub">Начните с аудита — узнайте реальное состояние вашей IT-инфраструктуры. Стоимость от 10 000 ₽, включается в первый месяц при переходе на сопровождение.</p>
     <div class="contact-options">
       <a href="mailto:info@o-horizons.com" class="contact-card">
         <span>✉️</span>
@@ -431,7 +448,7 @@
         <div><strong>Telegram</strong><p>@ohorizons</p></div>
       </a>
     </div>
-    <button class="btn-primary btn-large" onclick="openModal()">Связаться с нами</button>
+    <button class="btn-primary btn-large" onclick="openModal()">Заказать аудит</button>
   </div>
 </section>
 
