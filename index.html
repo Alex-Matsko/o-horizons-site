@@ -31,10 +31,10 @@
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="theme-color" content="#3b82f6" />
 
-  <link rel="preload" href="style.css?v=5" as="style" />
+  <link rel="preload" href="style.css?v=6" as="style" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="style.css?v=5" />
+  <link rel="stylesheet" href="style.css?v=6" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <script type="application/ld+json">
@@ -103,6 +103,20 @@
 </head>
 <body>
 
+<!-- COOKIE BANNER -->
+<div class="cookie-banner" id="cookieBanner" role="region" aria-label="Уведомление о файлах cookie">
+  <div class="cookie-inner">
+    <p class="cookie-text">
+      Мы используем файлы cookie и сервисы аналитики (Google Analytics, Яндекс.Метрика) для улучшения работы сайта и анализа посещаемости.
+      Продолжая использовать сайт, вы соглашаетесь с нашей <a href="/privacy-policy.html" target="_blank">политикой конфиденциальности</a>.
+    </p>
+    <div class="cookie-actions">
+      <button class="cookie-btn cookie-btn-accept" id="cookieAccept">Принять</button>
+      <button class="cookie-btn cookie-btn-decline" id="cookieDecline">Отклонить</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="auditModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
@@ -129,6 +143,12 @@
       <div class="form-group">
         <label for="message">Расскажите о задаче</label>
         <textarea id="message" name="message" placeholder="Что болит? Сколько серверов, пользователей?"></textarea>
+      </div>
+      <div class="form-consent">
+        <label class="consent-label">
+          <input type="checkbox" id="consentCheck" name="consent" required />
+          <span>Я согласен(на) на обработку персональных данных и ознакомлен(на) с <a href="/privacy-policy.html" target="_blank">политикой конфиденциальности</a> *</span>
+        </label>
       </div>
       <div class="modal-contacts">
         <strong>Наши контакты:</strong>
@@ -429,15 +449,30 @@
 </footer>
 
 <script>
+/* ---------- Cookie Banner ---------- */
+(function(){
+  var banner = document.getElementById('cookieBanner');
+  if(!banner) return;
+  var consent = localStorage.getItem('cookieConsent');
+  if(consent) { banner.style.display='none'; return; }
+  banner.style.display='flex';
+  document.getElementById('cookieAccept').addEventListener('click', function(){
+    localStorage.setItem('cookieConsent','accepted');
+    banner.style.display='none';
+  });
+  document.getElementById('cookieDecline').addEventListener('click', function(){
+    localStorage.setItem('cookieConsent','declined');
+    banner.style.display='none';
+  });
+})();
+
 /* ---------- Phone mask (+7 RU) ---------- */
 (function(){
   var inp = document.getElementById('phone');
   if(!inp) return;
-
   function formatRu(raw){
     var digits = raw.replace(/\D/g,'');
     if(!digits) return '';
-    // normalise: strip leading 7/8
     if(digits[0]==='7'||digits[0]==='8') digits=digits.slice(1);
     digits=digits.slice(0,10);
     var r='+7 ';
@@ -448,24 +483,19 @@
     if(digits.length>=9) r+='-'+digits.slice(8,10);
     return r;
   }
-
-  inp.addEventListener('input', function(e){
+  inp.addEventListener('input', function(){
     var pos = inp.selectionStart;
     var prev = inp.value;
     inp.value = formatRu(inp.value);
-    // keep caret near end of typed digits
     var diff = inp.value.length - prev.length;
     inp.setSelectionRange(pos+diff, pos+diff);
   });
-
   inp.addEventListener('keydown', function(e){
-    if(e.key==='Backspace'&&inp.value==='+'){ e.preventDefault(); inp.value=''; }
+    if(e.key==='Backspace'&&inp.value==='+') { e.preventDefault(); inp.value=''; }
   });
-
   inp.addEventListener('focus', function(){
     if(!inp.value) inp.value='+7 ';
   });
-
   inp.addEventListener('blur', function(){
     if(inp.value==='+7 '||inp.value==='+7') inp.value='';
   });
@@ -494,6 +524,12 @@ document.addEventListener('keydown',function(e){
 document.getElementById('auditForm').addEventListener('submit',async function(e){
   e.preventDefault();
   var btn=document.getElementById('submitBtn'),status=document.getElementById('formStatus');
+  var consent=document.getElementById('consentCheck');
+  if(!consent.checked){
+    status.textContent='✗ Необходимо согласие на обработку персональных данных.';
+    status.className='form-status error';
+    return;
+  }
   btn.disabled=true; btn.textContent='Отправляем...';
   status.textContent=''; status.className='form-status';
   var data={
