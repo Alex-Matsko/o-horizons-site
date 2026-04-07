@@ -77,6 +77,121 @@ a { text-decoration: none; color: inherit; }
 }
 .lang-switch:hover { color: #e2e8f0; border-color: #64748b; }
 
+/* === MODAL === */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.modal-overlay.active {
+  display: flex;
+}
+.modal {
+  background: #151820;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 520px;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 8px;
+}
+.modal-sub {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 28px;
+}
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 1.2rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+  transition: color 0.2s;
+}
+.modal-close:hover { color: #e2e8f0; }
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.form-group label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #94a3b8;
+}
+.form-group input,
+.form-group textarea {
+  background: #0d0f14;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+  outline: none;
+  font-family: inherit;
+}
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #3b82f6;
+}
+.form-group textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+.modal-contacts {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  align-items: center;
+}
+.modal-contacts a { color: #3b82f6; }
+.modal-contacts a:hover { text-decoration: underline; }
+.btn-submit {
+  width: 100%;
+  background: #3b82f6;
+  color: #fff;
+  padding: 13px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-submit:hover { background: #2563eb; }
+.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+.form-status {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+.form-status.success { color: #22c55e; }
+.form-status.error { color: #f87171; }
+
 /* === HERO === */
 .hero {
   padding: 80px 0 72px;
@@ -432,6 +547,7 @@ a { text-decoration: none; color: inherit; }
 
 /* === FAQ ACCORDION === */
 .faq-wrapper { max-width: 100%; }
+.faq-intro { font-size: 0.9rem; color: #64748b; margin-bottom: 28px; }
 .faq-list {
   border-radius: 16px;
   border: 1px solid rgba(148,163,184,0.15);
@@ -477,8 +593,6 @@ a { text-decoration: none; color: inherit; }
   color: #3b82f6;
   border-color: rgba(59,130,246,0.5);
 }
-
-/* Анимация открытия через max-height */
 .faq-answer {
   overflow: hidden;
   max-height: 0;
@@ -568,4 +682,5 @@ a { text-decoration: none; color: inherit; }
   .hero-stats { gap: 20px; flex-wrap: wrap; }
   .about-visual { grid-template-columns: 1fr 1fr; }
   .footer-inner { flex-direction: column; text-align: center; }
+  .modal { padding: 28px 20px; }
 }
