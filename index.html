@@ -31,14 +31,12 @@
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="theme-color" content="#3b82f6" />
 
-  <!-- Preload critical assets -->
-  <link rel="preload" href="style.css?v=4" as="style" />
+  <link rel="preload" href="style.css?v=5" as="style" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="style.css?v=4" />
+  <link rel="stylesheet" href="style.css?v=5" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-  <!-- Schema.org: Organization + LocalBusiness -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -50,10 +48,7 @@
     "sameAs": ["https://t.me/ohorizons"],
     "description": "IT-аутсорсинг и аудит IT-инфраструктуры для бизнеса: серверы 1С, резервное копирование, виртуализация, безопасность.",
     "serviceType": "IT outsourcing",
-    "areaServed": {
-      "@type": "Country",
-      "name": "Россия"
-    },
+    "areaServed": {"@type": "Country", "name": "Россия"},
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
       "name": "IT-услуги",
@@ -70,52 +65,22 @@
   }
   </script>
 
-  <!-- Schema.org: FAQPage -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "Когда компании нужен аудит IT-инфраструктуры?",
-        "acceptedAnswer": {"@type": "Answer", "text": "Чаще всего — когда начинают накапливаться инциденты, тормозит 1С или бэкапы не проверялись годами. Мы фиксируем текущее состояние, оцениваем риски и расставляем приоритеты задач."}
-      },
-      {
-        "@type": "Question",
-        "name": "Чем аудит отличается от обычного администрирования?",
-        "acceptedAnswer": {"@type": "Answer", "text": "Администрирование — это поддержание работы и тушение пожаров. Аудит — взгляд сверху на архитектуру, бэкапы, безопасность и процессы. Результат — понятный отчёт и дорожная карта."}
-      },
-      {
-        "@type": "Question",
-        "name": "Что будет после аудита?",
-        "acceptedAnswer": {"@type": "Answer", "text": "После аудита мы предложим варианты: разовый проект по устранению критических рисков или долгосрочное сопровождение с фиксированной стоимостью и SLA."}
-      },
-      {
-        "@type": "Question",
-        "name": "Сколько длится аудит?",
-        "acceptedAnswer": {"@type": "Answer", "text": "Как правило, 3–5 рабочих дней. Зависит от масштаба инфраструктуры: количества серверов, виртуальных машин и зон проверки."}
-      },
-      {
-        "@type": "Question",
-        "name": "Нужен ли физический доступ к серверам?",
-        "acceptedAnswer": {"@type": "Answer", "text": "Нет, в большинстве случаев достаточно удалённого доступа. Мы работаем через VPN или защищённый туннель — без выезда на площадку."}
-      },
-      {
-        "@type": "Question",
-        "name": "Что входит в IT-аутсорсинг?",
-        "acceptedAnswer": {"@type": "Answer", "text": "Зависит от тарифа: от мониторинга и контроля бэкапов — до полного сопровождения инфраструктуры, 1С, безопасности и роли IT-директора на аутсорсе."}
-      },
-      {
-        "@type": "Question",
-        "name": "Можно ли передать только часть задач?",
-        "acceptedAnswer": {"@type": "Answer", "text": "Да. Мы гибко настраиваем объём работ: можно взять только мониторинг и бэкапы, только 1С-инфраструктуру или определённые зоны. Финальный объём фиксируется в договоре."}
-      }
+      {"@type": "Question", "name": "Когда компании нужен аудит IT-инфраструктуры?", "acceptedAnswer": {"@type": "Answer", "text": "Чаще всего — когда начинают накапливаться инциденты, тормозит 1С или бэкапы не проверялись годами. Мы фиксируем текущее состояние, оцениваем риски и расставляем приоритеты задач."}},
+      {"@type": "Question", "name": "Чем аудит отличается от обычного администрирования?", "acceptedAnswer": {"@type": "Answer", "text": "Администрирование — это поддержание работы и тушение пожаров. Аудит — взгляд сверху на архитектуру, бэкапы, безопасность и процессы. Результат — понятный отчёт и дорожная карта."}},
+      {"@type": "Question", "name": "Что будет после аудита?", "acceptedAnswer": {"@type": "Answer", "text": "После аудита мы предложим варианты: разовый проект по устранению критических рисков или долгосрочное сопровождение с фиксированной стоимостью и SLA."}},
+      {"@type": "Question", "name": "Сколько длится аудит?", "acceptedAnswer": {"@type": "Answer", "text": "Как правило, 3–5 рабочих дней. Зависит от масштаба инфраструктуры: количества серверов, виртуальных машин и зон проверки."}},
+      {"@type": "Question", "name": "Нужен ли физический доступ к серверам?", "acceptedAnswer": {"@type": "Answer", "text": "Нет, в большинстве случаев достаточно удалённого доступа. Мы работаем через VPN или защищённый туннель — без выезда на площадку."}},
+      {"@type": "Question", "name": "Что входит в IT-аутсорсинг?", "acceptedAnswer": {"@type": "Answer", "text": "Зависит от тарифа: от мониторинга и контроля бэкапов — до полного сопровождения инфраструктуры, 1С, безопасности и роли IT-директора на аутсорсе."}},
+      {"@type": "Question", "name": "Можно ли передать только часть задач?", "acceptedAnswer": {"@type": "Answer", "text": "Да. Мы гибко настраиваем объём работ: можно взять только мониторинг и бэкапы, только 1С-инфраструктуру или определённые зоны. Финальный объём фиксируется в договоре."}}
     ]
   }
   </script>
 
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GK72SBNLF6"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -124,7 +89,6 @@
     gtag('config', 'G-GK72SBNLF6');
   </script>
 
-  <!-- Yandex.Metrika counter -->
   <script type="text/javascript">
       (function(m,e,t,r,i,k,a){
           m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
@@ -135,7 +99,6 @@
       ym(108408675, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
   </script>
   <noscript><div><img src="https://mc.yandex.ru/watch/108408675" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-  <!-- /Yandex.Metrika counter -->
 
 </head>
 <body>
@@ -154,6 +117,10 @@
       <div class="form-group">
         <label for="company">Компания</label>
         <input type="text" id="company" name="company" placeholder="ООО Пример" />
+      </div>
+      <div class="form-group">
+        <label for="phone">Телефон</label>
+        <input type="tel" id="phone" name="phone" placeholder="+7 (___) ___-__-__" inputmode="tel" autocomplete="tel" />
       </div>
       <div class="form-group">
         <label for="contactField">Email или Telegram *</label>
@@ -204,37 +171,18 @@
         <a href="#pricing" class="btn-outline">Смотреть тарифы</a>
       </div>
       <div class="hero-stats">
-        <div class="stat">
-          <span>98%</span>
-          <p>доступность сервисов</p>
-        </div>
-        <div class="stat">
-          <span>50+</span>
-          <p>реализованных проектов</p>
-        </div>
-        <div class="stat">
-          <span>&lt; 1ч</span>
-          <p>реакция на инцидент</p>
-        </div>
+        <div class="stat"><span>98%</span><p>доступность сервисов</p></div>
+        <div class="stat"><span>50+</span><p>реализованных проектов</p></div>
+        <div class="stat"><span>&lt; 1ч</span><p>реакция на инцидент</p></div>
       </div>
     </div>
     <div class="hero-visual">
       <div class="server-card">
-        <div class="server-line">
-          <span class="dot green"></span> 1C Server — Online
-        </div>
-        <div class="server-line">
-          <span class="dot green"></span> Backup — OK (сегодня 03:00)
-        </div>
-        <div class="server-line">
-          <span class="dot green"></span> MSSQL — Мониторинг
-        </div>
-        <div class="server-line">
-          <span class="dot green"></span> VPN — Активен
-        </div>
-        <div class="server-line">
-          <span class="dot green"></span> VMware ESXi — Running
-        </div>
+        <div class="server-line"><span class="dot green"></span> 1C Server — Online</div>
+        <div class="server-line"><span class="dot green"></span> Backup — OK (сегодня 03:00)</div>
+        <div class="server-line"><span class="dot green"></span> MSSQL — Мониторинг</div>
+        <div class="server-line"><span class="dot green"></span> VPN — Активен</div>
+        <div class="server-line"><span class="dot green"></span> VMware ESXi — Running</div>
         <div class="server-footer">Зеленее не бывает 🟢</div>
       </div>
     </div>
@@ -392,37 +340,16 @@
       <p>Специализируемся на бизнес-критичной инфраструктуре: серверы 1С, базы данных MSSQL, схемы резервного копирования Veeam, виртуализация на VMware ESXi / Proxmox / Hyper-V и сетевые периметры на MikroTik и NGFW.</p>
       <p>Наш принцип: IT-инфраструктура должна работать как часы — и вы никогда не должны думать о ней.</p>
       <div class="about-stack">
-        <span>VMware ESXi</span>
-        <span>Proxmox</span>
-        <span>Hyper-V</span>
-        <span>Veeam B&amp;R</span>
-        <span>MSSQL</span>
-        <span>1C</span>
-        <span>MikroTik</span>
-        <span>Zabbix</span>
-        <span>Active Directory</span>
-        <span>Linux</span>
-        <span>Windows Server</span>
-        <span>NGFW</span>
+        <span>VMware ESXi</span><span>Proxmox</span><span>Hyper-V</span><span>Veeam B&amp;R</span>
+        <span>MSSQL</span><span>1C</span><span>MikroTik</span><span>Zabbix</span>
+        <span>Active Directory</span><span>Linux</span><span>Windows Server</span><span>NGFW</span>
       </div>
     </div>
     <div class="about-visual">
-      <div class="kpi-card">
-        <span>98%</span>
-        <p>Средний SLA uptime</p>
-      </div>
-      <div class="kpi-card">
-        <span>&lt; 1ч</span>
-        <p>Реакция на критический инцидент</p>
-      </div>
-      <div class="kpi-card">
-        <span>3-2-1</span>
-        <p>Стандарт схемы резервирования</p>
-      </div>
-      <div class="kpi-card">
-        <span>0</span>
-        <p>Невосстановимых потерь данных</p>
-      </div>
+      <div class="kpi-card"><span>98%</span><p>Средний SLA uptime</p></div>
+      <div class="kpi-card"><span>&lt; 1ч</span><p>Реакция на критический инцидент</p></div>
+      <div class="kpi-card"><span>3-2-1</span><p>Стандарт схемы резервирования</p></div>
+      <div class="kpi-card"><span>0</span><p>Невосстановимых потерь данных</p></div>
     </div>
   </div>
 </section>
@@ -436,67 +363,32 @@
       <p class="faq-intro">Коротко и по делу. Разверните вопросы, которые вас интересуют, вместо того чтобы читать длинные стены текста.</p>
       <div class="faq-list" role="list">
         <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Когда компании нужен аудит IT-инфраструктуры?</span>
-            <span class="faq-icon">›</span>
-          </button>
-          <div class="faq-answer">
-            <p>Чаще всего — когда начинают накапливаться инциденты, тормозит 1С или бэкапы не проверялись годами. Мы фиксируем текущее состояние, оцениваем риски и расставляем приоритеты задач. Чтобы глубже разобраться, начните с раздела <a href="#audits">Аудиты</a>.</p>
-          </div>
+          <button class="faq-question" type="button" aria-expanded="false"><span class="label">Когда компании нужен аудит IT-инфраструктуры?</span><span class="faq-icon">›</span></button>
+          <div class="faq-answer"><p>Чаще всего — когда начинают накапливаться инциденты, тормозит 1С или бэкапы не проверялись годами. Мы фиксируем текущее состояние, оцениваем риски и расставляем приоритеты задач. Чтобы глубже разобраться, начните с раздела <a href="#audits">Аудиты</a>.</p></div>
         </div>
         <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Чем аудит отличается от обычного администрирования?</span>
-            <span class="faq-icon">›</span>
-          </button>
-          <div class="faq-answer">
-            <p>Администрирование — это поддержание работы и тушение пожаров. Аудит — взгляд сверху на архитектуру, бэкапы, безопасность и процессы. Результат — понятный отчёт и дорожная карта: что исправить в первую очередь и какие зоны есть смысл перевести на IT-аутсорсинг по нашим <a href="#pricing">тарифам</a>.</p>
-          </div>
+          <button class="faq-question" type="button" aria-expanded="false"><span class="label">Чем аудит отличается от обычного администрирования?</span><span class="faq-icon">›</span></button>
+          <div class="faq-answer"><p>Администрирование — это поддержание работы и тушение пожаров. Аудит — взгляд сверху на архитектуру, бэкапы, безопасность и процессы. Результат — понятный отчёт и дорожная карта: что исправить в первую очередь и какие зоны есть смысл перевести на IT-аутсорсинг по нашим <a href="#pricing">тарифам</a>.</p></div>
         </div>
         <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Что будет после аудита?</span>
-            <span class="faq-icon">›</span>
-          </button>
-          <div class="faq-answer">
-            <p>После аудита мы предложим варианты: разовый проект по устранению критических рисков или долгосрочное сопровождение с фиксированной стоимостью и SLA. Проще всего начать через раздел <a href="#contact">Контакты</a> — обсудим ваш случай и предложим формат.</p>
-          </div>
+          <button class="faq-question" type="button" aria-expanded="false"><span class="label">Что будет после аудита?</span><span class="faq-icon">›</span></button>
+          <div class="faq-answer"><p>После аудита мы предложим варианты: разовый проект по устранению критических рисков или долгосрочное сопровождение с фиксированной стоимостью и SLA. Проще всего начать через раздел <a href="#contact">Контакты</a> — обсудим ваш случай и предложим формат.</p></div>
         </div>
         <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Сколько длится аудит?</span>
-            <span class="faq-icon">›</span>
-          </button>
-          <div class="faq-answer">
-            <p>Как правило, 3–5 рабочих дней. Зависит от масштаба инфраструктуры: количества серверов, виртуальных машин и зон проверки. Для небольших компаний — чаще 2–3 дня.</p>
-          </div>
+          <button class="faq-question" type="button" aria-expanded="false"><span class="label">Сколько длится аудит?</span><span class="faq-icon">›</span></button>
+          <div class="faq-answer"><p>Как правило, 3–5 рабочих дней. Зависит от масштаба инфраструктуры: количества серверов, виртуальных машин и зон проверки. Для небольших компаний — чаще 2–3 дня.</p></div>
         </div>
         <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Нужен ли физический доступ к серверам?</span>
-            <span class="faq-icon">›</span>
-          </button>
-          <div class="faq-answer">
-            <p>Нет, в большинстве случаев достаточно удалённого доступа. Мы работаем через VPN или защищённый туннель — без выезда на площадку. Выезд возможен по запросу в отдельных случаях.</p>
-          </div>
+          <button class="faq-question" type="button" aria-expanded="false"><span class="label">Нужен ли физический доступ к серверам?</span><span class="faq-icon">›</span></button>
+          <div class="faq-answer"><p>Нет, в большинстве случаев достаточно удалённого доступа. Мы работаем через VPN или защищённый туннель — без выезда на площадку. Выезд возможен по запросу в отдельных случаях.</p></div>
         </div>
         <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Что входит в IT-аутсорсинг?</span>
-            <span class="faq-icon">›</span>
-          </button>
-          <div class="faq-answer">
-            <p>Зависит от тарифа: от мониторинга и контроля бэкапов — до полного сопровождения инфраструктуры, 1С, безопасности и роли IT-директора на аутсорсе. Подробнее — в разделе <a href="#pricing">Тарифы</a>.</p>
-          </div>
+          <button class="faq-question" type="button" aria-expanded="false"><span class="label">Что входит в IT-аутсорсинг?</span><span class="faq-icon">›</span></button>
+          <div class="faq-answer"><p>Зависит от тарифа: от мониторинга и контроля бэкапов — до полного сопровождения инфраструктуры, 1С, безопасности и роли IT-директора на аутсорсе. Подробнее — в разделе <a href="#pricing">Тарифы</a>.</p></div>
         </div>
         <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span class="label">Можно ли передать только часть задач?</span>
-            <span class="faq-icon">›</span>
-          </button>
-          <div class="faq-answer">
-            <p>Да. Мы гибко настраиваем объём работ: можно взять только мониторинг и бэкапы, только 1С-инфраструктуру или определённые зоны. Финальный объём фиксируется в договоре. Напишите нам — разберём ваш случай.</p>
-          </div>
+          <button class="faq-question" type="button" aria-expanded="false"><span class="label">Можно ли передать только часть задач?</span><span class="faq-icon">›</span></button>
+          <div class="faq-answer"><p>Да. Мы гибко настраиваем объём работ: можно взять только мониторинг и бэкапы, только 1С-инфраструктуру или определённые зоны. Финальный объём фиксируется в договоре. Напишите нам — разберём ваш случай.</p></div>
         </div>
       </div>
     </div>
@@ -512,17 +404,11 @@
     <div class="contact-options">
       <a href="mailto:info@o-horizons.com" class="contact-card">
         <span>✉️</span>
-        <div>
-          <strong>Email</strong>
-          <p>info@o-horizons.com</p>
-        </div>
+        <div><strong>Email</strong><p>info@o-horizons.com</p></div>
       </a>
       <a href="https://t.me/ohorizons" class="contact-card" target="_blank" rel="noopener">
         <span>✈️</span>
-        <div>
-          <strong>Telegram</strong>
-          <p>@ohorizons</p>
-        </div>
+        <div><strong>Telegram</strong><p>@ohorizons</p></div>
       </a>
     </div>
     <button class="btn-primary btn-large" onclick="openModal()">Связаться с нами</button>
@@ -531,10 +417,7 @@
 
 <footer class="footer">
   <div class="container footer-inner">
-    <div class="footer-logo">
-      <span class="logo-icon">&#x2B21;</span>
-      <span>Открытые Горизонты</span>
-    </div>
+    <div class="footer-logo"><span class="logo-icon">&#x2B21;</span><span>Открытые Горизонты</span></div>
     <p class="footer-copy">&#169; 2026 Открытые Горизонты. IT-аутсорсинг для бизнеса.</p>
     <div class="footer-share">
       <a href="https://t.me/share/url?url=https://o-horizons.com&text=IT-аутсорсинг%20и%20аудит%20инфраструктуры" target="_blank" rel="noopener">Поделиться в Telegram</a>
@@ -546,6 +429,49 @@
 </footer>
 
 <script>
+/* ---------- Phone mask (+7 RU) ---------- */
+(function(){
+  var inp = document.getElementById('phone');
+  if(!inp) return;
+
+  function formatRu(raw){
+    var digits = raw.replace(/\D/g,'');
+    if(!digits) return '';
+    // normalise: strip leading 7/8
+    if(digits[0]==='7'||digits[0]==='8') digits=digits.slice(1);
+    digits=digits.slice(0,10);
+    var r='+7 ';
+    if(digits.length>0) r+='('+digits.slice(0,3);
+    if(digits.length>=4) r+=') '+digits.slice(3,6);
+    else if(digits.length===3) r+=')';
+    if(digits.length>=7) r+='-'+digits.slice(6,8);
+    if(digits.length>=9) r+='-'+digits.slice(8,10);
+    return r;
+  }
+
+  inp.addEventListener('input', function(e){
+    var pos = inp.selectionStart;
+    var prev = inp.value;
+    inp.value = formatRu(inp.value);
+    // keep caret near end of typed digits
+    var diff = inp.value.length - prev.length;
+    inp.setSelectionRange(pos+diff, pos+diff);
+  });
+
+  inp.addEventListener('keydown', function(e){
+    if(e.key==='Backspace'&&inp.value==='+'){ e.preventDefault(); inp.value=''; }
+  });
+
+  inp.addEventListener('focus', function(){
+    if(!inp.value) inp.value='+7 ';
+  });
+
+  inp.addEventListener('blur', function(){
+    if(inp.value==='+7 '||inp.value==='+7') inp.value='';
+  });
+})();
+
+/* ---------- Modal ---------- */
 function openModal(){
   document.getElementById('auditModal').classList.add('active');
   document.body.style.overflow='hidden';
@@ -563,54 +489,48 @@ document.getElementById('auditModal').addEventListener('click',function(e){
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape')closeModal();
 });
+
+/* ---------- Form submit ---------- */
 document.getElementById('auditForm').addEventListener('submit',async function(e){
   e.preventDefault();
-  const btn=document.getElementById('submitBtn'),status=document.getElementById('formStatus');
-  btn.disabled=true;btn.textContent='Отправляем...';
-  status.textContent='';
-  status.className='form-status';
-  const data={
+  var btn=document.getElementById('submitBtn'),status=document.getElementById('formStatus');
+  btn.disabled=true; btn.textContent='Отправляем...';
+  status.textContent=''; status.className='form-status';
+  var data={
     name:document.getElementById('name').value,
     company:document.getElementById('company').value,
+    phone:document.getElementById('phone').value,
     contact:document.getElementById('contactField').value,
     message:document.getElementById('message').value,
     lang:'ru'
   };
   try{
-    const res=await fetch('/api/send',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(data)
-    });
+    var res=await fetch('/api/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
     if(res.ok){
       status.textContent='✓ Заявка отправлена! Свяжемся в течение одного рабочего дня.';
       status.classList.add('success');
       this.reset();
-      btn.textContent='Отправить заявку';
-      btn.disabled=false;
+      btn.textContent='Отправить заявку'; btn.disabled=false;
     }else throw new Error();
   }catch{
     status.textContent='✗ Не удалось отправить. Напишите нам: info@o-horizons.com';
     status.classList.add('error');
-    btn.textContent='Отправить заявку';
-    btn.disabled=false;
+    btn.textContent='Отправить заявку'; btn.disabled=false;
   }
 });
 
-const faqItems=document.querySelectorAll('.faq-item');
-faqItems.forEach(item=>{
-  const btn=item.querySelector('.faq-question');
-  btn.addEventListener('click',()=>{
-    const isOpen=item.classList.contains('open');
-    faqItems.forEach(i=>{
+/* ---------- FAQ ---------- */
+var faqItems=document.querySelectorAll('.faq-item');
+faqItems.forEach(function(item){
+  var btn=item.querySelector('.faq-question');
+  btn.addEventListener('click',function(){
+    var isOpen=item.classList.contains('open');
+    faqItems.forEach(function(i){
       i.classList.remove('open');
-      const b=i.querySelector('.faq-question');
-      if(b) b.setAttribute('aria-expanded','false');
+      var b=i.querySelector('.faq-question');
+      if(b)b.setAttribute('aria-expanded','false');
     });
-    if(!isOpen){
-      item.classList.add('open');
-      btn.setAttribute('aria-expanded','true');
-    }
+    if(!isOpen){ item.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
   });
 });
 </script>

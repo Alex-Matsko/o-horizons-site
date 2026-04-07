@@ -41,7 +41,7 @@ const transporter = nodemailer.createTransport({
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 app.post('/api/send', async (req, res) => {
-  const { name, company, contact, message, lang } = req.body;
+  const { name, company, phone, contact, message, lang } = req.body;
 
   // Basic validation
   if (!name || !contact) {
@@ -52,6 +52,9 @@ app.post('/api/send', async (req, res) => {
   }
   if (name.length > 100 || contact.length > 200 || (message && message.length > 2000)) {
     return res.status(400).json({ error: 'fields too long' });
+  }
+  if (phone && (typeof phone !== 'string' || phone.length > 30)) {
+    return res.status(400).json({ error: 'invalid phone' });
   }
 
   const isRu = lang !== 'en';
@@ -66,6 +69,7 @@ app.post('/api/send', async (req, res) => {
   <table style="width:100%;border-collapse:collapse;font-size:14px;">
     <tr><td style="padding:6px 0;color:#888;width:130px;">${isRu ? 'Имя' : 'Name'}</td><td style="padding:6px 0;"><strong>${name}</strong></td></tr>
     ${company ? `<tr><td style="padding:6px 0;color:#888;">${isRu ? 'Компания' : 'Company'}</td><td style="padding:6px 0;">${company}</td></tr>` : ''}
+    ${phone ? `<tr><td style="padding:6px 0;color:#888;">${isRu ? 'Телефон' : 'Phone'}</td><td style="padding:6px 0;"><strong>${phone}</strong></td></tr>` : ''}
     <tr><td style="padding:6px 0;color:#888;">${isRu ? 'Контакт' : 'Contact'}</td><td style="padding:6px 0;"><strong>${contact}</strong></td></tr>
     ${message ? `<tr><td style="padding:6px 0;color:#888;vertical-align:top;">${isRu ? 'Сообщение' : 'Message'}</td><td style="padding:6px 0;">${message.replace(/\n/g, '<br/>')}</td></tr>` : ''}
   </table>
