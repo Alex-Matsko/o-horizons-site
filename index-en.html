@@ -104,6 +104,20 @@
 </head>
 <body>
 
+<!-- COOKIE BANNER -->
+<div class="cookie-banner" id="cookieBanner" role="region" aria-label="Cookie notice">
+  <div class="cookie-inner">
+    <p class="cookie-text">
+      We use cookies and analytics services (Google Analytics, Yandex.Metrica) to improve site performance and analyse traffic.
+      By continuing to use this site you agree to our <a href="/privacy-policy.html" target="_blank">privacy policy</a>.
+    </p>
+    <div class="cookie-actions">
+      <button class="cookie-btn cookie-btn-accept" id="cookieAccept">Accept</button>
+      <button class="cookie-btn cookie-btn-decline" id="cookieDecline">Decline</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="auditModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
@@ -130,6 +144,12 @@
       <div class="form-group">
         <label for="message">Tell us about your challenge</label>
         <textarea id="message" name="message" placeholder="What's the pain point? How many servers, users?"></textarea>
+      </div>
+      <div class="form-consent">
+        <label class="consent-label">
+          <input type="checkbox" id="consentCheck" name="consent" required />
+          <span>I agree to the processing of my personal data and have read the <a href="/privacy-policy.html" target="_blank">privacy policy</a> *</span>
+        </label>
       </div>
       <div class="modal-contacts">
         <strong>Our contacts:</strong>
@@ -430,21 +450,34 @@
 </footer>
 
 <script>
-/* ---------- Phone mask (international, free-form with +) ---------- */
+/* ---------- Cookie Banner ---------- */
+(function(){
+  var banner = document.getElementById('cookieBanner');
+  if(!banner) return;
+  var consent = localStorage.getItem('cookieConsent');
+  if(consent) { banner.style.display='none'; return; }
+  banner.style.display='flex';
+  document.getElementById('cookieAccept').addEventListener('click', function(){
+    localStorage.setItem('cookieConsent','accepted');
+    banner.style.display='none';
+  });
+  document.getElementById('cookieDecline').addEventListener('click', function(){
+    localStorage.setItem('cookieConsent','declined');
+    banner.style.display='none';
+  });
+})();
+
+/* ---------- Phone mask (international) ---------- */
 (function(){
   var inp = document.getElementById('phone');
   if(!inp) return;
-
   function formatIntl(raw){
     var digits = raw.replace(/[^\d+]/g,'');
-    // ensure starts with +
     if(!digits) return '';
     if(digits[0]!=='+') digits='+'+digits;
-    // limit total length
     var plus = '+';
     var nums = digits.slice(1).replace(/\D/g,'').slice(0,14);
     if(!nums) return plus;
-    // generic format: +XXX (XXX) XXX-XX-XX
     var r = plus;
     r += nums.slice(0,3);
     if(nums.length>3) r += ' (' + nums.slice(3,6);
@@ -454,7 +487,6 @@
     if(nums.length>=12) r += '-' + nums.slice(11,13);
     return r;
   }
-
   inp.addEventListener('input', function(){
     var pos = inp.selectionStart;
     var prev = inp.value;
@@ -462,14 +494,8 @@
     var diff = inp.value.length - prev.length;
     inp.setSelectionRange(pos+diff, pos+diff);
   });
-
-  inp.addEventListener('focus', function(){
-    if(!inp.value) inp.value='+';
-  });
-
-  inp.addEventListener('blur', function(){
-    if(inp.value==='+') inp.value='';
-  });
+  inp.addEventListener('focus', function(){ if(!inp.value) inp.value='+'; });
+  inp.addEventListener('blur', function(){ if(inp.value==='+') inp.value=''; });
 })();
 
 /* ---------- Modal ---------- */
@@ -495,6 +521,12 @@ document.addEventListener('keydown',function(e){
 document.getElementById('auditForm').addEventListener('submit',async function(e){
   e.preventDefault();
   var btn=document.getElementById('submitBtn'),status=document.getElementById('formStatus');
+  var consent=document.getElementById('consentCheck');
+  if(!consent.checked){
+    status.textContent='✗ Please agree to the privacy policy.';
+    status.className='form-status error';
+    return;
+  }
   btn.disabled=true; btn.textContent='Sending...';
   status.textContent=''; status.className='form-status';
   var data={
