@@ -14,7 +14,7 @@
   <link rel="alternate" hreflang="x-default" href="https://o-horizons.com/" />
 
   <meta property="og:title" content="Open Horizons — IT Outsourcing &amp; Infrastructure Audit" />
-  <meta property="og:description" content="IT infrastructure audit and managed IT services for SMB. Backups, 1C, virtualisation, security — all under control. First audit free." />
+  <meta property="og:description" content="IT infrastructure audit and managed IT services for SMB. Backups, 1C, virtualisation, security — all under control. Audit from ₽10,000." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://o-horizons.com/en/" />
   <meta property="og:image" content="https://o-horizons.com/og-image.jpg" />
@@ -26,7 +26,7 @@
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Open Horizons — IT Outsourcing &amp; Infrastructure Audit" />
-  <meta name="twitter:description" content="IT infrastructure audit and managed IT services. First audit free." />
+  <meta name="twitter:description" content="IT infrastructure audit and managed IT services. Audit from ₽10,000." />
   <meta name="twitter:image" content="https://o-horizons.com/og-image.jpg" />
 
   <link rel="icon" type="image/png" href="/favicon.png" />
@@ -54,6 +54,7 @@
       "@type": "OfferCatalog",
       "name": "IT Services",
       "itemListElement": [
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Comprehensive IT Infrastructure Audit", "description": "Full review of backups, servers, 1C and remote access. From ₽10,000; cost credited to the first month of managed services"}},
         {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Backup & Recovery Audit", "description": "Verify whether your backups are actually recoverable"}},
         {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "1C Infrastructure Audit", "description": "Full analysis of 1C servers, MSSQL and database placement"}},
         {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Virtualisation & Server Audit", "description": "Hypervisor state, VMs, resources and fault tolerance review"}},
@@ -74,6 +75,7 @@
       {"@type": "Question", "name": "When does a company need an IT infrastructure audit?", "acceptedAnswer": {"@type": "Answer", "text": "Most often when incidents start piling up, 1C slows down or backups have not been tested for years. We document the current state, quantify the risks and prioritise tasks."}},
       {"@type": "Question", "name": "How is an audit different from routine administration?", "acceptedAnswer": {"@type": "Answer", "text": "Routine administration is about keeping systems running and putting out fires. An audit is a higher-level look at architecture, backups, security and processes. The outcome is a clear report and roadmap."}},
       {"@type": "Question", "name": "What happens after the audit?", "acceptedAnswer": {"@type": "Answer", "text": "After the audit we offer options: a one-off remediation project for critical risks or long-term managed services with a fixed fee and SLA."}},
+      {"@type": "Question", "name": "How much does the audit cost?", "acceptedAnswer": {"@type": "Answer", "text": "A comprehensive IT infrastructure audit starts from ₽10,000 — the final price depends on infrastructure size. If you move to managed services, the audit cost is credited to the first month."}},
       {"@type": "Question", "name": "How long does the audit take?", "acceptedAnswer": {"@type": "Answer", "text": "Typically 3 to 5 business days, depending on infrastructure size: number of servers, VMs and areas to review. Smaller companies usually take 2 to 3 days."}},
       {"@type": "Question", "name": "Do you need physical access to the servers?", "acceptedAnswer": {"@type": "Answer", "text": "No. In most cases remote access is sufficient. We work via VPN or a secure tunnel without an on-site visit. On-site visits are available on request."}},
       {"@type": "Question", "name": "What does IT outsourcing include?", "acceptedAnswer": {"@type": "Answer", "text": "It depends on the plan: from monitoring and backup control through to full management of infrastructure, 1C, security and a fractional IT director role."}},
@@ -122,8 +124,8 @@
 <div class="modal-overlay" id="auditModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()" aria-label="Close">&#x2715;</button>
-    <h2 id="modalTitle">Get a Free Audit</h2>
-    <p class="modal-sub">Leave your contact — we will get back to you within one business day.</p>
+    <h2 id="modalTitle">Order an IT Infrastructure Audit</h2>
+    <p class="modal-sub">Leave your contact — we will get back to you within one business day and discuss the details.</p>
     <form id="auditForm">
       <div class="form-group">
         <label for="name">Your name *</label>
@@ -188,8 +190,8 @@
       <p class="hero-sub">Complete management of your business IT infrastructure. We take care of everything — from servers to security. No downtime. No chaos.</p>
       <p class="hero-sub">We start with an audit: check backups, servers, 1C and remote access, show risks in monetary terms and provide a clear action plan to keep your infrastructure from letting the business down.</p>
       <div class="hero-actions">
-        <button class="btn-primary" onclick="openModal()">Get a free audit</button>
-        <a href="#pricing" class="btn-outline">View pricing</a>
+        <button class="btn-primary" onclick="openModal()">Order an audit</button>
+        <a href="#audits" class="btn-outline">About the audit</a>
       </div>
       <div class="hero-stats">
         <div class="stat"><span>98%</span><p>service uptime</p></div>
@@ -254,9 +256,21 @@
 <section class="section section-dark" id="audits">
   <div class="container">
     <p class="section-tag">Entry product</p>
-    <h2 class="section-title">Comprehensive IT Infrastructure Audit before Outsourcing</h2>
+    <h2 class="section-title">Comprehensive IT Infrastructure Audit</h2>
     <p class="section-sub">Before making a decision — make sure you know the real state of your IT infrastructure.</p>
-    <p class="section-sub">An IT infrastructure audit uncovers the risks: where backups are not working, where servers are hitting resource limits, where remote access is insecure and what is worth handing over to IT outsourcing to reduce the load on your team. More on audits in this section; managed service formats are in the Pricing block.</p>
+    <p class="section-sub">An IT infrastructure audit uncovers the risks: where backups are not working, where servers are hitting resource limits, where remote access is insecure and what is worth handing over to IT outsourcing to reduce the load on your team.</p>
+
+    <div class="audit-card audit-card-featured" style="margin-bottom: 2rem; padding: 2rem; border-radius: 12px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);">
+      <h4 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Comprehensive IT Infrastructure Audit</h4>
+      <p style="margin-bottom: 1rem;">Full review of backups, servers, 1C and remote access — in one report. Outcome: a detailed picture of the current state and a concrete action plan.</p>
+      <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+        <span class="audit-price" style="font-size: 1.4rem;">from ₽10,000</span>
+        <span style="opacity: 0.75; font-size: 0.9rem;">Audit cost is credited to the first month of managed services</span>
+        <button class="btn-primary" onclick="openModal()" style="margin-left: auto;">Order audit</button>
+      </div>
+    </div>
+
+    <p class="section-sub" style="margin-bottom: 1rem;">Or choose a specific area:</p>
     <div class="audit-grid">
       <div class="audit-card">
         <h4>Backup &amp; Recovery Audit</h4>
@@ -396,6 +410,10 @@
           <div class="faq-answer"><p>We offer options: a one-off remediation project for critical risks or long-term managed services with a fixed fee and SLA. The easiest way to start is through the <a href="#contact">Contact</a> section — we will discuss your case and suggest a format.</p></div>
         </div>
         <div class="faq-item" role="listitem">
+          <button class="faq-question" type="button" aria-expanded="false"><span class="label">How much does the audit cost?</span><span class="faq-icon">›</span></button>
+          <div class="faq-answer"><p>A comprehensive IT infrastructure audit starts from ₽10,000 — the final price depends on infrastructure size. If you move to managed services, the audit cost is credited to the first month of service.</p></div>
+        </div>
+        <div class="faq-item" role="listitem">
           <button class="faq-question" type="button" aria-expanded="false"><span class="label">How long does the audit take?</span><span class="faq-icon">›</span></button>
           <div class="faq-answer"><p>Typically 3 to 5 business days, depending on infrastructure size: number of servers, VMs and areas to review. Smaller companies usually take 2 to 3 days.</p></div>
         </div>
@@ -421,7 +439,7 @@
   <div class="container contact-inner">
     <p class="section-tag">Contact</p>
     <h2>Ready to talk about your infrastructure?</h2>
-    <p class="section-sub">Write to us — we will show what can be improved and suggest the right solution. First audit free.</p>
+    <p class="section-sub">Start with an audit — find out the real state of your IT infrastructure. From ₽10,000, credited to the first month if you move to managed services.</p>
     <div class="contact-options">
       <a href="mailto:info@o-horizons.com" class="contact-card">
         <span>✉️</span>
@@ -432,7 +450,7 @@
         <div><strong>Telegram</strong><p>@ohorizons</p></div>
       </a>
     </div>
-    <button class="btn-primary btn-large" onclick="openModal()">Contact us</button>
+    <button class="btn-primary btn-large" onclick="openModal()">Order an audit</button>
   </div>
 </section>
 
