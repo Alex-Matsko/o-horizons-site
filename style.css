@@ -19,6 +19,91 @@ a { text-decoration: none; color: inherit; }
   padding: 0 24px;
 }
 
+/* === COOKIE BANNER === */
+.cookie-banner {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: #0f172a;
+  border-top: 1px solid rgba(148,163,184,0.2);
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
+  padding: 16px 24px;
+  align-items: center;
+  justify-content: center;
+}
+.cookie-inner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  max-width: 900px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+.cookie-text {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  flex: 1;
+  min-width: 260px;
+}
+.cookie-text a { color: #3b82f6; text-decoration: underline; }
+.cookie-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.cookie-btn {
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+.cookie-btn-accept {
+  background: #3b82f6;
+  color: #fff;
+}
+.cookie-btn-accept:hover { background: #2563eb; }
+.cookie-btn-decline {
+  background: transparent;
+  color: #64748b;
+  border: 1px solid #334155;
+}
+.cookie-btn-decline:hover { color: #94a3b8; border-color: #64748b; }
+@media (max-width: 600px) {
+  .cookie-inner { flex-direction: column; gap: 12px; }
+  .cookie-actions { width: 100%; }
+  .cookie-btn { flex: 1; text-align: center; }
+}
+
+/* === CONSENT CHECKBOX === */
+.form-consent {
+  margin-bottom: 14px;
+}
+.consent-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+.consent-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  margin-top: 2px;
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+.consent-label a { color: #3b82f6; text-decoration: underline; }
+.consent-label a:hover { color: #60a5fa; }
+
 /* === NAVBAR === */
 .navbar {
   position: sticky;
@@ -423,11 +508,13 @@ a { text-decoration: none; color: inherit; }
   background: transparent;
   width: 100%;
 }
-.audit-outcome .section-sub {
+.audit-outcome-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e2e8f0;
   margin-bottom: 14px;
-  max-width: none;
 }
-.audit-outcome ul {
+.audit-outcome-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -437,12 +524,12 @@ a { text-decoration: none; color: inherit; }
   font-size: 0.9rem;
   color: #94a3b8;
 }
-.audit-outcome li {
+.audit-outcome-list li {
   position: relative;
   padding-left: 20px;
   line-height: 1.5;
 }
-.audit-outcome li::before {
+.audit-outcome-list li::before {
   content: "✓";
   position: absolute;
   left: 0;
