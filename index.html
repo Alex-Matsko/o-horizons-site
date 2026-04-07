@@ -9,7 +9,8 @@
 
   <link rel="canonical" href="https://o-horizons.com/" />
   <link rel="alternate" hreflang="ru" href="https://o-horizons.com/" />
-  <link rel="alternate" hreflang="en" href="https://o-horizons.com/index-en.html" />
+  <link rel="alternate" hreflang="en" href="https://o-horizons.com/en/" />
+  <link rel="alternate" hreflang="x-default" href="https://o-horizons.com/" />
 
   <meta property="og:title" content="IT-аутсорсинг и аудит IT для бизнеса — Open Horizons" />
   <meta property="og:description" content="Аудит IT, сопровождение 1С, серверов и безопасности. Полный контроль IT-инфраструктуры и готовые тарифы аутсорсинга." />
@@ -29,9 +30,13 @@
   <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="theme-color" content="#3b82f6" />
-  <link rel="stylesheet" href="style.css?v=3" />
+
+  <!-- Preload critical assets -->
+  <link rel="preload" href="style.css?v=4" as="style" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="style.css?v=4" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <!-- Schema.org: Organization + LocalBusiness -->
@@ -133,91 +138,6 @@
   <noscript><div><img src="https://mc.yandex.ru/watch/108408675" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
   <!-- /Yandex.Metrika counter -->
 
-  <style>
-    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.75);z-index:1000;align-items:center;justify-content:center;}
-    .modal-overlay.active{display:flex;}
-    .modal{
-      position:relative;
-      background:radial-gradient(circle at top left,rgba(56,189,248,0.16),transparent 55%),#0f172a;
-      border-radius:18px;
-      padding:32px 32px 28px;
-      width:100%;
-      max-width:520px;
-      box-shadow:0 22px 60px rgba(15,23,42,.75);
-      border:1px solid rgba(148,163,184,0.35);
-      overflow:hidden;
-    }
-    .modal::before{
-      content:"";
-      position:absolute;
-      inset:0 0 auto 0;
-      height:3px;
-      background:linear-gradient(90deg,#3b82f6,#22c55e);
-      opacity:.9;
-    }
-    .modal h2{font-size:1.45rem;margin-bottom:6px;color:#e5e7eb;letter-spacing:0.03em;text-transform:uppercase;}
-    .modal p.modal-sub{color:#9ca3af;font-size:.9rem;margin-bottom:18px;max-width:360px;}
-    .modal-close{position:absolute;top:16px;right:18px;background:none;border:none;font-size:1.25rem;cursor:pointer;color:#6b7280;line-height:1;border-radius:999px;padding:4px;transition:background .15s,color .15s,transform .1s;}
-    .modal-close:hover{color:#e5e7eb;background:rgba(15,23,42,.85);transform:translateY(-1px);}
-    .form-group{margin-bottom:14px;}
-    .form-group label{display:block;font-size:.8rem;font-weight:600;color:#9ca3af;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em;}
-    .form-group input,.form-group textarea{
-      width:100%;
-      padding:9px 12px;
-      border-radius:10px;
-      border:1px solid rgba(148,163,184,0.5);
-      background:#020617;
-      color:#e5e7eb;
-      font-family:inherit;
-      font-size:.92rem;
-      transition:border-color .15s,box-shadow .15s,background .15s;
-    }
-    .form-group input::placeholder,.form-group textarea::placeholder{color:#4b5563;font-size:.9rem;}
-    .form-group input:focus,.form-group textarea:focus{
-      outline:none;
-      border-color:#3b82f6;
-      box-shadow:0 0 0 1px rgba(59,130,246,0.6);
-      background:#020617;
-    }
-    .form-group textarea{resize:vertical;min-height:90px;}
-    .modal-contacts{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      background:rgba(15,23,42,0.9);
-      border-radius:10px;
-      padding:10px 12px;
-      margin:4px 0 18px;
-      font-size:.82rem;
-      color:#9ca3af;
-      border:1px dashed rgba(55,65,81,0.9);
-    }
-    .modal-contacts strong{color:#e5e7eb;font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;}
-    .modal-contacts a{color:#38bdf8;text-decoration:none;}
-    .modal-contacts a:hover{text-decoration:underline;}
-    .btn-submit{
-      width:100%;
-      padding:11px 16px;
-      background:linear-gradient(135deg,#3b82f6,#2563eb);
-      color:#fff;
-      border:none;
-      border-radius:999px;
-      font-size:.95rem;
-      font-weight:600;
-      cursor:pointer;
-      transition:transform .1s,box-shadow .15s,filter .15s;
-      box-shadow:0 14px 35px rgba(37,99,235,0.45);
-    }
-    .btn-submit:hover{filter:brightness(1.05);transform:translateY(-1px);}
-    .btn-submit:active{transform:translateY(0);box-shadow:0 10px 25px rgba(37,99,235,0.35);}
-    .btn-submit:disabled{background:#4b5563;box-shadow:none;cursor:not-allowed;}
-    .form-status{margin-top:10px;text-align:center;font-size:.85rem;min-height:1.1em;}
-    .form-status.success{color:#4ade80;}
-    .form-status.error{color:#f97373;}
-    @media(max-width:520px){
-      .modal{padding:24px 20px 22px;margin:16px;}
-    }
-  </style>
 </head>
 <body>
 
@@ -268,7 +188,7 @@
       <a href="#about">О нас</a>
       <a href="#contact" class="btn-nav">Связаться</a>
     </nav>
-    <a href="index-en.html" class="lang-switch">EN</a>
+    <a href="/en/" class="lang-switch">EN</a>
   </div>
 </header>
 
@@ -622,7 +542,7 @@
       <span>·</span>
       <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://o-horizons.com" target="_blank" rel="noopener">Поделиться в LinkedIn</a>
     </div>
-    <a href="index-en.html" class="lang-switch">Switch to English →</a>
+    <a href="/en/" class="lang-switch">Switch to English →</a>
   </div>
 </footer>
 
