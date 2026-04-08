@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
-  <rect width="120" height="120" rx="24" fill="#3b82f6"/>
-  <polygon points="60,18 100,40 100,80 60,102 20,80 20,40" fill="none" stroke="white" stroke-width="6" stroke-linejoin="round"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="120px" height="120px" viewBox="0 0 120 120" version="1.1">
+<g id="surface1">
+<path style=" stroke:none;fill-rule:nonzero;fill:rgb(23.137255%,50.980395%,96.470588%);fill-opacity:1;" d="M 60 7.5 L 105 33.75 L 105 86.25 L 60 112.5 L 15 86.25 L 15 33.75 Z M 60 7.5 "/>
+<path style="fill:none;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke:rgb(100%,100%,100%);stroke-opacity:1;stroke-miterlimit:4;" d="M 16 7 L 24 11.5 L 24 20.5 L 16 25 L 8 20.5 L 8 11.5 Z M 16 7 " transform="matrix(3.75,0,0,3.75,0,0)"/>
+</g>
 </svg>
