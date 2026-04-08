@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Калькулятор стоимости IT-обслуживания — Открытые Горизонты</title>
+  <meta name="description" content="Рассчитайте примерную стоимость IT-обслуживания вашего бизнеса: серверы 1С, рабочие места, Битрикс24, почта, Cleverence, видеонаблюдение, сети." />
+  <link rel="canonical" href="https://o-horizons.com/calculator" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=6" />
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GK72SBNLF6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GK72SBNLF6');
+  </script>
+
+  <style>
+    /* ── CALCULATOR PAGE STYLES ── */
+    .calc-hero {
+      padding: 64px 0 48px;
+      background: radial-gradient(ellipse at 60% 0%, rgba(59,130,246,0.10) 0%, transparent 60%), #0d0f14;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .calc-hero-inner { max-width: 760px; }
+    .calc-hero h1 { font-size: 2rem; font-weight: 700; color: #f1f5f9; margin-bottom: 12px; line-height: 1.2; }
+    .calc-hero p { font-size: 1rem; color: #64748b; max-width: 540px; }
+
+    /* ── LAYOUT ── */
+    .calc-layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 32px;
+      align-items: start;
+      padding: 48px 0 80px;
+    }
+
+    /* ── GROUPS ── */
+    .calc-group {
+      background: #151820;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 28px 28px 24px;
+      margin-bottom: 20px;
+      transition: border-color 0.2s;
+    }
+    .calc-group:hover { border-color: rgba(59,130,246,0.18); }
+    .calc-group-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .calc-group-icon { font-size: 1.4rem; line-height: 1; }
+    .calc-group-title { font-size: 1rem; font-weight: 600; color: #e2e8f0; }
+    .calc-group-sub { font-size: 0.78rem; color: #64748b; margin-top: 2px; }
+
+    /* ── ROWS ── */
+    .calc-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .calc-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .calc-row-info { flex: 1; min-width: 0; }
+    .calc-row-label { font-size: 0.88rem; color: #cbd5e1; font-weight: 500; }
+    .calc-row-hint  { font-size: 0.75rem; color: #475569; margin-top: 2px; }
+    .calc-row-price { font-size: 0.78rem; color: #64748b; white-space: nowrap; margin-left: 8px; flex-shrink: 0; }
+
+    /* ── CONTROLS ── */
+    .calc-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-shrink: 0;
+    }
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: #1e293b;
+      border-radius: 99px;
+      cursor: pointer;
+      border: 1px solid #334155;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .toggle-slider::before {
+      content: "";
+      position: absolute;
+      left: 3px; top: 3px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: #475569;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .toggle-switch input:checked + .toggle-slider { background: rgba(59,130,246,0.25); border-color: rgba(59,130,246,0.5); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); background: #3b82f6; }
+
+    /* Counter */
+    .counter {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .counter-btn {
+      width: 32px;
+      height: 32px;
+      background: #1e293b;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .counter-btn:hover { background: #2d3a50; color: #e2e8f0; }
+    .counter-btn:active { background: #3b82f6; color: #fff; }
+    .counter-val {
+      min-width: 36px;
+      text-align: center;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      background: #0d0f14;
+      padding: 0 4px;
+      height: 32px;
+      line-height: 32px;
+      border-left: 1px solid #334155;
+      border-right: 1px solid #334155;
+    }
+
+    /* ── RESULT PANEL (sticky) ── */
+    .calc-result {
+      position: sticky;
+      top: 88px;
+      background: #151820;
+      border: 1px solid rgba(59,130,246,0.25);
+      border-radius: 18px;
+      padding: 28px;
+      overflow: hidden;
+    }
+    .calc-result::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 3px;
+      background: linear-gradient(90deg, #3b82f6, #22c55e);
+    }
+    .result-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 20px;
+    }
+    .result-lines { margin-bottom: 20px; }
+    .result-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.83rem;
+    }
+    .result-line:last-child { border-bottom: none; }
+    .result-line-name { color: #94a3b8; flex: 1; min-width: 0; }
+    .result-line-val  { color: #cbd5e1; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+    .result-line-val.zero { color: #334155; }
+    .result-divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 16px 0; }
+    .result-total-label { font-size: 0.78rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+    .result-total-amount {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #3b82f6;
+      line-height: 1.1;
+      margin-bottom: 6px;
+      transition: color 0.3s;
+    }
+    .result-total-sub { font-size: 0.75rem; color: #475569; margin-bottom: 20px; }
+    .result-note {
+      background: rgba(59,130,246,0.07);
+      border: 1px solid rgba(59,130,246,0.15);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.78rem;
+      color: #64748b;
+      line-height: 1.55;
+      margin-bottom: 18px;
+    }
+    .result-note strong { color: #94a3b8; }
+    .result-btn {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: filter 0.2s, transform 0.15s;
+      box-shadow: 0 10px 28px rgba(37,99,235,0.35);
+    }
+    .result-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .result-btn:active { transform: none; }
+    .result-reset {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 9px;
+      background: transparent;
+      color: #475569;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .result-reset:hover { border-color: #334155; color: #64748b; }
+
+    /* Audit special */
+    .calc-audit-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .audit-option {
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .audit-option input[type="checkbox"] { display: none; }
+    .audit-option.selected {
+      border-color: rgba(59,130,246,0.55);
+      background: rgba(59,130,246,0.07);
+    }
+    .audit-option-title { font-size: 0.83rem; font-weight: 600; color: #cbd5e1; }
+    .audit-option-price { font-size: 0.75rem; color: #3b82f6; margin-top: 3px; }
+    .audit-option-check {
+      position: absolute;
+      top: 8px; right: 10px;
+      font-size: 0.75rem;
+      color: #3b82f6;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .audit-option.selected .audit-option-check { opacity: 1; }
+
+    /* ── EMPTY STATE ── */
+    .result-empty {
+      text-align: center;
+      padding: 20px 0 12px;
+    }
+    .result-empty-icon { font-size: 2rem; margin-bottom: 8px; opacity: 0.35; }
+    .result-empty-text { font-size: 0.82rem; color: #475569; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .calc-layout { grid-template-columns: 1fr; }
+      .calc-result { position: static; }
+      .calc-audit-row { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 540px) {
+      .calc-audit-row { grid-template-columns: 1fr; }
+      .calc-hero h1 { font-size: 1.6rem; }
+      .calc-group { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="auditModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()" aria-label="Закрыть">&#x2715;</button>
+    <h2 id="modalTitle">Получить точный расчёт</h2>
+    <p class="modal-sub" id="modalSub">Оставьте контакт — подготовим коммерческое предложение по вашей инфраструктуре.</p>
+    <form id="auditForm">
+      <div class="form-group">
+        <label for="name">Ваше имя *</label>
+        <input type="text" id="name" name="name" placeholder="Иван Иванов" required />
+      </div>
+      <div class="form-group">
+        <label for="company">Компания</label>
+        <input type="text" id="company" name="company" placeholder="ООО Пример" />
+      </div>
+      <div class="form-group">
+        <label for="phone">Телефон</label>
+        <input type="tel" id="phone" name="phone" placeholder="+7 (___) ___-__-__" inputmode="tel" autocomplete="tel" />
+      </div>
+      <div class="form-group">
+        <label for="contactField">Email или Telegram *</label>
+        <input type="text" id="contactField" name="contact" placeholder="email@example.com или @username" required />
+      </div>
+      <div class="form-group">
+        <label for="message">Расскажите о задаче</label>
+        <textarea id="message" name="message" placeholder="Что болит? Сколько серверов, пользователей?"></textarea>
+      </div>
+      <div class="form-consent">
+        <label class="consent-label">
+          <input type="checkbox" id="consentCheck" name="consent" required />
+          <span>Я согласен(на) на обработку персональных данных и ознакомлен(на) с <a href="/privacy-policy.html" target="_blank">политикой конфиденциальности</a> *</span>
+        </label>
+      </div>
+      <div class="modal-contacts">
+        <strong>Наши контакты:</strong>
+        <span><a href="mailto:info@o-horizons.com">info@o-horizons.com</a></span>
+        <span><a href="https://t.me/ohorizons" target="_blank">@ohorizons</a></span>
+      </div>
+      <button type="submit" class="btn-submit" id="submitBtn">Отправить заявку</button>
+      <div class="form-status" id="formStatus"></div>
+    </form>
+  </div>
+</div>
+
+<!-- NAV -->
+<header class="navbar">
+  <div class="container nav-inner">
+    <a href="/" class="logo" aria-label="На главную">
+      <span class="logo-icon">&#x2B21;</span>
+      <span class="logo-text">Открытые <strong>Горизонты</strong></span>
+    </a>
+    <nav class="nav-links">
+      <a href="/#services">Услуги</a>
+      <a href="/#audits">Аудиты</a>
+      <a href="/calculator" style="color:#3b82f6;font-weight:600;">Калькулятор</a>
+      <a href="/#about">О нас</a>
+      <a href="/#contact" class="btn-nav">Связаться</a>
+    </nav>
+    <a href="/en/" class="lang-switch">EN</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="calc-hero">
+  <div class="container calc-hero-inner">
+    <p class="hero-tag">Калькулятор стоимости</p>
+    <h1>Рассчитайте стоимость<br/>IT-обслуживания</h1>
+    <p>Отметьте, что нужно вашей компании — получите ориентировочный ежемесячный бюджет. Итоговая цена формируется индивидуально после аудита.</p>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="calc-layout">
+
+      <!-- LEFT COLUMN: INPUTS -->
+      <div class="calc-inputs">
+
+        <!-- 1. Рабочие места -->
+        <div class="calc-group">
+          <div class="calc-group-header">
+            <span class="calc-group-icon">🖥️</span>
+            <div>
+              <div class="calc-group-title">Рабочие места</div>
+              <div class="calc-group-sub">ПК пользователей, обслуживание и поддержка</div>
+            </div>
+          </div>
+
+          <div class="calc-row">
+            <div class="calc-row-info">
+              <div class="calc-row-label">Количество рабочих мест</div>
+              <div class="calc-row-hint">Абонентское обслуживание: 1 300 ₽/мес за ПК</div>
+            </div>
+            <div class="counter" id="cnt-pc">
+              <button class="counter-btn" data-action="dec" data-target="pc">−</button>
+              <span class="counter-val" id="val-pc">0</span>
+              <button class="counter-btn" data-action="inc" data-target="pc">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Серверы -->
+        <div class="calc-group">
+          <div class="calc-group-header">
+            <span class="calc-group-icon">🗄️</span>
+            <div>
+              <div class="calc-group-title">Серверная инфраструктура</div>
+              <div class="calc-group-sub">1С, MSSQL, виртуализация, резервное копирование</div>
+            </div>
+          </div>
+
+          <div class="calc-row">
+            <div class="calc-row-info">
+              <div class="calc-row-label">Сопровождение 1С-сервера</div>
+              <div class="calc-row-hint">MSSQL, обновления, регламентные работы, мониторинг</div>
+            </div>
+            <span class="calc-row-price">30 000 ₽/мес</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="tog-1c" data-key="srv_1c" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="calc-row">
+            <div class="calc-row-info">
+              <div class="calc-row-label">Контроль резервного копирования</div>
+              <div class="calc-row-hint">Мониторинг бэкапов, тест восстановления по регламенту</div>
+            </div>
+            <span class="calc-row-price">15 000 ₽/мес</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="tog-backup" data-key="srv_backup" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="calc-row">
+            <div class="calc-row-info">
+              <div class="calc-row-label">Количество виртуальных серверов / ВМ</div>
+              <div class="calc-row-hint">ESXi / Proxmox / Hyper-V, +5 000 ₽/мес за каждый</div>
+            </div>
+            <div class="counter">
+              <button class="counter-btn" data-action="dec" data-target="vm">−</button>
+              <span class="counter-val" id="val-vm">0</span>
+              <button class="counter-btn" data-action="inc" data-target="vm">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Прикладной софт -->
+        <div class="calc-group">
+          <div class="calc-group-header">
+            <span class="calc-group-icon">📦</span>
+            <div>
+              <div class="calc-group-title">Прикладные системы</div>
+              <div class="calc-group-sub">Битрикс24, почта, Cleverence/ТСД</div>
+            </div>
+          </div>
+
+          <div class="calc-row">
+            <div class="calc-row-info">
+              <div class="calc-row-label">Сопровождение Битрикс24</div>
+              <div class="calc-row-hint">Администрирование, права, обновления, консультации</div>
+            </div>
+            <span class="calc-row-price">15 000 ₽/мес</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="tog-b24" data-key="app_b24" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="calc-row">
+            <div class="calc-row-info">
+              <div class="calc-row-label">Сопровождение почтового сервера</div>
+              <div class="calc-row-hint">Exchange / Postfix / Kerio: мониторинг, антиспам, учётки</div>
+            </div>
+            <span class="calc-row-price">10 000 ₽/мес</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="tog-mail" data-key="app_mail" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="calc-row">
+            <div class="calc-row-info">
+              <div class="calc-row-label">Сопровождение Cleverence / ТСД</div>
+              <div class="calc-row-hint">Mobile SMARTS, обновления конфигураций, интеграция с 1С</div>
+            </div>
+            <span class="calc-row-price">12 000 ₽/мес</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="tog-tsd" data-key="app_tsd" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 4. Сеть и видеонаблюдение -->
+        <div class="calc-group">
+          <div class="calc-group-header">
+            <span class="calc-group-icon">🌐</span>
+            <div>
+              <div class="calc-group-title">Сети и видеонаблюдение</div>
+              <div class="calc-group-sub">LAN, MikroTik, IP-камеры, регистраторы</div>
+            </div>
+          </div>
+
+          <div class="calc-row">
+            <div class="calc-row-info">
+              <div class="calc-row-label">Сопровождение локальной сети</div>
+              <div class="calc-row-hint">Коммутаторы, MikroTik, мониторинг, мелкие настройки</div>
+            </div>
+            <span class="calc-row-price">8 000 ₽/мес</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="tog-lan" data-key="net_lan" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="calc-row">
+            <div class="calc-row-info">
+              <div class="calc-row-label">Сопровождение видеонаблюдения</div>
+              <div class="calc-row-hint">IP-камеры, DVR/NVR, контроль записи, обновление ПО</div>
+            </div>
+            <span class="calc-row-price">7 000 ₽/мес</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="tog-cctv" data-key="net_cctv" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 5. Уровень сервиса -->
+        <div class="calc-group">
+          <div class="calc-group-header">
+            <span class="calc-group-icon">⚡</span>
+            <div>
+              <div class="calc-group-title">Уровень сервиса</div>
+              <div class="calc-group-sub">SLA, время реакции и приоритет поддержки</div>
+            </div>
+          </div>
+
+          <div class="calc-row" style="flex-wrap:wrap; gap:12px; padding-bottom:14px;">
+            <div class="calc-row-info">
+              <div class="calc-row-label">Выберите уровень</div>
+              <div class="calc-row-hint">Влияет на надбавку к итоговой стоимости</div>
+            </div>
+            <div id="sla-selector" style="display:flex; gap:8px; flex-wrap:wrap; width:100%; margin-top:4px;">
+              <button class="sla-btn active" data-sla="0" data-label="Base">
+                <span class="sla-name">Base</span>
+                <span class="sla-desc">Реакция &lt; 4ч, в рабочее время</span>
+              </button>
+              <button class="sla-btn" data-sla="15" data-label="Standard">
+                <span class="sla-name">Standard <span class="sla-badge">+15%</span></span>
+                <span class="sla-desc">Реакция &lt; 2ч, приоритет</span>
+              </button>
+              <button class="sla-btn" data-sla="35" data-label="Premium">
+                <span class="sla-name">Premium <span class="sla-badge">+35%</span></span>
+                <span class="sla-desc">Реакция &lt; 1ч, SLA гарантия</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Аудиты -->
+        <div class="calc-group">
+          <div class="calc-group-header">
+            <span class="calc-group-icon">🔍</span>
+            <div>
+              <div class="calc-group-title">Входной аудит</div>
+              <div class="calc-group-sub">Разовая услуга — зачтётся в первый месяц при переходе на сопровождение</div>
+            </div>
+          </div>
+
+          <div class="calc-audit-row" id="audit-options">
+            <label class="audit-option" data-key="aud_backup" data-price="25000">
+              <input type="checkbox" />
+              <div class="audit-option-title">Аудит резервного копирования</div>
+              <div class="audit-option-price">25 000 ₽</div>
+              <span class="audit-option-check">✓</span>
+            </label>
+            <label class="audit-option" data-key="aud_1c" data-price="30000">
+              <input type="checkbox" />
+              <div class="audit-option-title">Аудит 1С-инфраструктуры</div>
+              <div class="audit-option-price">30 000 ₽</div>
+              <span class="audit-option-check">✓</span>
+            </label>
+            <label class="audit-option" data-key="aud_virt" data-price="50000">
+              <input type="checkbox" />
+              <div class="audit-option-title">Аудит виртуализации и серверов</div>
+              <div class="audit-option-price">50 000 ₽</div>
+              <span class="audit-option-check">✓</span>
+            </label>
+            <label class="audit-option" data-key="aud_ib" data-price="30000">
+              <input type="checkbox" />
+              <div class="audit-option-title">Аудит ИБ и удалённого доступа</div>
+              <div class="audit-option-price">30 000 ₽</div>
+              <span class="audit-option-check">✓</span>
+            </label>
+          </div>
+        </div>
+
+      </div><!-- /calc-inputs -->
+
+      <!-- RIGHT COLUMN: RESULT -->
+      <div>
+        <div class="calc-result" id="result-panel">
+          <div class="result-title">Ваш расчёт</div>
+
+          <div class="result-lines" id="result-lines">
+            <div class="result-empty" id="result-empty">
+              <div class="result-empty-icon">🧮</div>
+              <div class="result-empty-text">Выберите услуги слева<br/>— итог появится здесь</div>
+            </div>
+          </div>
+
+          <hr class="result-divider" id="result-divider" style="display:none;" />
+
+          <div id="result-totals" style="display:none;">
+            <div class="result-total-label">Ежемесячно от</div>
+            <div class="result-total-amount" id="result-monthly">0 ₽</div>
+            <div class="result-total-sub">без НДС · без разовых работ</div>
+
+            <div id="audit-total-wrap" style="display:none; margin-bottom:16px;">
+              <div class="result-total-label">Разово (аудиты)</div>
+              <div style="font-size:1.2rem;font-weight:700;color:#22c55e;" id="result-audit">0 ₽</div>
+              <div class="result-total-sub">зачитывается в первый месяц</div>
+            </div>
+          </div>
+
+          <div class="result-note" id="result-note" style="display:none;">
+            <strong>Важно:</strong> это ориентировочный расчёт. Итоговая стоимость зависит от реального объёма инфраструктуры и фиксируется в договоре после аудита.
+          </div>
+
+          <button class="result-btn" id="result-cta" onclick="openModal()" style="display:none;">
+            Получить точное КП
+          </button>
+          <button class="result-reset" id="result-reset" style="display:none;" onclick="resetCalc()">
+            Сбросить расчёт
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /calc-layout -->
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-logo"><span class="logo-icon">&#x2B21;</span><span>Открытые Горизонты</span></div>
+    <p class="footer-copy">&#169; 2026 Открытые Горизонты. IT-аутсорсинг для бизнеса.</p>
+    <div class="footer-share">
+      <a href="https://t.me/share/url?url=https://o-horizons.com/calculator&text=Калькулятор%20IT-обслуживания" target="_blank" rel="noopener">Поделиться в Telegram</a>
+      <span>·</span>
+      <a href="/" >← На главную</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+/* SLA buttons */
+.sla-btn {
+  flex: 1;
+  min-width: 120px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+  color: #94a3b8;
+}
+.sla-btn:hover { border-color: #64748b; color: #e2e8f0; }
+.sla-btn.active { border-color: rgba(59,130,246,0.6); background: rgba(59,130,246,0.1); }
+.sla-name { display: block; font-size: 0.85rem; font-weight: 600; color: #e2e8f0; margin-bottom: 3px; }
+.sla-btn.active .sla-name { color: #60a5fa; }
+.sla-desc { display: block; font-size: 0.72rem; color: #64748b; }
+.sla-badge { font-size: 0.68rem; font-weight: 700; background: rgba(59,130,246,0.2); color: #3b82f6; padding: 1px 6px; border-radius: 99px; }
+</style>
+
+<script>
+/* ═══ STATE ═══ */
+const state = {
+  pc: 0, vm: 0,
+  srv_1c: false, srv_backup: false,
+  app_b24: false, app_mail: false, app_tsd: false,
+  net_lan: false, net_cctv: false,
+  sla: 0,
+  aud_backup: false, aud_1c: false, aud_virt: false, aud_ib: false
+};
+
+const PRICES = {
+  pc:         { label: 'Обслуживание ПК',             price: 1300,  unit: '/ПК/мес',  type: 'monthly' },
+  vm:         { label: 'Виртуальные серверы',          price: 5000,  unit: '/ВМ/мес',  type: 'monthly' },
+  srv_1c:     { label: 'Сопровождение 1С-сервера',     price: 30000, unit: '/мес',     type: 'monthly' },
+  srv_backup: { label: 'Контроль резервного копирования', price: 15000, unit: '/мес',  type: 'monthly' },
+  app_b24:    { label: 'Сопровождение Битрикс24',      price: 15000, unit: '/мес',     type: 'monthly' },
+  app_mail:   { label: 'Почтовый сервер',              price: 10000, unit: '/мес',     type: 'monthly' },
+  app_tsd:    { label: 'Cleverence / ТСД',             price: 12000, unit: '/мес',     type: 'monthly' },
+  net_lan:    { label: 'Локальная сеть',               price: 8000,  unit: '/мес',     type: 'monthly' },
+  net_cctv:   { label: 'Видеонаблюдение',              price: 7000,  unit: '/мес',     type: 'monthly' },
+  aud_backup: { label: 'Аудит резервного копирования', price: 25000, unit: '',         type: 'once' },
+  aud_1c:     { label: 'Аудит 1С-инфраструктуры',     price: 30000, unit: '',         type: 'once' },
+  aud_virt:   { label: 'Аудит виртуализации',          price: 50000, unit: '',         type: 'once' },
+  aud_ib:     { label: 'Аудит ИБ и доступа',          price: 30000, unit: '',         type: 'once' },
+};
+
+/* ═══ COUNTERS ═══ */
+document.querySelectorAll('.counter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const t = btn.dataset.target;
+    if (btn.dataset.action === 'inc') state[t]++;
+    else if (state[t] > 0) state[t]--;
+    document.getElementById('val-' + t).textContent = state[t];
+    render();
+  });
+});
+
+/* ═══ TOGGLES ═══ */
+document.querySelectorAll('input[data-key]').forEach(inp => {
+  inp.addEventListener('change', () => {
+    state[inp.dataset.key] = inp.checked;
+    render();
+  });
+});
+
+/* ═══ AUDIT OPTIONS ═══ */
+document.querySelectorAll('#audit-options .audit-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    const key   = opt.dataset.key;
+    const inp   = opt.querySelector('input');
+    const isNow = !inp.checked;
+    inp.checked  = isNow;
+    state[key]   = isNow;
+    opt.classList.toggle('selected', isNow);
+    render();
+  });
+});
+
+/* ═══ SLA ═══ */
+document.querySelectorAll('.sla-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.sla-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.sla = parseInt(btn.dataset.sla);
+    render();
+  });
+});
+
+/* ═══ RENDER ═══ */
+function fmt(n) {
+  return n.toLocaleString('ru-RU') + ' ₽';
+}
+
+function render() {
+  let monthly = 0, once = 0;
+  const lines = [];
+
+  // PC
+  if (state.pc > 0) {
+    const s = PRICES.pc.price * state.pc;
+    monthly += s;
+    lines.push({ label: `${PRICES.pc.label} (${state.pc} шт)`, val: fmt(s), type: 'monthly' });
+  }
+  // VM
+  if (state.vm > 0) {
+    const s = PRICES.vm.price * state.vm;
+    monthly += s;
+    lines.push({ label: `${PRICES.vm.label} (${state.vm} шт)`, val: fmt(s), type: 'monthly' });
+  }
+  // boolean monthly
+  ['srv_1c','srv_backup','app_b24','app_mail','app_tsd','net_lan','net_cctv'].forEach(k => {
+    if (state[k]) {
+      monthly += PRICES[k].price;
+      lines.push({ label: PRICES[k].label, val: fmt(PRICES[k].price), type: 'monthly' });
+    }
+  });
+
+  // SLA surcharge
+  let slaAmount = 0;
+  if (state.sla > 0 && monthly > 0) {
+    slaAmount = Math.round(monthly * state.sla / 100);
+    monthly += slaAmount;
+    const activeSla = document.querySelector('.sla-btn.active');
+    lines.push({ label: `Надбавка SLA (${activeSla ? activeSla.dataset.label : ''}, +${state.sla}%)`, val: fmt(slaAmount), type: 'monthly' });
+  }
+
+  // audits (once)
+  const auditLines = [];
+  ['aud_backup','aud_1c','aud_virt','aud_ib'].forEach(k => {
+    if (state[k]) {
+      once += PRICES[k].price;
+      auditLines.push({ label: PRICES[k].label, val: fmt(PRICES[k].price), type: 'once' });
+    }
+  });
+
+  const hasAny = monthly > 0 || once > 0;
+  const linesEl   = document.getElementById('result-lines');
+  const emptyEl   = document.getElementById('result-empty');
+  const dividerEl = document.getElementById('result-divider');
+  const totalsEl  = document.getElementById('result-totals');
+  const noteEl    = document.getElementById('result-note');
+  const ctaEl     = document.getElementById('result-cta');
+  const resetEl   = document.getElementById('result-reset');
+  const monthlyEl = document.getElementById('result-monthly');
+  const auditWrap = document.getElementById('audit-total-wrap');
+  const auditEl   = document.getElementById('result-audit');
+
+  if (!hasAny) {
+    linesEl.innerHTML = '';
+    linesEl.appendChild(document.getElementById('result-empty') || createEmpty());
+    emptyEl && (emptyEl.style.display = 'block');
+    dividerEl.style.display = 'none';
+    totalsEl.style.display  = 'none';
+    noteEl.style.display    = 'none';
+    ctaEl.style.display     = 'none';
+    resetEl.style.display   = 'none';
+    return;
+  }
+
+  // Build lines HTML
+  let html = '';
+  [...lines, ...auditLines].forEach(l => {
+    const cls = l.type === 'once' ? 'style="color:#22c55e"' : '';
+    html += `<div class="result-line">
+      <span class="result-line-name">${l.label}</span>
+      <span class="result-line-val" ${cls}>${l.val}</span>
+    </div>`;
+  });
+  linesEl.innerHTML = html;
+
+  dividerEl.style.display = 'block';
+  totalsEl.style.display  = 'block';
+  noteEl.style.display    = 'block';
+  ctaEl.style.display     = 'block';
+  resetEl.style.display   = 'block';
+
+  monthlyEl.textContent = monthly > 0 ? fmt(monthly) + '/мес' : '— ₽/мес';
+
+  if (once > 0) {
+    auditWrap.style.display = 'block';
+    auditEl.textContent = fmt(once);
+  } else {
+    auditWrap.style.display = 'none';
+  }
+
+  // Pre-fill modal message
+  let summary = 'Расчёт калькулятора:\n';
+  [...lines, ...auditLines].forEach(l => { summary += `• ${l.label}: ${l.val}\n`; });
+  if (monthly > 0) summary += `\nИТОГО/мес: ${fmt(monthly)}`;
+  if (once > 0)    summary += `\nРазово (аудиты): ${fmt(once)}`;
+  const msgEl = document.getElementById('message');
+  if (msgEl && !msgEl._touched) msgEl.value = summary;
+}
+
+/* ═══ RESET ═══ */
+function resetCalc() {
+  Object.keys(state).forEach(k => {
+    state[k] = (k === 'pc' || k === 'vm' || k === 'sla') ? 0 : false;
+  });
+  document.querySelectorAll('input[data-key]').forEach(i => { i.checked = false; });
+  document.querySelectorAll('.audit-option').forEach(o => { o.classList.remove('selected'); o.querySelector('input').checked = false; });
+  document.getElementById('val-pc').textContent = '0';
+  document.getElementById('val-vm').textContent = '0';
+  document.querySelectorAll('.sla-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+  const msgEl = document.getElementById('message');
+  if (msgEl) { msgEl.value = ''; msgEl._touched = false; }
+  render();
+}
+
+/* ═══ MODAL ═══ */
+function openModal() {
+  document.getElementById('auditModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('name').focus();
+}
+function closeModal() {
+  document.getElementById('auditModal').classList.remove('active');
+  document.body.style.overflow = '';
+  document.getElementById('formStatus').textContent = '';
+}
+document.getElementById('auditModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+/* Track manual message edit */
+document.getElementById('message').addEventListener('input', function() { this._touched = true; });
+
+/* ═══ FORM ═══ */
+document.getElementById('auditForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  const status = document.getElementById('formStatus');
+  const consent = document.getElementById('consentCheck');
+  if (!consent.checked) {
+    status.textContent = '✗ Необходимо согласие на обработку персональных данных.';
+    status.className = 'form-status error';
+    return;
+  }
+  btn.disabled = true; btn.textContent = 'Отправляем...';
+  status.textContent = ''; status.className = 'form-status';
+  const data = {
+    name:    document.getElementById('name').value,
+    company: document.getElementById('company').value,
+    phone:   document.getElementById('phone').value,
+    contact: document.getElementById('contactField').value,
+    message: document.getElementById('message').value,
+    lang: 'ru'
+  };
+  try {
+    const res = await fetch('/api/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    if (res.ok) {
+      status.textContent = '✓ Заявка отправлена! Свяжемся в течение одного рабочего дня.';
+      status.classList.add('success');
+      this.reset();
+      btn.textContent = 'Отправить заявку'; btn.disabled = false;
+    } else throw new Error();
+  } catch {
+    status.textContent = '✗ Не удалось отправить. Напишите нам: info@o-horizons.com';
+    status.classList.add('error');
+    btn.textContent = 'Отправить заявку'; btn.disabled = false;
+  }
+});
+
+/* Phone mask */
+(function(){
+  const inp = document.getElementById('phone');
+  if (!inp) return;
+  function fmt(raw) {
+    let d = raw.replace(/\D/g,'');
+    if (!d) return '';
+    if (d[0]==='7'||d[0]==='8') d=d.slice(1);
+    d=d.slice(0,10);
+    let r='+7 ';
+    if(d.length>0) r+='('+d.slice(0,3);
+    if(d.length>=4) r+=') '+d.slice(3,6);
+    else if(d.length===3) r+=')';
+    if(d.length>=7) r+='-'+d.slice(6,8);
+    if(d.length>=9) r+='-'+d.slice(8,10);
+    return r;
+  }
+  inp.addEventListener('input', function(){
+    const pos=inp.selectionStart, prev=inp.value;
+    inp.value=fmt(inp.value);
+    const diff=inp.value.length-prev.length;
+    inp.setSelectionRange(pos+diff,pos+diff);
+  });
+  inp.addEventListener('focus', function(){ if(!inp.value) inp.value='+7 '; });
+  inp.addEventListener('blur', function(){ if(inp.value==='+7 '||inp.value==='+7') inp.value=''; });
+})();
+</script>
+</body>
+</html>
