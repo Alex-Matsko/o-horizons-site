@@ -135,6 +135,30 @@
     }
     .counter-btn:hover { background: #2d3a50; color: #e2e8f0; }
     .counter-btn:active { background: #3b82f6; color: #fff; }
+    .counter-val-input {
+      width: 52px;
+      text-align: center;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      background: #0d0f14;
+      padding: 0 4px;
+      height: 32px;
+      line-height: 32px;
+      border-left: 1px solid #334155;
+      border-right: 1px solid #334155;
+      border-top: none;
+      border-bottom: none;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .counter-val-input::-webkit-outer-spin-button,
+    .counter-val-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .counter-val-input:focus {
+      background: #131720;
+      color: #60a5fa;
+    }
+    /* legacy read-only counter-val (VM) */
     .counter-val {
       min-width: 36px;
       text-align: center;
@@ -355,7 +379,7 @@
       <a href="/#about">О нас</a>
       <a href="/#contact" class="btn-nav">Связаться</a>
     </nav>
-    <a href="/en/" class="lang-switch">EN</a>
+    <a href="/calculator-en.html" class="lang-switch">EN</a>
   </div>
 </header>
 
@@ -392,9 +416,18 @@
               <div class="calc-row-hint">Абонентское обслуживание: 1 300 ₽/мес за ПК</div>
             </div>
             <div class="counter" id="cnt-pc">
-              <button class="counter-btn" data-action="dec" data-target="pc">−</button>
-              <span class="counter-val" id="val-pc">0</span>
-              <button class="counter-btn" data-action="inc" data-target="pc">+</button>
+              <button class="counter-btn" data-action="dec" data-target="pc" type="button">−</button>
+              <input
+                type="number"
+                class="counter-val-input"
+                id="val-pc"
+                value="0"
+                min="0"
+                max="9999"
+                inputmode="numeric"
+                aria-label="Количество рабочих мест"
+              />
+              <button class="counter-btn" data-action="inc" data-target="pc" type="button">+</button>
             </div>
           </div>
         </div>
@@ -439,9 +472,18 @@
               <div class="calc-row-hint">ESXi / Proxmox / Hyper-V, +5 000 ₽/мес за каждый</div>
             </div>
             <div class="counter">
-              <button class="counter-btn" data-action="dec" data-target="vm">−</button>
-              <span class="counter-val" id="val-vm">0</span>
-              <button class="counter-btn" data-action="inc" data-target="vm">+</button>
+              <button class="counter-btn" data-action="dec" data-target="vm" type="button">−</button>
+              <input
+                type="number"
+                class="counter-val-input"
+                id="val-vm"
+                value="0"
+                min="0"
+                max="9999"
+                inputmode="numeric"
+                aria-label="Количество виртуальных серверов"
+              />
+              <button class="counter-btn" data-action="inc" data-target="vm" type="button">+</button>
             </div>
           </div>
         </div>
@@ -705,14 +747,42 @@ const PRICES = {
   aud_ib:     { label: 'Аудит ИБ и доступа',          price: 30000, unit: '',         type: 'once' },
 };
 
-/* ═══ COUNTERS ═══ */
+/* ═══ COUNTER INPUTS (pc & vm) ═══ */
+function getVal(target) {
+  const inp = document.getElementById('val-' + target);
+  return inp ? (parseInt(inp.value) || 0) : 0;
+}
+function setVal(target, val) {
+  const inp = document.getElementById('val-' + target);
+  if (inp) inp.value = val < 0 ? 0 : val;
+  state[target] = val < 0 ? 0 : val;
+}
+
 document.querySelectorAll('.counter-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const t = btn.dataset.target;
-    if (btn.dataset.action === 'inc') state[t]++;
-    else if (state[t] > 0) state[t]--;
-    document.getElementById('val-' + t).textContent = state[t];
+    const cur = getVal(t);
+    if (btn.dataset.action === 'inc') setVal(t, cur + 1);
+    else setVal(t, cur - 1);
     render();
+  });
+});
+
+['pc', 'vm'].forEach(target => {
+  const inp = document.getElementById('val-' + target);
+  if (!inp) return;
+  inp.addEventListener('input', () => {
+    let v = parseInt(inp.value) || 0;
+    if (v < 0) { v = 0; inp.value = 0; }
+    state[target] = v;
+    render();
+  });
+  inp.addEventListener('blur', () => {
+    if (inp.value === '' || isNaN(parseInt(inp.value))) {
+      inp.value = 0;
+      state[target] = 0;
+      render();
+    }
   });
 });
 
@@ -808,8 +878,7 @@ function render() {
 
   if (!hasAny) {
     linesEl.innerHTML = '';
-    linesEl.appendChild(document.getElementById('result-empty') || createEmpty());
-    emptyEl && (emptyEl.style.display = 'block');
+    if (emptyEl) { linesEl.appendChild(emptyEl); emptyEl.style.display = 'block'; }
     dividerEl.style.display = 'none';
     totalsEl.style.display  = 'none';
     noteEl.style.display    = 'none';
@@ -860,8 +929,8 @@ function resetCalc() {
   });
   document.querySelectorAll('input[data-key]').forEach(i => { i.checked = false; });
   document.querySelectorAll('.audit-option').forEach(o => { o.classList.remove('selected'); o.querySelector('input').checked = false; });
-  document.getElementById('val-pc').textContent = '0';
-  document.getElementById('val-vm').textContent = '0';
+  document.getElementById('val-pc').value = '0';
+  document.getElementById('val-vm').value = '0';
   document.querySelectorAll('.sla-btn').forEach((b,i) => b.classList.toggle('active', i===0));
   const msgEl = document.getElementById('message');
   if (msgEl) { msgEl.value = ''; msgEl._touched = false; }
