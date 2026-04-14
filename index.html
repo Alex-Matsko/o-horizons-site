@@ -570,51 +570,89 @@ document.addEventListener('keydown',function(e){
   if(e.key==='Escape')closeModal();
 });
 
-/* ---------- Form submit ---------- */
-document.getElementById('auditForm').addEventListener('submit',async function(e){
+/* ---------- Form submit → 1C:Dialog webhook ---------- */
+var WEBHOOK_URL = 'https://integrations.1cdialog.com/integration/webhook/909421:qMzZjLbwBCSjAJBq7aQ76F5RyZ5orTG4/callback';
+
+document.getElementById('auditForm').addEventListener('submit', async function(e){
   e.preventDefault();
-  var btn=document.getElementById('submitBtn'),status=document.getElementById('formStatus');
-  var consent=document.getElementById('consentCheck');
+  var btn    = document.getElementById('submitBtn');
+  var status = document.getElementById('formStatus');
+  var consent = document.getElementById('consentCheck');
+
   if(!consent.checked){
-    status.textContent='✗ Пожалуйста, подтвердите согласие с политикой конфиденциальности.';
-    status.className='form-status error';
+    status.textContent = '✗ Пожалуйста, подтвердите согласие с политикой конфиденциальности.';
+    status.className = 'form-status error';
     return;
   }
-  btn.disabled=true; btn.textContent='Отправка...';
-  status.textContent=''; status.className='form-status';
-  var data={
-    name:document.getElementById('name').value,
-    company:document.getElementById('company').value,
-    phone:document.getElementById('phone').value,
-    contact:document.getElementById('contactField').value,
-    message:document.getElementById('message').value,
-    lang:'ru'
+
+  btn.disabled = true;
+  btn.textContent = 'Отправка...';
+  status.textContent = '';
+  status.className = 'form-status';
+
+  var name    = document.getElementById('name').value.trim();
+  var company = document.getElementById('company').value.trim();
+  var phone   = document.getElementById('phone').value.trim();
+  var contact = document.getElementById('contactField').value.trim();
+  var msg     = document.getElementById('message').value.trim();
+
+  /* Формируем текст сообщения */
+  var lines = [];
+  lines.push('📋 Новая заявка с сайта o-horizons.com');
+  lines.push('');
+  lines.push('👤 Имя: ' + name);
+  if(company) lines.push('🏢 Компания: ' + company);
+  if(phone)   lines.push('📞 Телефон: ' + phone);
+  lines.push('✉️ Контакт: ' + contact);
+  if(msg)     lines.push('💬 Сообщение: ' + msg);
+
+  var msgId = 'web-' + Date.now();
+  var convId = 'site-leads';
+
+  var payload = {
+    createMessage: {
+      extId: msgId,
+      extConversationId: convId,
+      text: lines.join('\n'),
+      textFormat: 'text/plain'
+    }
   };
-  try{
-    var res=await fetch('/api/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-    if(res.ok){
-      status.textContent='✓ Заявка отправлена! Мы свяжемся с вами в течение одного рабочего дня.';
-      status.classList.add('success');
+
+  try {
+    var res = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+      body: JSON.stringify(payload)
+    });
+
+    if(res.ok || res.status === 409) {
+      /* 409 = обсуждение уже есть — это нормально */
+      status.textContent = '✓ Заявка отправлена! Мы свяжемся с вами в течение одного рабочего дня.';
+      status.className = 'form-status success';
       this.reset();
-      btn.textContent='Отправить заявку'; btn.disabled=false;
-    }else throw new Error();
-  }catch{
-    status.textContent='✗ Не удалось отправить. Напишите нам: info@o-horizons.com';
-    status.classList.add('error');
-    btn.textContent='Отправить заявку'; btn.disabled=false;
+    } else {
+      throw new Error('HTTP ' + res.status);
+    }
+  } catch(err) {
+    console.error('Webhook error:', err);
+    status.textContent = '✗ Не удалось отправить. Напишите нам: info@o-horizons.com';
+    status.className = 'form-status error';
   }
+
+  btn.textContent = 'Отправить заявку';
+  btn.disabled = false;
 });
 
 /* ---------- FAQ ---------- */
-var faqItems=document.querySelectorAll('.faq-item');
+var faqItems = document.querySelectorAll('.faq-item');
 faqItems.forEach(function(item){
-  var btn=item.querySelector('.faq-question');
-  btn.addEventListener('click',function(){
-    var isOpen=item.classList.contains('open');
+  var btn = item.querySelector('.faq-question');
+  btn.addEventListener('click', function(){
+    var isOpen = item.classList.contains('open');
     faqItems.forEach(function(i){
       i.classList.remove('open');
-      var b=i.querySelector('.faq-question');
-      if(b)b.setAttribute('aria-expanded','false');
+      var b = i.querySelector('.faq-question');
+      if(b) b.setAttribute('aria-expanded','false');
     });
     if(!isOpen){ item.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
   });
