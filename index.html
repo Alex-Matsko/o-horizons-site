@@ -27,10 +27,11 @@
   <meta name="twitter:description" content="Аудит IT, сопровождение 1С, серверов и безопасности. Комплексный аудит IT-инфраструктуры от 25 000 ₽." />
   <meta name="twitter:image" content="https://o-horizons.com/og-image.jpg" />
 
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+
   <link rel="icon" type="image/png" href="/favicon.png" />
   <link rel="manifest" href="/manifest.webmanifest" />
-  <meta name="theme-color" content="#3b82f6" />
+  <meta name="theme-color" content="#01696f" />
 
   <link rel="preload" href="style.css?v=7" as="style" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -570,7 +571,7 @@ document.addEventListener('keydown',function(e){
   if(e.key==='Escape')closeModal();
 });
 
-/* ---------- Form submit → 1C:Dialog вебхук + Email ---------- */
+/* ---------- Form submit → 1C:Dialog + Email ---------- */
 document.getElementById('auditForm').addEventListener('submit', async function(e){
   e.preventDefault();
   var btn    = document.getElementById('submitBtn');
@@ -594,51 +595,30 @@ document.getElementById('auditForm').addEventListener('submit', async function(e
   var contact = document.getElementById('contactField').value.trim();
   var msg     = document.getElementById('message').value.trim();
 
-  /* ── Payload для 1C:Dialog ── */
-  var lines = [];
-  lines.push('📋 Новая заявка с сайта o-horizons.com');
-  lines.push('');
-  lines.push('👤 Имя: ' + name);
-  if(company) lines.push('🏢 Компания: ' + company);
-  if(phone)   lines.push('📞 Телефон: ' + phone);
-  lines.push('✉️ Контакт: ' + contact);
-  if(msg)     lines.push('💬 Сообщение: ' + msg);
-
-  var webhookPayload = {
-    createMessage: {
-      extId: 'web-' + Date.now(),
-      extConversationId: 'site-leads',
-      text: lines.join('\n'),
-      textFormat: 'text/plain'
-    }
-  };
-
-  /* ── Payload для Email ── */
-  var emailPayload = {
-    name: name,
+  /* Единый flat-payload для обоих эндпоинтов */
+  var payload = {
+    name:    name,
     company: company,
-    phone: phone,
+    phone:   phone,
     contact: contact,
     message: msg,
-    lang: 'ru'
+    lang:    'ru'
   };
 
   try {
-    /* Отправляем оба запроса параллельно */
     var [webhookRes, emailRes] = await Promise.allSettled([
       fetch('/api/webhook-1c', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-        body: JSON.stringify(webhookPayload)
+        body: JSON.stringify(payload)
       }),
       fetch('/api/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-        body: JSON.stringify(emailPayload)
+        body: JSON.stringify(payload)
       })
     ]);
 
-    /* Считаем успехом, если хотя бы один канал сработал */
     var webhookOk = webhookRes.status === 'fulfilled' && webhookRes.value.ok;
     var emailOk   = emailRes.status === 'fulfilled' && emailRes.value.ok;
 
