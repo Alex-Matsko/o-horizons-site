@@ -7,70 +7,82 @@
     ('sid_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8));
   localStorage.setItem('oh_chat_sid', sessionId);
 
-  var history  = JSON.parse(localStorage.getItem('oh_chat_msgs') || '[]');
-  var isOpen   = false;
-  var isTyping = false;
-  var greeted  = localStorage.getItem('oh_chat_greeted') === '1';
-  var formShown = false; // guard: show form only once per session
+  var history   = JSON.parse(localStorage.getItem('oh_chat_msgs') || '[]');
+  var isOpen    = false;
+  var isTyping  = false;
+  var userName  = localStorage.getItem('oh_chat_name')  || '';
+  var userPhone = localStorage.getItem('oh_chat_phone') || '';
+  var identified = !!(userName && userPhone); // already gave contacts?
+  var greeted   = identified && localStorage.getItem('oh_chat_greeted') === '1';
 
   /* ── DOM ── */
-  var bubble = el('button', 'oh-chat-bubble', '💬');
+  var bubble = el('button', 'oh-chat-bubble', '\uD83D\uDCAC');
   var badge  = el('span',   'oh-chat-badge',  '1');
   bubble.appendChild(badge);
 
   var win = el('div', 'oh-chat-win');
   win.setAttribute('role', 'dialog');
-  win.setAttribute('aria-label', 'Чат с поддержкой');
+  win.setAttribute('aria-label', '\u0427\u0430\u0442 \u0441 \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u043e\u0439');
   win.innerHTML = [
     '<div class="oh-chat-head">',
       '<div class="oh-chat-head-info">',
-        '<span class="oh-chat-avatar">⬡</span>',
+        '<span class="oh-chat-avatar">\u2B21</span>',
         '<div>',
-          '<strong>Открытые Горизонты</strong>',
-          '<span class="oh-chat-status"><span class="oh-dot"></span>Онлайн</span>',
+          '<strong>\u041e\u0442\u043a\u0440\u044b\u0442\u044b\u0435 \u0413\u043e\u0440\u0438\u0437\u043e\u043d\u0442\u044b</strong>',
+          '<span class="oh-chat-status"><span class="oh-dot"></span>\u041e\u043d\u043b\u0430\u0439\u043d</span>',
         '</div>',
       '</div>',
-      '<button class="oh-chat-close" aria-label="Закрыть">✕</button>',
+      '<button class="oh-chat-close" aria-label="\u0417\u0430\u043a\u0440\u044b\u0442\u044c">\u2715</button>',
     '</div>',
-    '<div class="oh-chat-body" id="oh-body"></div>',
-    '<div class="oh-chat-typing" id="oh-typing" style="display:none">',
-      '<span></span><span></span><span></span>',
+
+    /* ── intro form (shown before chat) ── */
+    '<div class="oh-intro-form" id="oh-intro-form">',
+      '<p class="oh-intro-title">\u0414\u043e\u0431\u0440\u044b\u0439 \u0434\u0435\u043d\u044c! \uD83D\uDC4B</p>',
+      '<p class="oh-intro-sub">\u041e\u0441\u0442\u0430\u0432\u044c\u0442\u0435 \u0438\u043c\u044f \u0438 \u0442\u0435\u043b\u0435\u0444\u043e\u043d \u2014 \u0438 \u043c\u044b \u043d\u0430\u0447\u043d\u0451\u043c \u043e\u0431\u0449\u0435\u043d\u0438\u0435.</p>',
+      '<input class="oh-lead-input" id="oh-intro-name"  type="text" placeholder="\u0412\u0430\u0448\u0435 \u0438\u043c\u044f *" autocomplete="name" />',
+      '<input class="oh-lead-input" id="oh-intro-phone" type="tel"  placeholder="\u0422\u0435\u043b\u0435\u0444\u043e\u043d * (+7 ...)" autocomplete="tel" />',
+      '<button class="oh-lead-submit" id="oh-intro-submit">\u041d\u0430\u0447\u0430\u0442\u044c \u0447\u0430\u0442 \u2192</button>',
+      '<p class="oh-lead-note">\u041d\u0430\u0436\u0438\u043c\u0430\u044f \u043a\u043d\u043e\u043f\u043a\u0443, \u0432\u044b \u0441\u043e\u0433\u043b\u0430\u0448\u0430\u0435\u0442\u0435\u0441\u044c \u0441 <a href="/privacy-policy.html" target="_blank">\u043f\u043e\u043b\u0438\u0442\u0438\u043a\u043e\u0439 \u043a\u043e\u043d\u0444\u0438\u0434\u0435\u043d\u0446\u0438\u0430\u043b\u044c\u043d\u043e\u0441\u0442\u0438</a></p>',
     '</div>',
-    /* ── inline lead form (hidden by default) ── */
-    '<div class="oh-lead-form" id="oh-lead-form" style="display:none">',
-      '<p class="oh-lead-title">Оставьте контакт — инженер свяжется с вами</p>',
-      '<input class="oh-lead-input" id="oh-lead-name"  type="text"  placeholder="Ваше имя *" />',
-      '<input class="oh-lead-input" id="oh-lead-phone" type="tel"   placeholder="Телефон * (+7 ...)" />',
-      '<button class="oh-lead-submit" id="oh-lead-submit">Отправить заявку</button>',
-      '<p class="oh-lead-note">Нажимая кнопку, вы соглашаетесь с <a href="/privacy-policy.html" target="_blank">политикой конфиденциальности</a></p>',
-    '</div>',
-    '<div class="oh-chat-foot" id="oh-foot">',
-      '<textarea class="oh-chat-input" id="oh-input" rows="1" placeholder="Напишите сообщение..."></textarea>',
-      '<button class="oh-chat-send" id="oh-send" aria-label="Отправить">',
-        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">',
-          '<line x1="22" y1="2" x2="11" y2="13"/>',
-          '<polygon points="22 2 15 22 11 13 2 9 22 2"/>',
-        '</svg>',
-      '</button>',
+
+    /* ── chat area (hidden until identified) ── */
+    '<div class="oh-chat-area" id="oh-chat-area" style="display:none">',
+      '<div class="oh-chat-body" id="oh-body"></div>',
+      '<div class="oh-chat-typing" id="oh-typing" style="display:none">',
+        '<span></span><span></span><span></span>',
+      '</div>',
+      '<div class="oh-chat-foot" id="oh-foot">',
+        '<textarea class="oh-chat-input" id="oh-input" rows="1" placeholder="\u041d\u0430\u043f\u0438\u0448\u0438\u0442\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435..."></textarea>',
+        '<button class="oh-chat-send" id="oh-send" aria-label="\u041e\u0442\u043f\u0440\u0430\u0432\u0438\u0442\u044c">',
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">',
+            '<line x1="22" y1="2" x2="11" y2="13"/>',
+            '<polygon points="22 2 15 22 11 13 2 9 22 2"/>',
+          '</svg>',
+        '</button>',
+      '</div>',
     '</div>',
   ].join('');
 
   document.body.appendChild(bubble);
   document.body.appendChild(win);
 
+  var introForm   = document.getElementById('oh-intro-form');
+  var chatArea    = document.getElementById('oh-chat-area');
   var body        = document.getElementById('oh-body');
   var input       = document.getElementById('oh-input');
   var send        = document.getElementById('oh-send');
   var typing      = document.getElementById('oh-typing');
-  var leadForm    = document.getElementById('oh-lead-form');
-  var foot        = document.getElementById('oh-foot');
-  var leadName    = document.getElementById('oh-lead-name');
-  var leadPhone   = document.getElementById('oh-lead-phone');
-  var leadSubmit  = document.getElementById('oh-lead-submit');
+  var introName   = document.getElementById('oh-intro-name');
+  var introPhone  = document.getElementById('oh-intro-phone');
+  var introSubmit = document.getElementById('oh-intro-submit');
 
-  /* ── restore history ── */
-  history.forEach(function (m) { renderMsg(m.role, m.text, true); });
-  if (!greeted) setTimeout(function () { if (!isOpen) showBadge(); }, 8000);
+  /* ── restore history if already identified ── */
+  if (identified) {
+    showChatArea();
+    history.forEach(function (m) { renderMsg(m.role, m.text, true); });
+  }
+
+  if (!greeted && !identified) setTimeout(function () { if (!isOpen) showBadge(); }, 8000);
 
   /* ── events ── */
   bubble.addEventListener('click', toggleChat);
@@ -86,15 +98,17 @@
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && isOpen) closeChat();
   });
-  leadSubmit.addEventListener('click', submitLeadForm);
+  introSubmit.addEventListener('click', submitIntroForm);
+  introPhone.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') submitIntroForm();
+  });
 
   /* ── phone mask ── */
-  leadPhone.addEventListener('input', function () {
+  introPhone.addEventListener('input', function () {
     var digits = this.value.replace(/\D/g, '');
     if (digits.length && digits[0] !== '7') digits = '7' + digits;
     digits = digits.slice(0, 11);
-    var d = digits.slice(1);
-    var out = '+7';
+    var d = digits.slice(1), out = '+7';
     if (d.length > 0) out += ' (' + d.slice(0, 3);
     if (d.length >= 3) out += ')';
     if (d.length > 3) out += ' ' + d.slice(3, 6);
@@ -102,8 +116,8 @@
     if (d.length > 8) out += '-' + d.slice(8, 10);
     this.value = out;
   });
-  leadPhone.addEventListener('focus', function () { if (!this.value) this.value = '+7'; });
-  leadPhone.addEventListener('blur',  function () { if (this.value === '+7') this.value = ''; });
+  introPhone.addEventListener('focus', function () { if (!this.value) this.value = '+7'; });
+  introPhone.addEventListener('blur',  function () { if (this.value === '+7') this.value = ''; });
 
   /* ══════════════════════════════════════════════════════════════
      OPEN / CLOSE
@@ -115,30 +129,13 @@
     win.classList.add('oh-chat-open');
     bubble.classList.add('oh-bubble-open');
     hideBadge();
-    scrollBottom();
-    input.focus();
 
-    if (!greeted) {
-      greeted = true;
-      localStorage.setItem('oh_chat_greeted', '1');
-      setTimeout(function () {
-        showTyping();
-        setTimeout(function () {
-          hideTyping();
-          addBotMsg('Добрый день! 👋 Я помогу разобраться с IT-аутсорсингом и аудитом. Чем могу помочь?');
-          setTimeout(function () {
-            showTyping();
-            setTimeout(function () {
-              hideTyping();
-              addBotMsgWithButtons('Выберите тему или напишите свой вопрос:', [
-                'Узнать о тарифах',
-                'Заказать аудит',
-                'Задать вопрос',
-              ]);
-            }, 800);
-          }, 600);
-        }, 1200);
-      }, 400);
+    if (!identified) {
+      introName.focus();
+    } else {
+      scrollBottom();
+      input.focus();
+      if (!greeted) startGreeting();
     }
   }
 
@@ -146,6 +143,80 @@
     isOpen = false;
     win.classList.remove('oh-chat-open');
     bubble.classList.remove('oh-bubble-open');
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     INTRO FORM SUBMIT
+  ══════════════════════════════════════════════════════════════ */
+  function submitIntroForm() {
+    var name  = introName.value.trim();
+    var phone = introPhone.value.trim();
+
+    if (!name) {
+      introName.style.borderColor = '#ef4444';
+      introName.focus();
+      return;
+    }
+    if (!phone || phone.replace(/\D/g,'').length < 7) {
+      introPhone.style.borderColor = '#ef4444';
+      introPhone.focus();
+      return;
+    }
+
+    introName.style.borderColor = '';
+    introPhone.style.borderColor = '';
+    introSubmit.disabled = true;
+    introSubmit.textContent = '\u041F\u043E\u0434\u0436\u0434\u0438\u0442\u0435...';
+
+    userName  = name;
+    userPhone = phone;
+    localStorage.setItem('oh_chat_name',  userName);
+    localStorage.setItem('oh_chat_phone', userPhone);
+    identified = true;
+
+    /* notify 1C that a new contact started a chat */
+    fetch('/api/chat-lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: sessionId, name: userName, phone: userPhone, history: [], event: 'chat_started' }),
+    }).catch(function(){}); /* fire-and-forget */
+
+    showChatArea();
+    startGreeting();
+  }
+
+  function showChatArea() {
+    introForm.style.display = 'none';
+    chatArea.style.display  = 'flex';
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     GREETING
+  ══════════════════════════════════════════════════════════════ */
+  function startGreeting() {
+    if (greeted) return;
+    greeted = true;
+    localStorage.setItem('oh_chat_greeted', '1');
+
+    setTimeout(function () {
+      showTyping();
+      setTimeout(function () {
+        hideTyping();
+        addBotMsg('\u041f\u0440\u0438\u0432\u0435\u0442, ' + userName + '! \uD83D\uDC4B \u0427\u0435\u043c \u043c\u043e\u0433\u0443 \u043f\u043e\u043c\u043e\u0447\u044c?');
+        setTimeout(function () {
+          showTyping();
+          setTimeout(function () {
+            hideTyping();
+            addBotMsgWithButtons('\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0442\u0435\u043c\u0443 \u0438\u043b\u0438 \u043d\u0430\u043f\u0438\u0448\u0438\u0442\u0435 \u0441\u0432\u043e\u0439 \u0432\u043e\u043f\u0440\u043e\u0441:', [
+              '\u0423\u0437\u043d\u0430\u0442\u044c \u043e \u0442\u0430\u0440\u0438\u0444\u0430\u0445',
+              '\u0417\u0430\u043a\u0430\u0437\u0430\u0442\u044c \u0430\u0443\u0434\u0438\u0442',
+              '\u0417\u0430\u0434\u0430\u0442\u044c \u0432\u043e\u043f\u0440\u043e\u0441',
+            ]);
+            setTimeout(function() { input.focus(); }, 100);
+          }, 700);
+        }, 500);
+      }, 1000);
+    }, 300);
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -168,7 +239,13 @@
     fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sessionId: sessionId, text: text, history: history.slice(-60) }),
+      body: JSON.stringify({
+        sessionId: sessionId,
+        text:      text,
+        history:   history.slice(-60),
+        name:      userName,
+        phone:     userPhone,
+      }),
     })
     .then(function (r) { return r.json(); })
     .then(function (data) {
@@ -176,69 +253,13 @@
       isTyping = false;
       send.disabled = false;
       if (data.reply) addBotMsg(data.reply);
-      // Server signals that it's time to show the lead form
-      if (data.showForm) showLeadForm();
+      scrollBottom();
     })
     .catch(function () {
       hideTyping();
       isTyping = false;
       send.disabled = false;
-      addBotMsg('Извините, что-то пошло не так. Напишите напрямую: info@o-horizons.com');
-    });
-  }
-
-  /* ══════════════════════════════════════════════════════════════
-     LEAD FORM
-  ══════════════════════════════════════════════════════════════ */
-  function showLeadForm() {
-    if (formShown) return;
-    formShown = true;
-    // Hide text input, show the form
-    foot.style.display = 'none';
-    leadForm.style.display = 'flex';
-    leadName.focus();
-    scrollBottom();
-  }
-
-  function hideLeadForm() {
-    leadForm.style.display = 'none';
-    foot.style.display = 'flex';
-  }
-
-  function submitLeadForm() {
-    var name  = leadName.value.trim();
-    var phone = leadPhone.value.trim();
-
-    if (!name) { leadName.focus(); leadName.style.borderColor = '#ef4444'; return; }
-    if (!phone || phone.length < 6) { leadPhone.focus(); leadPhone.style.borderColor = '#ef4444'; return; }
-
-    leadSubmit.disabled = true;
-    leadSubmit.textContent = 'Отправляем...';
-
-    // Add to history so it goes to 1C
-    addUserMsg('📋 Имя: ' + name + ' | Телефон: ' + phone);
-
-    fetch('/api/chat-lead', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        sessionId: sessionId,
-        name:      name,
-        phone:     phone,
-        history:   history.slice(-60),
-      }),
-    })
-    .then(function (r) { return r.json(); })
-    .then(function (data) {
-      hideLeadForm();
-      addBotMsg('✅ Заявка принята! Наш инженер позвонит вам в ближайшее время. Если срочно — info@o-horizons.com или @ohorizons в Telegram.');
-      formShown = true; // don't show again
-    })
-    .catch(function () {
-      leadSubmit.disabled = false;
-      leadSubmit.textContent = 'Отправить заявку';
-      addBotMsg('Не удалось отправить. Напишите напрямую: info@o-horizons.com');
-      hideLeadForm();
+      addBotMsg('\u0418\u0437\u0432\u0438\u043d\u0438\u0442\u0435, \u0447\u0442\u043e-\u0442\u043e \u043f\u043e\u0448\u043b\u043e \u043d\u0435 \u0442\u0430\u043a. \u041d\u0430\u043f\u0438\u0448\u0438\u0442\u0435 \u043d\u0430\u043f\u0440\u044f\u043c\u0443\u044e: info@o-horizons.com');
     });
   }
 
@@ -249,6 +270,8 @@
     history.push({ role: 'user', text: text });
     saveHistory();
     renderMsg('user', text);
+    /* sync every user message to 1C so conversation is visible live */
+    syncTo1C();
   }
 
   function addBotMsg(text) {
@@ -282,6 +305,22 @@
   function saveHistory() {
     if (history.length > 60) history = history.slice(-60);
     try { localStorage.setItem('oh_chat_msgs', JSON.stringify(history)); } catch (e) {}
+  }
+
+  /* send full conversation to 1C (upsert — same extConversationId) */
+  function syncTo1C() {
+    if (!userName || !userPhone) return;
+    fetch('/api/chat-lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId: sessionId,
+        name:      userName,
+        phone:     userPhone,
+        history:   history.slice(-60),
+        event:     'message',
+      }),
+    }).catch(function(){});
   }
 
   /* ══════════════════════════════════════════════════════════════
