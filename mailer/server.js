@@ -24,6 +24,7 @@ const limiter = rateLimit({
   message: { error: 'Too many requests, please try again later.' },
 });
 app.use('/api/send', limiter);
+app.use('/api/webhook-1c', limiter);
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -39,6 +40,39 @@ const transporter = nodemailer.createTransport({
 });
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
+// ── 1C:Dialog webhook proxy ──────────────────────────────────────────────────
+// Forwards the request server-side to avoid CORS issues in the browser.
+const WEBHOOK_1C = process.env.WEBHOOK_1C ||
+  'https://integrations.1cdialog.com/integration/webhook/909421:qMzZjLbwBCSjAJBq7aQ76F5RyZ5orTG4/callback';
+
+app.post('/api/webhook-1c', async (req, res) => {
+  if (!req.body || !req.body.createMessage) {
+    return res.status(400).json({ error: 'invalid payload' });
+  }
+
+  try {
+    const upstream = await fetch(WEBHOOK_1C, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+      body: JSON.stringify(req.body),
+    });
+
+    const text = await upstream.text();
+
+    // 200 = success, 409 = conversation already exists (normal on repeated sends)
+    if (upstream.ok || upstream.status === 409) {
+      return res.json({ ok: true, status: upstream.status });
+    }
+
+    console.error('1C webhook error:', upstream.status, text);
+    return res.status(502).json({ error: '1C upstream error', status: upstream.status });
+  } catch (err) {
+    console.error('1C webhook fetch failed:', err.message);
+    return res.status(502).json({ error: 'Failed to reach 1C:Dialog' });
+  }
+});
+// ─────────────────────────────────────────────────────────────────────────────
 
 app.post('/api/send', async (req, res) => {
   const { name, company, phone, contact, message, lang } = req.body;
