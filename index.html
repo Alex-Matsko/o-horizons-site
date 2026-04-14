@@ -570,9 +570,10 @@ document.addEventListener('keydown',function(e){
   if(e.key==='Escape')closeModal();
 });
 
-/* ---------- Form submit → 1C:Dialog webhook ---------- */
-var WEBHOOK_URL = 'https://integrations.1cdialog.com/integration/webhook/909421:qMzZjLbwBCSjAJBq7aQ76F5RyZ5orTG4/callback';
-
+/* ---------- Form submit → прокси → 1C:Dialog ---------- */
+/* Запрос идёт на /api/webhook-1c (серверный прокси),
+   чтобы обойти CORS-ограничения браузера при прямом
+   обращении к integrations.1cdialog.com               */
 document.getElementById('auditForm').addEventListener('submit', async function(e){
   e.preventDefault();
   var btn    = document.getElementById('submitBtn');
@@ -596,7 +597,6 @@ document.getElementById('auditForm').addEventListener('submit', async function(e
   var contact = document.getElementById('contactField').value.trim();
   var msg     = document.getElementById('message').value.trim();
 
-  /* Формируем текст сообщения */
   var lines = [];
   lines.push('📋 Новая заявка с сайта o-horizons.com');
   lines.push('');
@@ -606,27 +606,23 @@ document.getElementById('auditForm').addEventListener('submit', async function(e
   lines.push('✉️ Контакт: ' + contact);
   if(msg)     lines.push('💬 Сообщение: ' + msg);
 
-  var msgId = 'web-' + Date.now();
-  var convId = 'site-leads';
-
   var payload = {
     createMessage: {
-      extId: msgId,
-      extConversationId: convId,
+      extId: 'web-' + Date.now(),
+      extConversationId: 'site-leads',
       text: lines.join('\n'),
       textFormat: 'text/plain'
     }
   };
 
   try {
-    var res = await fetch(WEBHOOK_URL, {
+    var res = await fetch('/api/webhook-1c', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json; charset=UTF-8' },
       body: JSON.stringify(payload)
     });
 
-    if(res.ok || res.status === 409) {
-      /* 409 = обсуждение уже есть — это нормально */
+    if(res.ok) {
       status.textContent = '✓ Заявка отправлена! Мы свяжемся с вами в течение одного рабочего дня.';
       status.className = 'form-status success';
       this.reset();
