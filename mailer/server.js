@@ -17,8 +17,9 @@ app.use(cors({ origin: allowedOrigin }));
 const limiter = rateLimit({ windowMs: 15*60*1000, max: 10, standardHeaders: true, legacyHeaders: false });
 app.use('/api/send',       limiter);
 app.use('/api/webhook-1c', limiter);
-app.use('/api/chat',       rateLimit({ windowMs: 60*1000, max: 30 }));
-app.use('/api/chat-lead',  rateLimit({ windowMs: 60*1000, max: 10 }));
+app.use('/api/chat',       rateLimit({ windowMs: 60*1000, max: 60 }));
+app.use('/api/chat-lead',  rateLimit({ windowMs: 60*1000, max: 30 }));
+app.use('/api/chat-poll',  rateLimit({ windowMs: 60*1000, max: 120 }));
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -46,69 +47,60 @@ async function post1C(payload) {
   console.log('1C ←', JSON.stringify(payload).slice(0, 140), '→', r.status, txt);
   return { status: r.status, text: txt };
 }
-
-function ok1C(status) {
-  return status === 200 || status === 201 || status === 409;
-}
+function ok1C(s) { return s === 200 || s === 201 || s === 409; }
 
 /* ══════════════════════════════════════════════════════
    Session store
+   session: { id, msgSeq, operatorMode, inboxQueue: [{id,text,ts}] }
 ══════════════════════════════════════════════════════ */
 const sessions = new Map();
 function getSession(id) {
-  if (!sessions.has(id)) sessions.set(id, { id, step: null, msgSeq: 0 });
+  if (!sessions.has(id)) sessions.set(id, { id, msgSeq: 0, operatorMode: false, inboxQueue: [] });
   return sessions.get(id);
 }
 
 /* ══════════════════════════════════════════════════════
-   1C: одна беседа на sessionId, каждое сообщение — отдельный createMessage
-   conversationId стабилен: 'chat-<sessionId>'
-   messageId уникален:      'chat-<sessionId>-<seq>'
+   1C conversation helpers
 ══════════════════════════════════════════════════════ */
 async function ensureConversation(sessionId, name) {
   const convId = 'chat-' + sessionId;
-  const title  = 'Чат с сайта: ' + (name || 'Гость');
-  // 409 = уже существует — это нормально
-  const r = await post1C({ createConversation: { extConversationId: convId, title } });
-  if (!ok1C(r.status)) throw new Error('createConversation failed: ' + r.status + ' ' + r.text);
+  const r = await post1C({ createConversation: { extConversationId: convId, title: 'Чат с сайта: ' + (name || 'Гость') } });
+  if (!ok1C(r.status)) throw new Error('createConversation failed: ' + r.status);
   return convId;
-}
-
-async function sendMessageTo1C(sessionId, name, phone, text, seq) {
-  const convId = await ensureConversation(sessionId, name);
-  const msgId  = convId + '-' + seq;
-
-  // Первое сообщение содержит контакты + текст, остальные — только текст
-  const body = seq === 1
-    ? ['👤 ' + (name || '—'), '📞 ' + (phone || '—'), '', text].join('\n')
-    : text;
-
-  await post1C({ createMessage: { extId: msgId, extConversationId: convId, text: body } });
 }
 
 async function appendToChatLead({ sessionId, name, phone, history, event }) {
   const session = getSession(sessionId);
-
   try {
     const convId = await ensureConversation(sessionId, name);
 
     if (event === 'chat_started') {
-      // Первое сообщение — контакты
-      const msgId = convId + '-0';
-      const body  = ['━━━ НОВЫЙ ЧАТ ━━━', '👤 Имя:     ' + (name || '—'), '📞 Телефон: ' + (phone || '—')].join('\n');
-      await post1C({ createMessage: { extId: msgId, extConversationId: convId, text: body } });
+      const body = ['━━━ НОВЫЙ ЧАТ ━━━', '👤 ' + (name || '—'), '📞 ' + (phone || '—')].join('\n');
+      await post1C({ createMessage: { extId: convId + '-0', extConversationId: convId, text: body } });
       session.msgSeq = 0;
       return;
     }
 
-    // event === 'message': отправляем только ПОСЛЕДНЕЕ сообщение из истории
+    if (event === 'operator_requested') {
+      await post1C({ createMessage: {
+        extId: convId + '-op-' + Date.now(),
+        extConversationId: convId,
+        text: '🔔 Пользователь запросил оператора',
+      }});
+      return;
+    }
+
+    // event === 'message'
     if (Array.isArray(history) && history.length) {
       const last = history[history.length - 1];
       if (last && last.text) {
         session.msgSeq += 1;
-        const msgId  = convId + '-' + session.msgSeq;
         const prefix = last.role === 'user' ? '👤 ' : '🤖 ';
-        await post1C({ createMessage: { extId: msgId, extConversationId: convId, text: prefix + last.text } });
+        await post1C({ createMessage: {
+          extId: convId + '-' + session.msgSeq,
+          extConversationId: convId,
+          text: prefix + last.text,
+        }});
       }
     }
   } catch (e) {
@@ -120,44 +112,64 @@ async function appendToChatLead({ sessionId, name, phone, history, event }) {
    Bot logic
 ══════════════════════════════════════════════════════ */
 const BOT_REPLIES = {
-  'узнать о тарифах': [
-    'У нас 4 тарифа:\n\n• Офис Base — от 25 000 ₽/мес (до 10 ПК, сеть, почта)\n• Infra Standard — от 45 000 ₽/мес (серверы 1С, MSSQL, бэкапы)\n• Infra Premium — от 70 000 ₽/мес (SLA, 24/7)\n• Virtual CIO — от 120 000 ₽/мес (IT-директор на аутсорсе)',
-    'Точную стоимость — на калькуляторе: https://o-horizons.com/calculator',
-  ],
-  'заказать аудит': [
-    'Отлично! Комплексный аудит — от 25 000 ₽. Проверяем бэкапы, серверы, 1С, удалённый доступ. Стоимость зачтётся в первый месяц сопровождения.',
-  ],
-  'задать вопрос': [
-    'Конечно! Задавайте — постараюсь ответить. Если вопрос сложный, подключу инженера.',
-  ],
+  'узнать о тарифах': 'У нас 4 тарифа:\n\n• Офис Base — от 25 000 ₽/мес (до 10 ПК, сеть, почта)\n• Infra Standard — от 45 000 ₽/мес (серверы 1С, MSSQL, бэкапы)\n• Infra Premium — от 70 000 ₽/мес (SLA, 24/7)\n• Virtual CIO — от 120 000 ₽/мес (IT-директор на аутсорсе)\n\nТочную стоимость — на калькуляторе: https://o-horizons.com/calculator',
+  'заказать аудит':   'Отлично! Комплексный аудит — от 25 000 ₽. Проверяем бэкапы, серверы, 1С, удалённый доступ. Стоимость зачтётся в первый месяц сопровождения.',
+  'задать вопрос':    null, // handled below
 };
+
+const OPERATOR_WORDS = ['оператор','инженер','человек','менеджер','специалист','живой','поддержк','связат','соедин','подключи'];
 
 const KEYWORDS = [
   { words: ['цен','тариф','стоит','сколько','прайс'], key: 'узнать о тарифах' },
   { words: ['аудит','проверк','провери'],              key: 'заказать аудит'   },
-  { words: ['1с','1c','mssql','базы','сервер','бэкап','backup','виртуал','vmware','proxmox'],
-    reply: 'Мы специализируемся именно на этом! Серверы 1С, MSSQL, Veeam, VMware/Proxmox — наш профиль.' },
+  { words: ['1с','1c','mssql','базы','сервер','бэкап','backup','виртуал','vmware','proxmox','инфраструктур','компьютер','рабочи'],
+    reply: 'Мы специализируемся именно на этом! Обслуживаем серверы 1С, MSSQL, Veeam, VMware/Proxmox и рабочие места. Расскажите подробнее — подберём тариф.' },
   { words: ['безопасност','vpn','mikrotik','firewall','ngfw'],
-    reply: 'Настройка VPN, MikroTik и NGFW входит в наши услуги.' },
+    reply: 'Настройка VPN, MikroTik и NGFW — наш профиль. Хотите узнать стоимость или заказать аудит?' },
+  { words: ['24/7','24х7','круглосуточ','постоянн'],
+    reply: 'Тариф Infra Premium и Virtual CIO включают поддержку 24/7 с гарантированным SLA. Рассказать подробнее?' },
 ];
 
 function getBotReply(session, text) {
   const lower = text.toLowerCase();
 
-  if (/^(привет|здравствуй|добрый|hello|hi\b)/.test(lower))
-    return { reply: 'Добрый день! Чем могу помочь? Расскажу о тарифах, аудите или отвечу на вопрос.' };
+  // Запрос оператора
+  if (OPERATOR_WORDS.some(w => lower.includes(w))) {
+    session.operatorMode = true;
+    return {
+      reply: '🔔 Понял, соединяю с инженером! Обычно отвечаем в течение нескольких минут. Напишите здесь — оператор увидит сообщение.',
+      operatorMode: true,
+    };
+  }
 
+  // Приветствие
+  if (/^(привет|здравствуй|добрый|hello|hi\b|хай|ку\b)/.test(lower))
+    return { reply: 'Добрый день! Чем могу помочь? Расскажу о тарифах, аудите — или сразу соединю с инженером.' };
+
+  // Быстрые кнопки
+  if (lower === 'задать вопрос')
+    return { reply: 'Конечно! Напишите ваш вопрос — отвечу или подключу инженера.' };
   const exact = BOT_REPLIES[lower];
-  if (exact) return { reply: exact.join('\n\n') };
+  if (exact) return { reply: exact };
 
+  // Ключевые слова
   for (const kw of KEYWORDS) {
-    if (kw.words && kw.words.some(w => lower.includes(w))) {
+    if (kw.words.some(w => lower.includes(w))) {
       if (kw.reply) return { reply: kw.reply };
-      if (kw.key)   return { reply: BOT_REPLIES[kw.key].join('\n\n') };
+      if (kw.key)   return { reply: BOT_REPLIES[kw.key] };
     }
   }
 
-  return { reply: 'Хороший вопрос! Напишите подробнее — постараюсь помочь или подключу инженера.' };
+  // Длинное сообщение — передаём оператору
+  if (text.trim().length > 60) {
+    session.operatorMode = true;
+    return {
+      reply: '📨 Передал ваш вопрос инженеру. Он ответит здесь в чате. Обычно ждать не дольше нескольких минут.',
+      operatorMode: true,
+    };
+  }
+
+  return { reply: 'Уточните, пожалуйста: вас интересуют тарифы, аудит IT-инфраструктуры — или хотите сразу поговорить с инженером?' };
 }
 
 /* ══════════════════════════════════════════════════════
@@ -171,17 +183,20 @@ app.post('/api/chat', async (req, res) => {
     return res.status(400).json({ error: 'message too long' });
 
   const session = getSession(sessionId);
-  const { reply } = getBotReply(session, text.trim());
 
-  return res.json({ reply });
+  // Если уже переключились на оператора — бот молчит, ждём polling
+  if (session.operatorMode)
+    return res.json({ reply: null, operatorMode: true });
+
+  const result = getBotReply(session, text.trim());
+  return res.json(result);
 });
 
 /* ══════════════════════════════════════════════════════
-   POST /api/chat-lead  — called on every user message & on chat start
+   POST /api/chat-lead
 ══════════════════════════════════════════════════════ */
 app.post('/api/chat-lead', async (req, res) => {
   const { sessionId, name, phone, history, event } = req.body || {};
-
   if (!sessionId || !name || !phone)
     return res.status(400).json({ error: 'sessionId, name and phone are required' });
   if (String(name).length > 100 || String(phone).length > 30)
@@ -191,11 +206,52 @@ app.post('/api/chat-lead', async (req, res) => {
     ? history.slice(-60).filter(m => m && typeof m.role === 'string' && typeof m.text === 'string')
     : [];
 
-  // fire-and-forget
+  // Если пользователь запросил оператора — помечаем сессию и уведомляем 1С
+  if (event === 'operator_requested') {
+    const session = getSession(sessionId);
+    session.operatorMode = true;
+  }
+
   appendToChatLead({ sessionId, name, phone, history: safeHistory, event: event || 'message' })
     .catch(console.error);
 
   return res.json({ ok: true });
+});
+
+/* ══════════════════════════════════════════════════════
+   POST /api/chat-inbox  — 1C оператор отправляет сообщение пользователю
+   Body: { sessionId, text, secret }
+══════════════════════════════════════════════════════ */
+app.post('/api/chat-inbox', (req, res) => {
+  const { sessionId, text, secret } = req.body || {};
+  const INBOX_SECRET = process.env.INBOX_SECRET || 'oh-inbox-secret';
+  if (secret !== INBOX_SECRET) return res.status(403).json({ error: 'forbidden' });
+  if (!sessionId || !text) return res.status(400).json({ error: 'sessionId and text required' });
+
+  const session = getSession(sessionId);
+  session.inboxQueue.push({ id: Date.now() + '-' + Math.random().toString(36).slice(2,6), text: String(text).slice(0, 2000), ts: Date.now() });
+  // Не копим более 50 сообщений в очереди
+  if (session.inboxQueue.length > 50) session.inboxQueue = session.inboxQueue.slice(-50);
+
+  console.log('inbox → session', sessionId, ':', text.slice(0, 80));
+  return res.json({ ok: true });
+});
+
+/* ══════════════════════════════════════════════════════
+   GET /api/chat-poll?sessionId=XXX&after=TIMESTAMP
+   Фронтенд опрашивает каждые 4 сек, получает новые сообщения от оператора
+══════════════════════════════════════════════════════ */
+app.get('/api/chat-poll', (req, res) => {
+  const { sessionId, after } = req.query;
+  if (!sessionId) return res.status(400).json({ error: 'sessionId required' });
+
+  const session = sessions.get(sessionId);
+  if (!session) return res.json({ messages: [], operatorMode: false });
+
+  const afterTs = parseInt(after || '0', 10);
+  const messages = session.inboxQueue.filter(m => m.ts > afterTs);
+
+  return res.json({ messages, operatorMode: session.operatorMode });
 });
 
 /* ══════════════════════════════════════════════════════
@@ -236,7 +292,7 @@ app.post('/api/send', async (req, res) => {
   <h2 style="color:#01696f">${isRu ? 'Новая заявка на аудит' : 'New Audit Request'}</h2>
   <table style="width:100%;font-size:14px">
     <tr><td style="color:#888;width:130px;padding:6px 0">${isRu?'Имя':'Name'}</td><td><strong>${name}</strong></td></tr>
-    ${company?`<tr><td style="color:#888;padding:6px 0">${isRu?'Компания':'Company'}</td><td>${company}</td></tr>`:''} 
+    ${company?`<tr><td style="color:#888;padding:6px 0">${isRu?'Компания':'Company'}</td><td>${company}</td></tr>`:''}
     ${phone?`<tr><td style="color:#888;padding:6px 0">${isRu?'Телефон':'Phone'}</td><td><strong>${phone}</strong></td></tr>`:''}
     <tr><td style="color:#888;padding:6px 0">${isRu?'Контакт':'Contact'}</td><td><strong>${contact}</strong></td></tr>
     ${message?`<tr><td style="color:#888;padding:6px 0;vertical-align:top">${isRu?'Сообщение':'Message'}</td><td>${message.replace(/\n/g,'<br/>')}</td></tr>`:''}
