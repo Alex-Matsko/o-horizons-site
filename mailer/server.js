@@ -10,16 +10,12 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 
-// Trust Nginx reverse proxy (fixes ERR_ERL_UNEXPECTED_X_FORWARDED_FOR)
 app.set('trust proxy', 1);
-
 app.use(express.json({ limit: '16kb' }));
 
-// CORS — only allow own domain
 const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://o-horizons.com';
 app.use(cors({ origin: allowedOrigin }));
 
-// Rate limiting — max 10 requests per 15 min per IP
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
@@ -38,9 +34,7 @@ const transporter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
-  tls: {
-    rejectUnauthorized: false,
-  },
+  tls: { rejectUnauthorized: false },
 });
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
@@ -56,67 +50,51 @@ app.post('/api/webhook-1c', async (req, res) => {
     return res.status(400).json({ error: 'name and contact are required' });
   }
 
-  // Generate unique ID for this lead (timestamp + random suffix)
+  // Unique ID per lead
   const leadId = 'lead-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
 
   // Build message text
-  const lines = [];
-  lines.push('📋 Новая заявка с сайта o-horizons.com');
-  lines.push('');
-  lines.push('👤 Имя: ' + name);
+  const lines = [
+    '📋 Новая заявка с сайта o-horizons.com',
+    '',
+    '👤 Имя: ' + name,
+  ];
   if (company) lines.push('🏢 Компания: ' + company);
   if (phone)   lines.push('📞 Телефон: ' + phone);
   lines.push('✉️ Контакт: ' + contact);
   if (message) lines.push('💬 Сообщение: ' + message);
 
-  // Determine channel type from contact field
-  const isTelegram = contact.startsWith('@') || contact.toLowerCase().includes('t.me');
-  const channelType = isTelegram ? 'telegram' : 'email';
-
-  // 1C:Dialog payload — each lead is a new conversation
+  // Minimal payload — only required fields for 1C:Dialog webhook
   const payload = {
     createMessage: {
       extId:             leadId,
       extConversationId: leadId,
-      subject:           'Заявка с сайта: ' + name + (company ? ' (' + company + ')' : ''),
       text:              lines.join('\n'),
-      textFormat:        'text/plain',
-      channelType:       channelType,
-      contact: {
-        name:    name,
-        phone:   phone   || undefined,
-        email:   !isTelegram ? contact : undefined,
-        telegram: isTelegram ? contact : undefined,
-      },
     }
   };
 
-  // Remove undefined keys from contact object
-  Object.keys(payload.createMessage.contact).forEach(k => {
-    if (payload.createMessage.contact[k] === undefined) {
-      delete payload.createMessage.contact[k];
-    }
-  });
-
   try {
-    console.log('Sending to 1C:Dialog:', JSON.stringify(payload, null, 2));
+    console.log('=== Sending to 1C:Dialog ===');
+    console.log(JSON.stringify(payload, null, 2));
 
     const upstream = await fetch(WEBHOOK_1C, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-      body: JSON.stringify(payload),
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(payload),
     });
 
     const text = await upstream.text();
-    console.log('1C:Dialog response:', upstream.status, text);
+    console.log('=== 1C:Dialog response ===', upstream.status, text);
 
-    // 200/201 = success, 409 = already exists (treat as ok)
     if (upstream.ok || upstream.status === 409) {
       return res.json({ ok: true, status: upstream.status });
     }
 
-    console.error('1C webhook error:', upstream.status, text);
-    return res.status(502).json({ error: '1C upstream error', status: upstream.status, body: text });
+    return res.status(502).json({
+      error:  '1C upstream error',
+      status: upstream.status,
+      body:   text,
+    });
   } catch (err) {
     console.error('1C webhook fetch failed:', err.message);
     return res.status(502).json({ error: 'Failed to reach 1C:Dialog' });
@@ -135,9 +113,6 @@ app.post('/api/send', async (req, res) => {
   }
   if (name.length > 100 || contact.length > 200 || (message && message.length > 2000)) {
     return res.status(400).json({ error: 'fields too long' });
-  }
-  if (phone && (typeof phone !== 'string' || phone.length > 30)) {
-    return res.status(400).json({ error: 'invalid phone' });
   }
 
   const isRu = lang !== 'en';
@@ -163,7 +138,7 @@ app.post('/api/send', async (req, res) => {
   try {
     await transporter.sendMail({
       from: `"Открытые Горизонты" <${process.env.SMTP_USER}>`,
-      to: process.env.MAIL_TO,
+      to:   process.env.MAIL_TO,
       subject,
       html,
     });
