@@ -9,6 +9,10 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
+
+// Trust Nginx reverse proxy (fixes ERR_ERL_UNEXPECTED_X_FORWARDED_FOR)
+app.set('trust proxy', 1);
+
 app.use(express.json({ limit: '16kb' }));
 
 // CORS — only allow own domain
@@ -42,7 +46,6 @@ const transporter = nodemailer.createTransport({
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 // ── 1C:Dialog webhook proxy ──────────────────────────────────────────────────
-// Forwards the request server-side to avoid CORS issues in the browser.
 const WEBHOOK_1C = process.env.WEBHOOK_1C ||
   'https://integrations.1cdialog.com/integration/webhook/909421:qMzZjLbwBCSjAJBq7aQ76F5RyZ5orTG4/callback';
 
@@ -65,8 +68,9 @@ app.post('/api/webhook-1c', async (req, res) => {
       return res.json({ ok: true, status: upstream.status });
     }
 
+    // Log full response body to help debug 1C errors
     console.error('1C webhook error:', upstream.status, text);
-    return res.status(502).json({ error: '1C upstream error', status: upstream.status });
+    return res.status(502).json({ error: '1C upstream error', status: upstream.status, body: text });
   } catch (err) {
     console.error('1C webhook fetch failed:', err.message);
     return res.status(502).json({ error: 'Failed to reach 1C:Dialog' });
@@ -77,7 +81,6 @@ app.post('/api/webhook-1c', async (req, res) => {
 app.post('/api/send', async (req, res) => {
   const { name, company, phone, contact, message, lang } = req.body;
 
-  // Basic validation
   if (!name || !contact) {
     return res.status(400).json({ error: 'name and contact are required' });
   }
