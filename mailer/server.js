@@ -51,43 +51,69 @@ function ok1C(status) {
   return status === 200 || status === 201 || status === 409;
 }
 
-function formatHistory(hist) {
-  if (!Array.isArray(hist) || !hist.length) return '(переписка пуста)';
-  return hist
-    .filter(m => m && m.role && m.text)
-    .map(m => (m.role === 'user' ? '👤 Посетитель' : '🤖 Бот') + ': ' + String(m.text).slice(0, 600))
-    .join('\n');
-}
-
-async function sendLeadTo1C({ name, phone, sessionId, history }) {
-  const leadId = 'chat-' + sessionId + '-' + Date.now();
-  const title  = 'Чат с сайта: ' + (name || 'Гость');
-
-  const body = [
-    '━━━ КОНТАКТ ━━━',
-    '👤 Имя:     ' + (name  || '—'),
-    '📞 Телефон: ' + (phone || '—'),
-    '',
-    '━━━ ИСТОРИЯ ПЕРЕПИСКИ ━━━',
-    formatHistory(history),
-  ].join('\n');
-
-  try {
-    const c = await post1C({ createConversation: { extConversationId: leadId, title } });
-    if (!ok1C(c.status)) { console.error('createConversation failed:', c.status, c.text); return; }
-    await post1C({ createMessage: { extId: leadId + '-lead', extConversationId: leadId, text: body } });
-  } catch (e) {
-    console.error('sendLeadTo1C:', e.message);
-  }
-}
-
 /* ══════════════════════════════════════════════════════
-   Session store (step tracker; history comes from frontend)
+   Session store
 ══════════════════════════════════════════════════════ */
 const sessions = new Map();
 function getSession(id) {
-  if (!sessions.has(id)) sessions.set(id, { id, step: null });
+  if (!sessions.has(id)) sessions.set(id, { id, step: null, msgSeq: 0 });
   return sessions.get(id);
+}
+
+/* ══════════════════════════════════════════════════════
+   1C: одна беседа на sessionId, каждое сообщение — отдельный createMessage
+   conversationId стабилен: 'chat-<sessionId>'
+   messageId уникален:      'chat-<sessionId>-<seq>'
+══════════════════════════════════════════════════════ */
+async function ensureConversation(sessionId, name) {
+  const convId = 'chat-' + sessionId;
+  const title  = 'Чат с сайта: ' + (name || 'Гость');
+  // 409 = уже существует — это нормально
+  const r = await post1C({ createConversation: { extConversationId: convId, title } });
+  if (!ok1C(r.status)) throw new Error('createConversation failed: ' + r.status + ' ' + r.text);
+  return convId;
+}
+
+async function sendMessageTo1C(sessionId, name, phone, text, seq) {
+  const convId = await ensureConversation(sessionId, name);
+  const msgId  = convId + '-' + seq;
+
+  // Первое сообщение содержит контакты + текст, остальные — только текст
+  const body = seq === 1
+    ? ['👤 ' + (name || '—'), '📞 ' + (phone || '—'), '', text].join('\n')
+    : text;
+
+  await post1C({ createMessage: { extId: msgId, extConversationId: convId, text: body } });
+}
+
+async function appendToChatLead({ sessionId, name, phone, history, event }) {
+  const session = getSession(sessionId);
+
+  try {
+    const convId = await ensureConversation(sessionId, name);
+
+    if (event === 'chat_started') {
+      // Первое сообщение — контакты
+      const msgId = convId + '-0';
+      const body  = ['━━━ НОВЫЙ ЧАТ ━━━', '👤 Имя:     ' + (name || '—'), '📞 Телефон: ' + (phone || '—')].join('\n');
+      await post1C({ createMessage: { extId: msgId, extConversationId: convId, text: body } });
+      session.msgSeq = 0;
+      return;
+    }
+
+    // event === 'message': отправляем только ПОСЛЕДНЕЕ сообщение из истории
+    if (Array.isArray(history) && history.length) {
+      const last = history[history.length - 1];
+      if (last && last.text) {
+        session.msgSeq += 1;
+        const msgId  = convId + '-' + session.msgSeq;
+        const prefix = last.role === 'user' ? '👤 ' : '🤖 ';
+        await post1C({ createMessage: { extId: msgId, extConversationId: convId, text: prefix + last.text } });
+      }
+    }
+  } catch (e) {
+    console.error('appendToChatLead:', e.message);
+  }
 }
 
 /* ══════════════════════════════════════════════════════
@@ -115,41 +141,27 @@ const KEYWORDS = [
     reply: 'Настройка VPN, MikroTik и NGFW входит в наши услуги.' },
 ];
 
-// Returns { reply, showForm }
 function getBotReply(session, text) {
   const lower = text.toLowerCase();
 
-  // greetings
   if (/^(привет|здравствуй|добрый|hello|hi\b)/.test(lower))
     return { reply: 'Добрый день! Чем могу помочь? Расскажу о тарифах, аудите или отвечу на вопрос.' };
 
-  // exact quick-button matches
   const exact = BOT_REPLIES[lower];
-  if (exact) {
-    const showForm = lower === 'заказать аудит';
-    return { reply: exact.join('\n\n'), showForm };
-  }
+  if (exact) return { reply: exact.join('\n\n') };
 
-  // keyword matching
   for (const kw of KEYWORDS) {
     if (kw.words && kw.words.some(w => lower.includes(w))) {
-      if (kw.reply) return { reply: kw.reply + ' Оставьте контакт — инженер перезвонит.', showForm: true };
-      if (kw.key) {
-        const showForm = kw.key === 'заказать аудит';
-        return { reply: BOT_REPLIES[kw.key].join('\n\n'), showForm };
-      }
+      if (kw.reply) return { reply: kw.reply };
+      if (kw.key)   return { reply: BOT_REPLIES[kw.key].join('\n\n') };
     }
   }
 
-  // fallback — always offer form
-  return {
-    reply: 'Хороший вопрос! Для точного ответа лучше подключить нашего инженера — оставьте контакт и мы перезвоним.',
-    showForm: true,
-  };
+  return { reply: 'Хороший вопрос! Напишите подробнее — постараюсь помочь или подключу инженера.' };
 }
 
 /* ══════════════════════════════════════════════════════
-   POST /api/chat  — regular bot messages
+   POST /api/chat
 ══════════════════════════════════════════════════════ */
 app.post('/api/chat', async (req, res) => {
   const { sessionId, text } = req.body || {};
@@ -159,19 +171,16 @@ app.post('/api/chat', async (req, res) => {
     return res.status(400).json({ error: 'message too long' });
 
   const session = getSession(sessionId);
-  const { reply, showForm = false } = getBotReply(session, text.trim());
+  const { reply } = getBotReply(session, text.trim());
 
-  // If form should be shown — set step so we don't show it again
-  if (showForm) session.step = 'form_shown';
-
-  return res.json({ reply, showForm: showForm && session.step === 'form_shown' });
+  return res.json({ reply });
 });
 
 /* ══════════════════════════════════════════════════════
-   POST /api/chat-lead  — lead form submission with FULL history
+   POST /api/chat-lead  — called on every user message & on chat start
 ══════════════════════════════════════════════════════ */
 app.post('/api/chat-lead', async (req, res) => {
-  const { sessionId, name, phone, history } = req.body || {};
+  const { sessionId, name, phone, history, event } = req.body || {};
 
   if (!sessionId || !name || !phone)
     return res.status(400).json({ error: 'sessionId, name and phone are required' });
@@ -182,14 +191,15 @@ app.post('/api/chat-lead', async (req, res) => {
     ? history.slice(-60).filter(m => m && typeof m.role === 'string' && typeof m.text === 'string')
     : [];
 
-  // Fire 1C (don't block response)
-  sendLeadTo1C({ name, phone, sessionId, history: safeHistory }).catch(console.error);
+  // fire-and-forget
+  appendToChatLead({ sessionId, name, phone, history: safeHistory, event: event || 'message' })
+    .catch(console.error);
 
   return res.json({ ok: true });
 });
 
 /* ══════════════════════════════════════════════════════
-   POST /api/webhook-1c  — contact form (not chat)
+   POST /api/webhook-1c  — contact form
 ══════════════════════════════════════════════════════ */
 app.post('/api/webhook-1c', async (req, res) => {
   const { name, company, phone, contact, message } = req.body || {};
@@ -226,7 +236,7 @@ app.post('/api/send', async (req, res) => {
   <h2 style="color:#01696f">${isRu ? 'Новая заявка на аудит' : 'New Audit Request'}</h2>
   <table style="width:100%;font-size:14px">
     <tr><td style="color:#888;width:130px;padding:6px 0">${isRu?'Имя':'Name'}</td><td><strong>${name}</strong></td></tr>
-    ${company?`<tr><td style="color:#888;padding:6px 0">${isRu?'Компания':'Company'}</td><td>${company}</td></tr>`:''}
+    ${company?`<tr><td style="color:#888;padding:6px 0">${isRu?'Компания':'Company'}</td><td>${company}</td></tr>`:''} 
     ${phone?`<tr><td style="color:#888;padding:6px 0">${isRu?'Телефон':'Phone'}</td><td><strong>${phone}</strong></td></tr>`:''}
     <tr><td style="color:#888;padding:6px 0">${isRu?'Контакт':'Contact'}</td><td><strong>${contact}</strong></td></tr>
     ${message?`<tr><td style="color:#888;padding:6px 0;vertical-align:top">${isRu?'Сообщение':'Message'}</td><td>${message.replace(/\n/g,'<br/>')}</td></tr>`:''}
