@@ -595,7 +595,6 @@ document.getElementById('auditForm').addEventListener('submit', async function(e
   var contact = document.getElementById('contactField').value.trim();
   var msg     = document.getElementById('message').value.trim();
 
-  /* Единый flat-payload для обоих эндпоинтов */
   var payload = {
     name:    name,
     company: company,
@@ -654,5 +653,9 @@ faqItems.forEach(function(item){
   });
 });
 </script>
+
+<!-- 1C:Dialog WebChat -->
+<script src="https://integrations.1cdialog.com/integration/webchat/198894:6jTnUYS4rCq7zy5V2RKxsFG8mPJ9d01z" async></script>
+
 </body>
 </html>
