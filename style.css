@@ -938,6 +938,11 @@ a { text-decoration: none; color: inherit; }
   box-shadow: 0 0 5px #22c55e;
   animation: oh-pulse 2s infinite;
 }
+/* Оранжевая точка: ожидание оператора */
+.oh-dot-orange {
+  background: #f97316;
+  box-shadow: 0 0 5px #f97316;
+}
 @keyframes oh-pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
@@ -955,7 +960,7 @@ a { text-decoration: none; color: inherit; }
 }
 .oh-chat-close:hover { color: #e2e8f0; background: rgba(255,255,255,0.06); }
 
-/* ── Intro form (shown before chat starts) ── */
+/* ── Intro form ── */
 .oh-intro-form {
   display: flex;
   flex-direction: column;
@@ -979,7 +984,7 @@ a { text-decoration: none; color: inherit; }
   line-height: 1.5;
 }
 
-/* ── Chat area (body + footer, shown after intro) ── */
+/* ── Chat area ── */
 .oh-chat-area {
   flex-direction: column;
   flex: 1;
@@ -1005,6 +1010,7 @@ a { text-decoration: none; color: inherit; }
 /* Messages */
 .oh-msg {
   display: flex;
+  flex-direction: column;
   max-width: 82%;
   animation: oh-fadein 0.2s ease;
 }
@@ -1012,8 +1018,20 @@ a { text-decoration: none; color: inherit; }
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.oh-msg-bot  { align-self: flex-start; }
-.oh-msg-user { align-self: flex-end; }
+.oh-msg-bot      { align-self: flex-start; }
+.oh-msg-user     { align-self: flex-end; }
+.oh-msg-operator { align-self: flex-start; }
+
+.oh-msg-label {
+  font-size: 0.68rem;
+  color: #f97316;
+  font-weight: 600;
+  margin-bottom: 3px;
+  padding-left: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .oh-msg-bubble {
   padding: 10px 14px;
   border-radius: 16px;
@@ -1034,6 +1052,12 @@ a { text-decoration: none; color: inherit; }
   background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: #fff;
   border-bottom-right-radius: 4px;
+}
+.oh-msg-operator .oh-msg-bubble {
+  background: rgba(249,115,22,0.15);
+  color: #fed7aa;
+  border: 1px solid rgba(249,115,22,0.3);
+  border-bottom-left-radius: 4px;
 }
 
 /* Quick reply buttons */
@@ -1130,7 +1154,7 @@ a { text-decoration: none; color: inherit; }
 .oh-chat-send:hover { filter: brightness(1.1); transform: scale(1.05); }
 .oh-chat-send:disabled { background: #334155; cursor: not-allowed; transform: none; }
 
-/* Shared input styles for intro + lead forms */
+/* Shared input styles */
 .oh-lead-input {
   width: 100%;
   background: #1e293b;
