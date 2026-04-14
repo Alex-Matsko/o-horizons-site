@@ -1,4 +1,3 @@
-// Disable TLS certificate verification globally (handles expired/self-signed certs)
 if (process.env.SMTP_TLS_REJECT_UNAUTHORIZED === 'false') {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 }
@@ -50,10 +49,8 @@ app.post('/api/webhook-1c', async (req, res) => {
     return res.status(400).json({ error: 'name and contact are required' });
   }
 
-  // Unique ID per lead
   const leadId = 'lead-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
 
-  // Build message text
   const lines = [
     '📋 Новая заявка с сайта o-horizons.com',
     '',
@@ -64,13 +61,11 @@ app.post('/api/webhook-1c', async (req, res) => {
   lines.push('✉️ Контакт: ' + contact);
   if (message) lines.push('💬 Сообщение: ' + message);
 
-  // Minimal payload — only required fields for 1C:Dialog webhook
+  // Flat payload — no createMessage wrapper
   const payload = {
-    createMessage: {
-      extId:             leadId,
-      extConversationId: leadId,
-      text:              lines.join('\n'),
-    }
+    extId:             leadId,
+    extConversationId: leadId,
+    text:              lines.join('\n'),
   };
 
   try {
@@ -100,7 +95,7 @@ app.post('/api/webhook-1c', async (req, res) => {
     return res.status(502).json({ error: 'Failed to reach 1C:Dialog' });
   }
 });
-// ─────────────────────────────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────────────────
 
 app.post('/api/send', async (req, res) => {
   const { name, company, phone, contact, message, lang } = req.body;
