@@ -10,7 +10,7 @@ const rateLimit = require('express-rate-limit');
 const app = express();
 
 app.set('trust proxy', 1);
-app.use(express.json({ limit: '16kb' }));
+app.use(express.json({ limit: '32kb' }));
 
 const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://o-horizons.com';
 app.use(cors({ origin: allowedOrigin }));
@@ -24,7 +24,7 @@ const limiter = rateLimit({
 });
 app.use('/api/send', limiter);
 app.use('/api/webhook-1c', limiter);
-app.use('/api/chat', rateLimit({ windowMs: 60 * 1000, max: 20 }));
+app.use('/api/chat', rateLimit({ windowMs: 60 * 1000, max: 30 }));
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -50,13 +50,13 @@ async function post1C(payload) {
     body: JSON.stringify(payload),
   });
   const text = await res.text();
-  console.log('1C:Dialog', JSON.stringify(payload).slice(0, 80), '→', res.status, text);
+  console.log('1C:Dialog', JSON.stringify(payload).slice(0, 120), '→', res.status, text);
   return { status: res.status, text };
 }
 
 // ── Chat sessions store (in-memory, resets on restart) ────────────────────────
+// session: { id, step, name, contact, history: [{role, text}] }
 const sessions = new Map();
-// session: { id, step, name, contact, waitingForOperator }
 
 const BOT_REPLIES = {
   'узнать о тарифах': [
@@ -93,7 +93,6 @@ function getBotReply(session, text) {
   if (session.step === 'await_contact') {
     session.contact = text;
     session.step = 'done';
-    // send lead to 1C:Dialog async (don't await in reply)
     sendLeadTo1C(session);
     return '✅ Заявка принята! Наш инженер свяжется с вами в ближайшее время. Если срочно — пишите напрямую: info@o-horizons.com или @ohorizons в Telegram.';
   }
@@ -130,20 +129,48 @@ function getBotReply(session, text) {
   return 'Хороший вопрос! Для подробного ответа лучше подключить нашего инженера. Напишите ваше имя — и мы свяжемся с вами.';
 }
 
+// ── Format chat history for 1C ───────────────────────────────────────────────
+function formatHistory(history) {
+  if (!history || history.length === 0) return '(история пуста)';
+  return history.map(m => {
+    const who = m.role === 'user' ? '👤 Посетитель' : '🤖 Бот';
+    return who + ': ' + m.text;
+  }).join('\n');
+}
+
+// ── Send full lead + chat history to 1C:Dialog ───────────────────────────────
 async function sendLeadTo1C(session) {
   const leadId = 'chat-' + session.id + '-' + Date.now();
+  const title = 'Чат с сайта: ' + (session.name || 'Гость');
+
+  // Build one consolidated message: contact info + full dialog
+  const lines = [
+    '━━━ КОНТАКТ ━━━',
+    '👤 Имя: '    + (session.name    || '—'),
+    '✉️  Контакт: ' + (session.contact || '—'),
+    '',
+    '━━━ ИСТОРИЯ ПЕРЕПИСКИ ━━━',
+    formatHistory(session.history),
+  ];
+
   try {
-    await post1C({
+    const conv = await post1C({
       createConversation: {
         extConversationId: leadId,
-        title: 'Чат с сайта: ' + (session.name || 'Гость'),
+        title,
       }
     });
+    // 2xx or 409 (already exists) are both OK
+    if (!conv.status.toString().startsWith('2') && conv.status !== 409) {
+      console.error('createConversation failed:', conv.status, conv.text);
+      return;
+    }
+
     await post1C({
       createMessage: {
-        extId: leadId + '-msg',
+        extId: leadId + '-lead',
         extConversationId: leadId,
-        text: '👤 Имя: ' + (session.name || '—') + '\n✉️ Контакт: ' + (session.contact || '—'),
+        text: lines.join('\n'),
       }
     });
   } catch (e) {
@@ -160,15 +187,26 @@ app.post('/api/chat', async (req, res) => {
   if (text.length > 1000) return res.status(400).json({ error: 'message too long' });
 
   if (!sessions.has(sessionId)) {
-    sessions.set(sessionId, { id: sessionId, step: null, name: null, contact: null });
+    sessions.set(sessionId, { id: sessionId, step: null, name: null, contact: null, history: [] });
   }
   const session = sessions.get(sessionId);
 
-  const reply = getBotReply(session, text.trim());
+  const trimmed = text.trim();
+
+  // Save user message to history BEFORE generating reply
+  session.history.push({ role: 'user', text: trimmed });
+  // Keep history bounded (last 60 messages)
+  if (session.history.length > 60) session.history = session.history.slice(-60);
+
+  const reply = getBotReply(session, trimmed);
+
+  // Save bot reply to history
+  session.history.push({ role: 'bot', text: reply });
+
   return res.json({ reply });
 });
 
-// ── 1C:Dialog webhook proxy ──────────────────────────────────────────────────
+// ── 1C:Dialog webhook proxy (contact form) ───────────────────────────────────
 app.post('/api/webhook-1c', async (req, res) => {
   const { name, company, phone, contact, message } = req.body || {};
 
