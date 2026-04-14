@@ -50,25 +50,71 @@ const WEBHOOK_1C = process.env.WEBHOOK_1C ||
   'https://integrations.1cdialog.com/integration/webhook/909421:qMzZjLbwBCSjAJBq7aQ76F5RyZ5orTG4/callback';
 
 app.post('/api/webhook-1c', async (req, res) => {
-  if (!req.body || !req.body.createMessage) {
-    return res.status(400).json({ error: 'invalid payload' });
+  const { name, company, phone, contact, message } = req.body || {};
+
+  if (!name || !contact) {
+    return res.status(400).json({ error: 'name and contact are required' });
   }
 
+  // Generate unique ID for this lead (timestamp + random suffix)
+  const leadId = 'lead-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+
+  // Build message text
+  const lines = [];
+  lines.push('📋 Новая заявка с сайта o-horizons.com');
+  lines.push('');
+  lines.push('👤 Имя: ' + name);
+  if (company) lines.push('🏢 Компания: ' + company);
+  if (phone)   lines.push('📞 Телефон: ' + phone);
+  lines.push('✉️ Контакт: ' + contact);
+  if (message) lines.push('💬 Сообщение: ' + message);
+
+  // Determine channel type from contact field
+  const isTelegram = contact.startsWith('@') || contact.toLowerCase().includes('t.me');
+  const channelType = isTelegram ? 'telegram' : 'email';
+
+  // 1C:Dialog payload — each lead is a new conversation
+  const payload = {
+    createMessage: {
+      extId:             leadId,
+      extConversationId: leadId,
+      subject:           'Заявка с сайта: ' + name + (company ? ' (' + company + ')' : ''),
+      text:              lines.join('\n'),
+      textFormat:        'text/plain',
+      channelType:       channelType,
+      contact: {
+        name:    name,
+        phone:   phone   || undefined,
+        email:   !isTelegram ? contact : undefined,
+        telegram: isTelegram ? contact : undefined,
+      },
+    }
+  };
+
+  // Remove undefined keys from contact object
+  Object.keys(payload.createMessage.contact).forEach(k => {
+    if (payload.createMessage.contact[k] === undefined) {
+      delete payload.createMessage.contact[k];
+    }
+  });
+
   try {
+    console.log('Sending to 1C:Dialog:', JSON.stringify(payload, null, 2));
+
     const upstream = await fetch(WEBHOOK_1C, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-      body: JSON.stringify(req.body),
+      body: JSON.stringify(payload),
     });
 
     const text = await upstream.text();
+    console.log('1C:Dialog response:', upstream.status, text);
 
-    // 200 = success, 409 = conversation already exists (normal on repeated sends)
+    // 200/201 = success, 409 = already exists (treat as ok)
     if (upstream.ok || upstream.status === 409) {
       return res.json({ ok: true, status: upstream.status });
     }
 
-    // Log full response body to help debug 1C errors
     console.error('1C webhook error:', upstream.status, text);
     return res.status(502).json({ error: '1C upstream error', status: upstream.status, body: text });
   } catch (err) {
