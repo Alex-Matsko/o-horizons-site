@@ -38,10 +38,22 @@ const transporter = nodemailer.createTransport({
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
-// ── 1C:Dialog webhook proxy ──────────────────────────────────────────────────
+// ── helpers ───────────────────────────────────────────────────────────────────
 const WEBHOOK_1C = process.env.WEBHOOK_1C ||
   'https://integrations.1cdialog.com/integration/webhook/909421:qMzZjLbwBCSjAJBq7aQ76F5RyZ5orTG4/callback';
 
+async function post1C(payload) {
+  const res = await fetch(WEBHOOK_1C, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const text = await res.text();
+  console.log('1C:Dialog', JSON.stringify(payload).slice(0, 80), '→', res.status, text);
+  return { status: res.status, text };
+}
+
+// ── 1C:Dialog webhook proxy ──────────────────────────────────────────────────
 app.post('/api/webhook-1c', async (req, res) => {
   const { name, company, phone, contact, message } = req.body || {};
 
@@ -52,8 +64,6 @@ app.post('/api/webhook-1c', async (req, res) => {
   const leadId = 'lead-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
 
   const lines = [
-    '📋 Новая заявка с сайта o-horizons.com',
-    '',
     '👤 Имя: ' + name,
   ];
   if (company) lines.push('🏢 Компания: ' + company);
@@ -61,37 +71,36 @@ app.post('/api/webhook-1c', async (req, res) => {
   lines.push('✉️ Контакт: ' + contact);
   if (message) lines.push('💬 Сообщение: ' + message);
 
-  // Flat payload — no createMessage wrapper
-  const payload = {
-    extId:             leadId,
-    extConversationId: leadId,
-    text:              lines.join('\n'),
-  };
-
   try {
-    console.log('=== Sending to 1C:Dialog ===');
-    console.log(JSON.stringify(payload, null, 2));
-
-    const upstream = await fetch(WEBHOOK_1C, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(payload),
+    // Step 1: create conversation
+    const conv = await post1C({
+      createConversation: {
+        extConversationId: leadId,
+        title: 'Новое обращение с сайта: ' + name + (company ? ' (' + company + ')' : ''),
+      }
     });
 
-    const text = await upstream.text();
-    console.log('=== 1C:Dialog response ===', upstream.status, text);
-
-    if (upstream.ok || upstream.status === 409) {
-      return res.json({ ok: true, status: upstream.status });
+    // 409 = conversation already exists, that's fine
+    if (!conv.status.toString().startsWith('2') && conv.status !== 409) {
+      return res.status(502).json({ error: 'createConversation failed', status: conv.status, body: conv.text });
     }
 
-    return res.status(502).json({
-      error:  '1C upstream error',
-      status: upstream.status,
-      body:   text,
+    // Step 2: send message into that conversation
+    const msg = await post1C({
+      createMessage: {
+        extId:             leadId + '-msg',
+        extConversationId: leadId,
+        text:              lines.join('\n'),
+      }
     });
+
+    if (!msg.status.toString().startsWith('2') && msg.status !== 409) {
+      return res.status(502).json({ error: 'createMessage failed', status: msg.status, body: msg.text });
+    }
+
+    return res.json({ ok: true });
   } catch (err) {
-    console.error('1C webhook fetch failed:', err.message);
+    console.error('1C webhook error:', err.message);
     return res.status(502).json({ error: 'Failed to reach 1C:Dialog' });
   }
 });
