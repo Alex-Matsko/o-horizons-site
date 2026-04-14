@@ -24,6 +24,7 @@ const limiter = rateLimit({
 });
 app.use('/api/send', limiter);
 app.use('/api/webhook-1c', limiter);
+app.use('/api/chat', rateLimit({ windowMs: 60 * 1000, max: 20 }));
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -40,7 +41,7 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 const WEBHOOK_1C = process.env.WEBHOOK_1C ||
-  'https://integrations.1cdialog.com/integration/webhook/909421:qMzZjLbwBCSjAJBq7aQ76F5RyZ5orTG4/callback';
+  'https://integrations.1cdialog.com/integration/webhook/151566:fw0l34MTcGzGfvByMLq7tL2EIhJfQVjP/callback';
 
 async function post1C(payload) {
   const res = await fetch(WEBHOOK_1C, {
@@ -53,6 +54,120 @@ async function post1C(payload) {
   return { status: res.status, text };
 }
 
+// ── Chat sessions store (in-memory, resets on restart) ────────────────────────
+const sessions = new Map();
+// session: { id, step, name, contact, waitingForOperator }
+
+const BOT_REPLIES = {
+  'узнать о тарифах': [
+    'У нас есть 4 тарифа:\n\n• Офис Base — от 25 000 ₽/мес (до 10 ПК, сеть, почта)\n• Infra Standard — от 45 000 ₽/мес (серверы 1С, MSSQL, бэкапы)\n• Infra Premium — от 70 000 ₽/мес (SLA, 24/7, тесты восстановления)\n• Virtual CIO — от 120 000 ₽/мес (IT-директор на аутсорсе)',
+    'Точную стоимость можно рассчитать в калькуляторе: https://o-horizons.com/calculator — или оставьте контакт, и мы подберём тариф под вашу инфраструктуру.',
+  ],
+  'заказать аудит': [
+    'Отлично! Комплексный аудит IT-инфраструктуры — от 25 000 ₽. Проверяем бэкапы, серверы, 1С и удалённый доступ. Стоимость зачтётся в первый месяц сопровождения.',
+    'Чтобы оформить заявку, напишите ваше имя — и я передам её нашему инженеру.',
+  ],
+  'задать вопрос': [
+    'Конечно! Задавайте — постараюсь ответить. Если вопрос сложный, подключу инженера.',
+  ],
+};
+
+const KEYWORDS = [
+  { words: ['цен', 'тариф', 'стоит', 'сколько', 'прайс'], key: 'узнать о тарифах' },
+  { words: ['аудит', 'проверк', 'провери'], key: 'заказать аудит' },
+  { words: ['1с', '1c', 'mssql', 'базы', 'сервер', 'бэкап', 'backup', 'виртуал', 'vmware', 'proxmox'], key: null, reply: 'Мы специализируемся именно на этом! Серверы 1С, MSSQL, Veeam, VMware/Proxmox — наш профиль. Хотите обсудить вашу инфраструктуру с инженером? Напишите ваше имя.' },
+  { words: ['безопасност', 'vpn', 'mikrotik', 'firewall', 'ngfw'], key: null, reply: 'Настройка сетевого периметра, VPN, MikroTik и NGFW — входит в наши услуги. Хотите обсудить детали? Напишите ваше имя и мы свяжемся.' },
+];
+
+function getBotReply(session, text) {
+  const lower = text.toLowerCase();
+
+  // waiting for name
+  if (session.step === 'await_name') {
+    session.name = text;
+    session.step = 'await_contact';
+    return 'Приятно познакомиться, ' + text + '! Оставьте email или Telegram — мы свяжемся в течение одного рабочего дня.';
+  }
+
+  // waiting for contact
+  if (session.step === 'await_contact') {
+    session.contact = text;
+    session.step = 'done';
+    // send lead to 1C:Dialog async (don't await in reply)
+    sendLeadTo1C(session);
+    return '✅ Заявка принята! Наш инженер свяжется с вами в ближайшее время. Если срочно — пишите напрямую: info@o-horizons.com или @ohorizons в Telegram.';
+  }
+
+  // exact quick buttons
+  const exact = BOT_REPLIES[lower];
+  if (exact) {
+    if (lower === 'заказать аудит') session.step = 'await_name';
+    return exact.join('\n\n');
+  }
+
+  // keyword matching
+  for (const kw of KEYWORDS) {
+    if (kw.words.some(w => lower.includes(w))) {
+      if (kw.reply) {
+        session.step = 'await_name';
+        return kw.reply;
+      }
+      if (kw.key) {
+        const replies = BOT_REPLIES[kw.key];
+        if (kw.key === 'заказать аудит') session.step = 'await_name';
+        return replies.join('\n\n');
+      }
+    }
+  }
+
+  // greetings
+  if (/^(привет|здравствуй|добрый|hello|hi\b)/.test(lower)) {
+    return 'Добрый день! Чем могу помочь? Могу рассказать о тарифах, аудите или ответить на вопрос об инфраструктуре.';
+  }
+
+  // fallback — offer operator
+  session.step = 'await_name';
+  return 'Хороший вопрос! Для подробного ответа лучше подключить нашего инженера. Напишите ваше имя — и мы свяжемся с вами.';
+}
+
+async function sendLeadTo1C(session) {
+  const leadId = 'chat-' + session.id + '-' + Date.now();
+  try {
+    await post1C({
+      createConversation: {
+        extConversationId: leadId,
+        title: 'Чат с сайта: ' + (session.name || 'Гость'),
+      }
+    });
+    await post1C({
+      createMessage: {
+        extId: leadId + '-msg',
+        extConversationId: leadId,
+        text: '👤 Имя: ' + (session.name || '—') + '\n✉️ Контакт: ' + (session.contact || '—'),
+      }
+    });
+  } catch (e) {
+    console.error('sendLeadTo1C error:', e.message);
+  }
+}
+
+// ── /api/chat ─────────────────────────────────────────────────────────────────
+app.post('/api/chat', async (req, res) => {
+  const { sessionId, text } = req.body || {};
+  if (!sessionId || !text || typeof text !== 'string') {
+    return res.status(400).json({ error: 'sessionId and text required' });
+  }
+  if (text.length > 1000) return res.status(400).json({ error: 'message too long' });
+
+  if (!sessions.has(sessionId)) {
+    sessions.set(sessionId, { id: sessionId, step: null, name: null, contact: null });
+  }
+  const session = sessions.get(sessionId);
+
+  const reply = getBotReply(session, text.trim());
+  return res.json({ reply });
+});
+
 // ── 1C:Dialog webhook proxy ──────────────────────────────────────────────────
 app.post('/api/webhook-1c', async (req, res) => {
   const { name, company, phone, contact, message } = req.body || {};
@@ -63,16 +178,13 @@ app.post('/api/webhook-1c', async (req, res) => {
 
   const leadId = 'lead-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
 
-  const lines = [
-    '👤 Имя: ' + name,
-  ];
+  const lines = ['👤 Имя: ' + name];
   if (company) lines.push('🏢 Компания: ' + company);
   if (phone)   lines.push('📞 Телефон: ' + phone);
   lines.push('✉️ Контакт: ' + contact);
   if (message) lines.push('💬 Сообщение: ' + message);
 
   try {
-    // Step 1: create conversation
     const conv = await post1C({
       createConversation: {
         extConversationId: leadId,
@@ -80,17 +192,15 @@ app.post('/api/webhook-1c', async (req, res) => {
       }
     });
 
-    // 409 = conversation already exists, that's fine
     if (!conv.status.toString().startsWith('2') && conv.status !== 409) {
       return res.status(502).json({ error: 'createConversation failed', status: conv.status, body: conv.text });
     }
 
-    // Step 2: send message into that conversation
     const msg = await post1C({
       createMessage: {
-        extId:             leadId + '-msg',
+        extId: leadId + '-msg',
         extConversationId: leadId,
-        text:              lines.join('\n'),
+        text: lines.join('\n'),
       }
     });
 
@@ -104,7 +214,8 @@ app.post('/api/webhook-1c', async (req, res) => {
     return res.status(502).json({ error: 'Failed to reach 1C:Dialog' });
   }
 });
-// ────────────────────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 app.post('/api/send', async (req, res) => {
   const { name, company, phone, contact, message, lang } = req.body;
