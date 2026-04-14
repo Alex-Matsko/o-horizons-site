@@ -20,6 +20,7 @@ app.use('/api/webhook-1c', limiter);
 app.use('/api/chat',       rateLimit({ windowMs: 60*1000, max: 60 }));
 app.use('/api/chat-lead',  rateLimit({ windowMs: 60*1000, max: 30 }));
 app.use('/api/chat-poll',  rateLimit({ windowMs: 60*1000, max: 120 }));
+app.use('/api/1c-events',  rateLimit({ windowMs: 60*1000, max: 300 }));
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -57,6 +58,16 @@ const sessions = new Map();
 function getSession(id) {
   if (!sessions.has(id)) sessions.set(id, { id, msgSeq: 0, operatorMode: false, inboxQueue: [] });
   return sessions.get(id);
+}
+
+/*
+  convId → sessionId: extConversationId у нас всегда 'chat-<sessionId>'
+  Разбираем обратно: sessionId = convId.slice(5)
+*/
+function convIdToSessionId(extConversationId) {
+  if (!extConversationId) return null;
+  if (extConversationId.startsWith('chat-')) return extConversationId.slice(5);
+  return null;
 }
 
 /* ══════════════════════════════════════════════════════
@@ -114,7 +125,7 @@ async function appendToChatLead({ sessionId, name, phone, history, event }) {
 const BOT_REPLIES = {
   'узнать о тарифах': 'У нас 4 тарифа:\n\n• Офис Base — от 25 000 ₽/мес (до 10 ПК, сеть, почта)\n• Infra Standard — от 45 000 ₽/мес (серверы 1С, MSSQL, бэкапы)\n• Infra Premium — от 70 000 ₽/мес (SLA, 24/7)\n• Virtual CIO — от 120 000 ₽/мес (IT-директор на аутсорсе)\n\nТочную стоимость — на калькуляторе: https://o-horizons.com/calculator',
   'заказать аудит':   'Отлично! Комплексный аудит — от 25 000 ₽. Проверяем бэкапы, серверы, 1С, удалённый доступ. Стоимость зачтётся в первый месяц сопровождения.',
-  'задать вопрос':    null, // handled below
+  'задать вопрос':    null,
 };
 
 const OPERATOR_WORDS = ['оператор','инженер','человек','менеджер','специалист','живой','поддержк','связат','соедин','подключи'];
@@ -133,7 +144,6 @@ const KEYWORDS = [
 function getBotReply(session, text) {
   const lower = text.toLowerCase();
 
-  // Запрос оператора
   if (OPERATOR_WORDS.some(w => lower.includes(w))) {
     session.operatorMode = true;
     return {
@@ -142,17 +152,14 @@ function getBotReply(session, text) {
     };
   }
 
-  // Приветствие
   if (/^(привет|здравствуй|добрый|hello|hi\b|хай|ку\b)/.test(lower))
     return { reply: 'Добрый день! Чем могу помочь? Расскажу о тарифах, аудите — или сразу соединю с инженером.' };
 
-  // Быстрые кнопки
   if (lower === 'задать вопрос')
     return { reply: 'Конечно! Напишите ваш вопрос — отвечу или подключу инженера.' };
   const exact = BOT_REPLIES[lower];
   if (exact) return { reply: exact };
 
-  // Ключевые слова
   for (const kw of KEYWORDS) {
     if (kw.words.some(w => lower.includes(w))) {
       if (kw.reply) return { reply: kw.reply };
@@ -160,7 +167,6 @@ function getBotReply(session, text) {
     }
   }
 
-  // Длинное сообщение — передаём оператору
   if (text.trim().length > 60) {
     session.operatorMode = true;
     return {
@@ -183,8 +189,6 @@ app.post('/api/chat', async (req, res) => {
     return res.status(400).json({ error: 'message too long' });
 
   const session = getSession(sessionId);
-
-  // Если уже переключились на оператора — бот молчит, ждём polling
   if (session.operatorMode)
     return res.json({ reply: null, operatorMode: true });
 
@@ -206,7 +210,6 @@ app.post('/api/chat-lead', async (req, res) => {
     ? history.slice(-60).filter(m => m && typeof m.role === 'string' && typeof m.text === 'string')
     : [];
 
-  // Если пользователь запросил оператора — помечаем сессию и уведомляем 1С
   if (event === 'operator_requested') {
     const session = getSession(sessionId);
     session.operatorMode = true;
@@ -219,27 +222,56 @@ app.post('/api/chat-lead', async (req, res) => {
 });
 
 /* ══════════════════════════════════════════════════════
-   POST /api/chat-inbox  — 1C оператор отправляет сообщение пользователю
-   Body: { sessionId, text, secret }
+   POST /api/1c-events
+   ─────────────────────────────────────────────────────
+   Этот URL нужно зарегистрировать как "Callback URL"
+   в настройках вебхук-интеграции 1С:Диалог.
+
+   1С:Диалог шлёт сюда POST-запросы когда оператор
+   пишет ответ в чат. Формат тела (JSON):
+   {
+     "receiveMessage": {
+       "extConversationId": "chat-<sessionId>",
+       "text": "Текст ответа",
+       "extUserId": "operator_id"
+     }
+   }
+   Сервер кладёт текст в inboxQueue нужной сессии.
+   Фронтенд забирает его через GET /api/chat-poll.
 ══════════════════════════════════════════════════════ */
-app.post('/api/chat-inbox', (req, res) => {
-  const { sessionId, text, secret } = req.body || {};
-  const INBOX_SECRET = process.env.INBOX_SECRET || 'oh-inbox-secret';
-  if (secret !== INBOX_SECRET) return res.status(403).json({ error: 'forbidden' });
-  if (!sessionId || !text) return res.status(400).json({ error: 'sessionId and text required' });
+app.post('/api/1c-events', (req, res) => {
+  const body = req.body || {};
+  console.log('1c-events ←', JSON.stringify(body).slice(0, 300));
 
-  const session = getSession(sessionId);
-  session.inboxQueue.push({ id: Date.now() + '-' + Math.random().toString(36).slice(2,6), text: String(text).slice(0, 2000), ts: Date.now() });
-  // Не копим более 50 сообщений в очереди
-  if (session.inboxQueue.length > 50) session.inboxQueue = session.inboxQueue.slice(-50);
+  // ── receiveMessage: оператор написал в беседу ──
+  if (body.receiveMessage) {
+    const { extConversationId, text, extUserId } = body.receiveMessage;
+    const sessionId = convIdToSessionId(extConversationId);
 
-  console.log('inbox → session', sessionId, ':', text.slice(0, 80));
-  return res.json({ ok: true });
+    if (sessionId && text) {
+      const session = getSession(sessionId);
+      // Не пушим назад сообщения самого бота/сайта (они имеют extUserId начинающийся с 'chat-')
+      const isBotMessage = extUserId && String(extUserId).startsWith('chat-');
+      if (!isBotMessage) {
+        session.operatorMode = true;
+        session.inboxQueue.push({
+          id: Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+          text: String(text).slice(0, 2000),
+          ts: Date.now(),
+        });
+        if (session.inboxQueue.length > 50) session.inboxQueue = session.inboxQueue.slice(-50);
+        console.log('operator → session', sessionId, ':', String(text).slice(0, 80));
+      }
+    }
+    return res.status(200).json({ ok: true });
+  }
+
+  // ── Любые другие события (createConversation ACK и др.) — просто 200 ──
+  return res.status(200).json({ ok: true });
 });
 
 /* ══════════════════════════════════════════════════════
    GET /api/chat-poll?sessionId=XXX&after=TIMESTAMP
-   Фронтенд опрашивает каждые 4 сек, получает новые сообщения от оператора
 ══════════════════════════════════════════════════════ */
 app.get('/api/chat-poll', (req, res) => {
   const { sessionId, after } = req.query;
