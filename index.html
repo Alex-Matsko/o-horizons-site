@@ -570,10 +570,7 @@ document.addEventListener('keydown',function(e){
   if(e.key==='Escape')closeModal();
 });
 
-/* ---------- Form submit → прокси → 1C:Dialog ---------- */
-/* Запрос идёт на /api/webhook-1c (серверный прокси),
-   чтобы обойти CORS-ограничения браузера при прямом
-   обращении к integrations.1cdialog.com               */
+/* ---------- Form submit → 1C:Dialog вебхук + Email ---------- */
 document.getElementById('auditForm').addEventListener('submit', async function(e){
   e.preventDefault();
   var btn    = document.getElementById('submitBtn');
@@ -597,6 +594,7 @@ document.getElementById('auditForm').addEventListener('submit', async function(e
   var contact = document.getElementById('contactField').value.trim();
   var msg     = document.getElementById('message').value.trim();
 
+  /* ── Payload для 1C:Dialog ── */
   var lines = [];
   lines.push('📋 Новая заявка с сайта o-horizons.com');
   lines.push('');
@@ -606,7 +604,7 @@ document.getElementById('auditForm').addEventListener('submit', async function(e
   lines.push('✉️ Контакт: ' + contact);
   if(msg)     lines.push('💬 Сообщение: ' + msg);
 
-  var payload = {
+  var webhookPayload = {
     createMessage: {
       extId: 'web-' + Date.now(),
       extConversationId: 'site-leads',
@@ -615,22 +613,44 @@ document.getElementById('auditForm').addEventListener('submit', async function(e
     }
   };
 
-  try {
-    var res = await fetch('/api/webhook-1c', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-      body: JSON.stringify(payload)
-    });
+  /* ── Payload для Email ── */
+  var emailPayload = {
+    name: name,
+    company: company,
+    phone: phone,
+    contact: contact,
+    message: msg,
+    lang: 'ru'
+  };
 
-    if(res.ok) {
+  try {
+    /* Отправляем оба запроса параллельно */
+    var [webhookRes, emailRes] = await Promise.allSettled([
+      fetch('/api/webhook-1c', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+        body: JSON.stringify(webhookPayload)
+      }),
+      fetch('/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+        body: JSON.stringify(emailPayload)
+      })
+    ]);
+
+    /* Считаем успехом, если хотя бы один канал сработал */
+    var webhookOk = webhookRes.status === 'fulfilled' && webhookRes.value.ok;
+    var emailOk   = emailRes.status === 'fulfilled' && emailRes.value.ok;
+
+    if(webhookOk || emailOk){
       status.textContent = '✓ Заявка отправлена! Мы свяжемся с вами в течение одного рабочего дня.';
       status.className = 'form-status success';
       this.reset();
     } else {
-      throw new Error('HTTP ' + res.status);
+      throw new Error('Both channels failed');
     }
   } catch(err) {
-    console.error('Webhook error:', err);
+    console.error('Submit error:', err);
     status.textContent = '✗ Не удалось отправить. Напишите нам: info@o-horizons.com';
     status.className = 'form-status error';
   }
