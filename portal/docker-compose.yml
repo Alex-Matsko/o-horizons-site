@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   portal-db:
     image: postgres:16-alpine
@@ -48,14 +46,14 @@ services:
         condition: service_healthy
     networks:
       - portal-net
-    # Бэкапы монтируем только для чтения — бэкенд отдаёт файлы клиенту
     volumes:
       - /opt/1c/backups:/backups:ro
     healthcheck:
       test: ['CMD-SHELL', 'wget -qO- http://localhost:3001/health || exit 1']
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   portal-worker:
     build:
@@ -73,10 +71,8 @@ services:
     networks:
       - portal-net
     volumes:
-      # Worker пишет бэкапы на хост — rw обязателен
       - /opt/1c/backups:/backups:rw
       - /opt/1c/templates:/templates:ro
-      # SSH ключ для подключения к серверу 1С (если 1С на отдельной машине)
       - ${SSH_KEY_PATH:-/root/.ssh/portal_deploy}:/root/.ssh/portal_deploy:ro
 
   portal-frontend:
@@ -101,7 +97,6 @@ services:
         condition: service_healthy
       portal-frontend:
         condition: service_started
-      # Worker должен стартовать до nginx, чтобы очередь была готова
       portal-worker:
         condition: service_started
     networks:
