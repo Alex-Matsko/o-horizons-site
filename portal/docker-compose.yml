@@ -48,6 +48,7 @@ services:
         condition: service_healthy
     networks:
       - portal-net
+    # Бэкапы монтируем только для чтения — бэкенд отдаёт файлы клиенту
     volumes:
       - /opt/1c/backups:/backups:ro
     healthcheck:
@@ -72,8 +73,11 @@ services:
     networks:
       - portal-net
     volumes:
-      - /opt/1c/backups:/backups
+      # Worker пишет бэкапы на хост — rw обязателен
+      - /opt/1c/backups:/backups:rw
       - /opt/1c/templates:/templates:ro
+      # SSH ключ для подключения к серверу 1С (если 1С на отдельной машине)
+      - ${SSH_KEY_PATH:-/root/.ssh/portal_deploy}:/root/.ssh/portal_deploy:ro
 
   portal-frontend:
     build:
@@ -93,8 +97,13 @@ services:
     volumes:
       - ./nginx/1c.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
-      - portal-backend
-      - portal-frontend
+      portal-backend:
+        condition: service_healthy
+      portal-frontend:
+        condition: service_started
+      # Worker должен стартовать до nginx, чтобы очередь была готова
+      portal-worker:
+        condition: service_started
     networks:
       - portal-net
 
