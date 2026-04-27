@@ -1,5 +1,6 @@
 #!/bin/bash
-# Usage: create_ib.sh <ib_name> <pg_db_name> <cluster_name>
+# Создать ИБ в кластере 1С через ibcmd
+# Использование: create_ib.sh <ib_name> <pg_db_name> <cluster_name>
 set -euo pipefail
 
 IB_NAME="$1"
@@ -9,13 +10,12 @@ CLUSTER="$3"
 IBCMD=/opt/1cv8/current/ibcmd
 
 $IBCMD infobase create \
+  --name="$IB_NAME" \
   --dbms=PostgreSQL \
   --db-server=localhost \
   --db-name="$PG_DB" \
-  --db-user=usr1cv8 \
-  --db-pwd="$ONEC_PG_PASSWORD" \
-  --name="$IB_NAME" \
-  --cluster-name="$CLUSTER" \
-  --license-distribution=allow
+  --db-user=onec_user \
+  --db-pwd="$ONEC_DB_PASSWORD" \
+  --cluster="$CLUSTER"
 
-echo "IB $IB_NAME created in cluster $CLUSTER"
+echo "1C infobase '$IB_NAME' created"

@@ -1,18 +1,14 @@
 #!/bin/bash
-# Usage: create_pg_db.sh <db_name>
-# Runs as portal_deploy with sudo
+# Запускается от portal_deploy через sudo
+# Использование: create_pg_db.sh <db_name>
 set -euo pipefail
 
 DB_NAME="$1"
 
-if [[ -z "$DB_NAME" ]]; then
-  echo "ERROR: db_name required" >&2
-  exit 1i
-
-if [[ ! "$DB_NAME" =~ ^[a-z0-9_]+$ ]]; then
-  echo "ERROR: invalid db_name" >&2
+if [[ ! "$DB_NAME" =~ ^onec_[a-z0-9]+$ ]]; then
+  echo "ERROR: Invalid db name: $DB_NAME" >&2
   exit 1
 fi
 
-sudo -u postgres psql -c "CREATE DATABASE \"$DB_NAME\" ENCODING 'UTF8' LC_COLLATE 'ru_RU.UTF-8' LC_CTYPE 'ru_RU.UTF-8' TEMPLATE template0;"
-echo "DB $DB_NAME created"
+su -c "createdb -E UTF8 -T template0 '$DB_NAME'" postgres
+echo "PostgreSQL database '$DB_NAME' created"

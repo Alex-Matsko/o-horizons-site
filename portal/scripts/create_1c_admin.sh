@@ -1,22 +1,23 @@
 #!/bin/bash
-# Usage: create_1c_admin.sh <ib_name>
-# Создаёт пользователя Administrator через ibcmd
+# Создать пользователя-администратора в новой ИБ
+# Использование: create_1c_admin.sh <ib_name>
 set -euo pipefail
 
 IB_NAME="$1"
-IBCMD=/opt/1cv8/current/ibcmd
-
+ADMIN_LOGIN="admin"
 ADMIN_PASS=$(openssl rand -base64 12)
 
-$IBCMD infobase user create \
-  --infobase="$IB_NAME" \
-  --name="Администратор" \
-  --descr="Portal Admin" \
-  --auth-standard \
-  --login="admin" \
-  --password="$ADMIN_PASS" \
-  --role="ПолныеПрава"
+/opt/1cv8/current/1cv8 DESIGNER \
+  /S "localhost\$IB_NAME" \
+  /CreateInfoBase \
+  /AddUser \
+  /Name "$ADMIN_LOGIN" \
+  /Password "$ADMIN_PASS" \
+  /Role "ПолныеПрава" \
+  -UC portal_unlock
 
-# Вывести пароль для перехвата воркером
-echo "ADMIN_LOGIN=admin"
-echo "ADMIN_PASS=$ADMIN_PASS"
+# Сохранить пароль в файл для последующего считывания порталом
+echo "$ADMIN_PASS" > "/tmp/1c_admin_pass_${IB_NAME}.txt"
+chmod 600 "/tmp/1c_admin_pass_${IB_NAME}.txt"
+
+echo "Admin user created for '$IB_NAME'"

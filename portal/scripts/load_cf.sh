@@ -1,18 +1,20 @@
 #!/bin/bash
-# Usage: load_cf.sh <ib_name> <cf_path>
+# Загрузить конфигурацию из CF-файла в ИБ
+# Использование: load_cf.sh <ib_name> <cf_path>
 set -euo pipefail
 
 IB_NAME="$1"
 CF_PATH="$2"
 
-IBCMD=/opt/1cv8/current/ibcmd
+if [ ! -f "$CF_PATH" ]; then
+  echo "ERROR: CF file not found: $CF_PATH" >&2
+  exit 1
+fi
 
-$IBCMD infobase config import \
-  --infobase="$IB_NAME" \
-  "$CF_PATH"
+/opt/1cv8/current/1cv8 DESIGNER \
+  /S "localhost\$IB_NAME" \
+  /LoadCfg "$CF_PATH" \
+  /UpdateDBCfg \
+  -UC portal_unlock
 
-$IBCMD infobase config apply \
-  --infobase="$IB_NAME" \
-  --force
-
-echo "CF loaded and applied for $IB_NAME"
+echo "Configuration loaded into '$IB_NAME'"
