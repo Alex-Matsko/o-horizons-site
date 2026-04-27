@@ -1,119 +1,53 @@
-import { NodeSSH } from 'node-ssh';
 import axios from 'axios';
 import { config } from '../config/index.js';
+import { query } from '../config/db.js';
 
-// ─── SSH to 1C server ───────────────────────────────────────────
-export async function runSSHCommand(command) {
-  const ssh = new NodeSSH();
-  await ssh.connect({
-    host: config.onec.serverHost,
-    username: config.onec.sshUser,
-    privateKeyPath: config.onec.sshKeyPath,
-  });
-  const result = await ssh.execCommand(command);
-  ssh.dispose();
-  if (result.code !== 0) {
-    throw new Error(`SSH command failed: ${result.stderr}`);
-  }
-  return result.stdout.trim();
-}
-
-// ─── Create 1C infobase ──────────────────────────────────────────
-export async function createInfobase({ infobaseName, cfTemplatePath }) {
-  // 1. Create blank PostgreSQL DB
-  await runSSHCommand(
-    `sudo -u postgres createdb "${infobaseName}" --encoding=UTF8`
-  );
-
-  // 2. Create infobase via ibcmd
-  await runSSHCommand(
-    `ibcmd infobase create \
-      --dbms=PostgreSQL \
-      --db-server=localhost \
-      --db-name="${infobaseName}" \
-      --db-user=onec_db \
-      --db-pwd="${process.env.ONEC_DB_PASSWORD}" \
-      --cluster-user=cluster_admin \
-      --cluster-pwd="${process.env.ONEC_CLUSTER_PASSWORD}" \
-      --name="${infobaseName}" \
-      --descr="Created by portal"`
-  );
-
-  // 3. Load configuration from CF template
-  await runSSHCommand(
-    `ibcmd infobase config load \
-      --infobase="${infobaseName}" \
-      --ibuser=Administrator \
-      "${cfTemplatePath}"`
-  );
-
-  // 4. Publish via Apache (reload config)
-  await runSSHCommand(`sudo systemctl reload apache2`);
-
-  return `${config.onec.apacheBaseUrl}/${infobaseName}`;
-}
-
-// ─── Delete infobase ─────────────────────────────────────────────
-export async function deleteInfobase(infobaseName) {
-  await runSSHCommand(
-    `ibcmd infobase drop \
-      --infobase="${infobaseName}" \
-      --cluster-user=cluster_admin \
-      --cluster-pwd="${process.env.ONEC_CLUSTER_PASSWORD}" \
-      --drop-database`
-  );
-}
-
-// ─── Create backup (.dt file via ibcmd) ──────────────────────────
-export async function createBackup({ infobaseName, destPath }) {
-  await runSSHCommand(
-    `ibcmd infobase dump \
-      --infobase="${infobaseName}" \
-      --ibuser=Administrator \
-      "${destPath}"`
-  );
-}
-
-// ─── REST API 1C: list users in infobase ─────────────────────────
-function onecApiClient(infobaseName) {
+function onecClient(db) {
+  const base = `${config.onec.apacheBaseUrl}/${db.onec_ib_name}/odata/standard.odata`;
   return axios.create({
-    baseURL: `${config.onec.apacheBaseUrl}/${infobaseName}/odata/standard.odata`,
+    baseURL: base,
     auth: { username: config.onec.apiUser, password: config.onec.apiPass },
+    headers: { Accept: 'application/json;odata=nometadata' },
     timeout: 15000,
-    headers: { Accept: 'application/json' },
   });
 }
 
-export async function getInfobaseUsers(infobaseName) {
-  const client = onecApiClient(infobaseName);
-  const res = await client.get('/Catalog_Пользователи?$format=json');
-  return res.data?.value || [];
+export async function onecSyncUsers(db) {
+  const client = onecClient(db);
+  const res = await client.get('/Catalog_Пользователи?$format=json&$select=Ref_Key,Description,ИмяПользователя,НедействующийПользователь');
+  const items = res.data?.value || [];
+
+  for (const u of items) {
+    await query(
+      `INSERT INTO db_users_cache (database_id, onec_uuid, name, login, is_active, synced_at)
+       VALUES ($1, $2, $3, $4, $5, NOW())
+       ON CONFLICT (database_id, login)
+       DO UPDATE SET name = EXCLUDED.name, is_active = EXCLUDED.is_active, onec_uuid = EXCLUDED.onec_uuid, synced_at = NOW()`,
+      [db.id, u.Ref_Key, u.Description, u.ИмяПользователя, !u.НедействующийПользователь]
+    );
+  }
+  await query('UPDATE databases SET last_health_at = NOW() WHERE id = $1', [db.id]);
+  return items;
 }
 
-export async function createInfobaseUser(infobaseName, { name, password, roles = [] }) {
-  const client = onecApiClient(infobaseName);
-  await client.post('/Catalog_Пользователи', {
+export async function onecCreateUser(db, { name, login, password, roles = [] }) {
+  const client = onecClient(db);
+  const res = await client.post('/Catalog_Пользователи', {
     Description: name,
-    Password: password,
-    IBUserRoles: roles,
+    ИмяПользователя: login,
+    Пароль: password,
+    НедействующийПользователь: false,
   });
+  return res.data;
 }
 
-export async function deleteInfobaseUser(infobaseName, userId) {
-  const client = onecApiClient(infobaseName);
-  await client.delete(`/Catalog_Пользователи(guid'${userId}')`);
-}
-
-// ─── Healthcheck: ping published 1C base ─────────────────────────
-export async function healthcheckDatabase(apacheUrl) {
-  const start = Date.now();
+export async function onecCheckHealth(db) {
   try {
-    await axios.get(`${apacheUrl}/e1cib/ping`, {
-      timeout: 5000,
-      auth: { username: config.onec.apiUser, password: config.onec.apiPass },
-    });
-    return { ok: true, latencyMs: Date.now() - start };
+    const client = onecClient(db);
+    const start = Date.now();
+    await client.get('/$metadata', { timeout: 5000 });
+    return { up: true, latency: Date.now() - start };
   } catch {
-    return { ok: false, latencyMs: Date.now() - start };
+    return { up: false, latency: null };
   }
 }
