@@ -1,30 +1,27 @@
-import { query } from '../config/db.js';
+'use strict';
 
-export async function requireAuth(request, reply) {
+async function authMiddleware(request, reply) {
   try {
     await request.jwtVerify();
-  } catch {
-    return reply.code(401).send({ error: 'Unauthorized' });
-  }
-}
-
-export async function requireAdmin(request, reply) {
-  try {
-    await request.jwtVerify();
-    if (request.user.role !== 'admin') {
-      return reply.code(403).send({ error: 'Forbidden' });
+    // Проверяем что пользователь активен
+    const { rows } = await request.server.db.query(
+      'SELECT id, is_active, is_admin FROM tenants WHERE id = $1',
+      [request.user.sub]
+    );
+    if (!rows[0] || !rows[0].is_active) {
+      return reply.code(401).send({ error: 'Unauthorized' });
     }
-  } catch {
+    request.tenant = rows[0];
+  } catch (err) {
     return reply.code(401).send({ error: 'Unauthorized' });
   }
 }
 
-export async function requireActiveAccount(request, reply) {
-  const { rows } = await query(
-    'SELECT is_active FROM tenants WHERE id = $1',
-    [request.user.sub]
-  );
-  if (!rows[0]?.is_active) {
-    return reply.code(403).send({ error: 'Account is not active' });
+async function adminMiddleware(request, reply) {
+  await authMiddleware(request, reply);
+  if (!request.tenant?.is_admin) {
+    return reply.code(403).send({ error: 'Forbidden' });
   }
 }
+
+module.exports = { authMiddleware, adminMiddleware };

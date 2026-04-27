@@ -1,77 +1,62 @@
-import Fastify from 'fastify';
-import cors from '@fastify/cors';
-import cookie from '@fastify/cookie';
-import jwt from '@fastify/jwt';
-import rateLimit from '@fastify/rate-limit';
-import { config } from './config/index.js';
-import { redis } from './config/redis.js';
-import { pool } from './config/db.js';
-import { authRoutes } from './routes/auth.js';
-import { databaseRoutes } from './routes/databases.js';
-import { adminRoutes } from './routes/admin.js';
-import { backupRoutes } from './routes/backups.js';
-import { usersRoutes } from './routes/users.js';
-import { tariffRoutes } from './routes/tariffs.js';
+'use strict';
 
-const app = Fastify({
-  logger: {
-    level: config.env === 'production' ? 'warn' : 'info',
-    transport: config.env !== 'production'
-      ? { target: 'pino-pretty', options: { colorize: true } }
-      : undefined,
-  },
-  trustProxy: true,
-});
+const Fastify = require('fastify');
+const { Pool } = require('pg');
 
-await app.register(rateLimit, {
-  redis,
-  global: true,
-  max: 200,
-  timeWindow: '1 minute',
-});
+const authRoutes = require('./routes/auth');
+const databaseRoutes = require('./routes/databases');
+const backupRoutes = require('./routes/backups');
+const adminRoutes = require('./routes/admin');
 
-await app.register(cors, {
-  origin: [config.appUrl, 'https://1c.o-horizons.com'],
-  credentials: true,
-});
+async function buildApp() {
+  const app = Fastify({
+    logger: { level: process.env.LOG_LEVEL || 'info' },
+    trustProxy: true,
+  });
 
-await app.register(cookie);
+  // PostgreSQL pool
+  const db = new Pool({ connectionString: process.env.DATABASE_URL });
+  app.decorate('db', db);
 
-await app.register(jwt, {
-  secret: config.jwt.secret,
-  cookie: { cookieName: 'access_token', signed: false },
-});
+  // CORS
+  await app.register(require('@fastify/cors'), {
+    origin: process.env.FRONTEND_URL || 'https://1c.o-horizons.com',
+    credentials: true,
+  });
 
-// Health
-app.get('/api/health', async () => ({ status: 'ok', ts: Date.now() }));
+  // Cookie support
+  await app.register(require('@fastify/cookie'));
 
-// Routes
-app.register(authRoutes,     { prefix: '/api/auth' });
-app.register(databaseRoutes, { prefix: '/api/databases' });
-app.register(adminRoutes,    { prefix: '/api/admin' });
-app.register(backupRoutes,   { prefix: '/api/backups' });
-app.register(usersRoutes,    { prefix: '/api/users' });
-app.register(tariffRoutes,   { prefix: '/api/tariffs' });
+  // JWT
+  await app.register(require('@fastify/jwt'), {
+    secret: process.env.JWT_SECRET,
+    sign: { expiresIn: '15m' },
+  });
 
-// 404
-app.setNotFoundHandler((req, reply) => {
-  reply.code(404).send({ error: 'Not found' });
-});
+  // Rate limiting
+  await app.register(require('@fastify/rate-limit'), {
+    max: 100,
+    timeWindow: '1 minute',
+  });
 
-// Errors
-app.setErrorHandler((err, req, reply) => {
-  app.log.error(err);
-  const code = err.statusCode || 500;
-  reply.code(code).send({ error: err.message || 'Internal server error' });
-});
+  // Routes
+  app.register(authRoutes,     { prefix: '/api/auth' });
+  app.register(databaseRoutes, { prefix: '/api/databases' });
+  app.register(backupRoutes,   { prefix: '/api/databases' });
+  app.register(adminRoutes,    { prefix: '/api/admin' });
 
-try {
-  await pool.query('SELECT 1');
-  app.log.info('[DB] Connected');
-} catch (e) {
-  app.log.error('[DB] Connection failed:', e.message);
-  process.exit(1);
+  // Health check
+  app.get('/health', async () => ({ status: 'ok', ts: new Date().toISOString() }));
+
+  return app;
 }
 
-await app.listen({ port: config.port, host: '0.0.0.0' });
-app.log.info(`Portal API listening on port ${config.port}`);
+module.exports = buildApp;
+
+if (require.main === module) {
+  buildApp().then(app => {
+    app.listen({ port: Number(process.env.PORT) || 3010, host: '0.0.0.0' }, (err) => {
+      if (err) { app.log.error(err); process.exit(1); }
+    });
+  });
+}

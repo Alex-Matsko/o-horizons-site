@@ -1,52 +1,74 @@
-import { query } from '../config/db.js';
-import { requireAuth, requireActiveAccount } from '../middleware/auth.js';
-import { backupQueue } from '../queues/index.js';
+'use strict';
 
-export async function backupRoutes(app) {
-  const preHandler = [requireAuth, requireActiveAccount];
+const { authMiddleware } = require('../middleware/auth');
+const { Queue } = require('bullmq');
+const path = require('path');
+const fs = require('fs');
 
-  // GET /api/backups?database_id=...
-  app.get('/', { preHandler }, async (req) => {
-    const { database_id } = req.query;
-    let sql = `
-      SELECT b.*, d.name AS db_name
-      FROM backups b
-      JOIN databases d ON d.id = b.database_id
-      WHERE b.tenant_id = $1
-    `;
-    const params = [req.user.sub];
-    if (database_id) { sql += ' AND b.database_id = $2'; params.push(database_id); }
-    sql += ' ORDER BY b.created_at DESC LIMIT 50';
-    const { rows } = await query(sql, params);
+const backupQueue = new Queue('backup-db', {
+  connection: { url: process.env.REDIS_URL },
+});
+
+module.exports = async function backupRoutes(app) {
+  // Список бэкапов
+  app.get('/:id/backups', { preHandler: authMiddleware }, async (req, reply) => {
+    const { rows: dbRows } = await app.db.query(
+      'SELECT id FROM databases WHERE id=$1 AND tenant_id=$2',
+      [req.params.id, req.tenant.id]
+    );
+    if (!dbRows[0]) return reply.code(404).send({ error: 'Not found' });
+
+    const { rows } = await app.db.query(
+      `SELECT id, type, status, file_size_bytes, started_at, completed_at, expires_at, created_at
+       FROM backups WHERE database_id=$1 ORDER BY created_at DESC LIMIT 50`,
+      [req.params.id]
+    );
     return rows;
   });
 
-  // POST /api/backups - create manual backup
-  app.post('/', { preHandler }, async (req, reply) => {
-    const { database_id } = req.body;
-    if (!database_id) return reply.code(400).send({ error: 'database_id is required' });
-
-    const { rows: db } = await query(
-      `SELECT id, status FROM databases WHERE id = $1 AND tenant_id = $2`,
-      [database_id, req.user.sub]
+  // Создать бэкап
+  app.post('/:id/backups', { preHandler: authMiddleware }, async (req, reply) => {
+    const { rows: dbRows } = await app.db.query(
+      'SELECT * FROM databases WHERE id=$1 AND tenant_id=$2 AND status=$3',
+      [req.params.id, req.tenant.id, 'active']
     );
-    if (!db.length) return reply.code(404).send({ error: 'Database not found' });
-    if (db[0].status !== 'running') return reply.code(400).send({ error: 'Database is not running' });
+    if (!dbRows[0]) return reply.code(404).send({ error: 'Not found or not active' });
 
-    // Check no backup already running
-    const { rows: running } = await query(
-      `SELECT id FROM backups WHERE database_id = $1 AND status IN ('pending','running')`,
-      [database_id]
+    const { rows: bRows } = await app.db.query(
+      `INSERT INTO backups (database_id, type, status)
+       VALUES ($1, 'manual', 'pending') RETURNING id`,
+      [req.params.id]
     );
-    if (running.length) return reply.code(409).send({ error: 'A backup is already in progress' });
-
-    const { rows } = await query(
-      `INSERT INTO backups (database_id, tenant_id, type, expires_at)
-       VALUES ($1, $2, 'manual', NOW() + INTERVAL '${14} days')
-       RETURNING *`,
-      [database_id, req.user.sub]
-    );
-    await backupQueue.add('create_backup', { backupId: rows[0].id });
-    return reply.code(201).send(rows[0]);
+    await backupQueue.add('backup', {
+      backupId: bRows[0].id,
+      databaseId: req.params.id,
+      slug: dbRows[0].slug,
+      dbName: dbRows[0].db_name,
+      dbHost: dbRows[0].db_host,
+    });
+    return reply.code(202).send({ message: 'Backup queued', backup_id: bRows[0].id });
   });
-}
+
+  // Скачать бэкап
+  app.get('/:id/backups/:bid/download', { preHandler: authMiddleware }, async (req, reply) => {
+    const { rows: dbRows } = await app.db.query(
+      'SELECT id FROM databases WHERE id=$1 AND tenant_id=$2',
+      [req.params.id, req.tenant.id]
+    );
+    if (!dbRows[0]) return reply.code(404).send({ error: 'Not found' });
+
+    const { rows } = await app.db.query(
+      'SELECT * FROM backups WHERE id=$1 AND database_id=$2 AND status=$3',
+      [req.params.bid, req.params.id, 'done']
+    );
+    if (!rows[0] || !rows[0].file_path) return reply.code(404).send({ error: 'Backup not ready' });
+
+    const filePath = rows[0].file_path;
+    if (!fs.existsSync(filePath)) return reply.code(404).send({ error: 'File not found' });
+
+    const filename = path.basename(filePath);
+    reply.header('Content-Disposition', `attachment; filename="${filename}"`);
+    reply.header('Content-Type', 'application/octet-stream');
+    return reply.send(fs.createReadStream(filePath));
+  });
+};

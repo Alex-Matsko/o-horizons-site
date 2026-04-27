@@ -1,93 +1,111 @@
-import { query } from '../config/db.js';
-import { requireAuth, requireActiveAccount } from '../middleware/auth.js';
-import { databaseQueue } from '../queues/index.js';
+'use strict';
 
-export async function databaseRoutes(app) {
-  const preHandler = [requireAuth, requireActiveAccount];
+const { authMiddleware } = require('../middleware/auth');
+const { Queue } = require('bullmq');
+const { nanoid } = require('nanoid');
+const onecService = require('../services/onec.service');
 
-  // GET /api/databases - list my databases
-  app.get('/', { preHandler }, async (req) => {
-    const { rows } = await query(
-      `SELECT d.id, d.name, d.status, d.url, d.disk_used_mb,
-              d.is_healthy, d.last_health_at, d.created_at,
-              c.name AS config_name, c.code AS config_code
-       FROM databases d
-       JOIN onec_configs c ON c.id = d.config_id
-       WHERE d.tenant_id = $1
-       ORDER BY d.created_at DESC`,
-      [req.user.sub]
+const dbQueue = new Queue('create-db', {
+  connection: { url: process.env.REDIS_URL },
+});
+
+module.exports = async function databaseRoutes(app) {
+  // Список баз клиента
+  app.get('/', { preHandler: authMiddleware }, async (req) => {
+    const { rows } = await app.db.query(
+      `SELECT d.*, 
+        (SELECT COUNT(*) FROM db_users u WHERE u.database_id = d.id) as user_count
+       FROM databases d WHERE d.tenant_id=$1 ORDER BY d.created_at DESC`,
+      [req.tenant.id]
     );
     return rows;
   });
 
-  // GET /api/databases/:id
-  app.get('/:id', { preHandler }, async (req, reply) => {
-    const { rows } = await query(
-      `SELECT d.*, c.name AS config_name, c.code AS config_code
-       FROM databases d
-       JOIN onec_configs c ON c.id = d.config_id
-       WHERE d.id = $1 AND d.tenant_id = $2`,
-      [req.params.id, req.user.sub]
+  // Детали базы
+  app.get('/:id', { preHandler: authMiddleware }, async (req, reply) => {
+    const { rows } = await app.db.query(
+      'SELECT * FROM databases WHERE id=$1 AND tenant_id=$2',
+      [req.params.id, req.tenant.id]
     );
-    if (!rows.length) return reply.code(404).send({ error: 'Not found' });
+    if (!rows[0]) return reply.code(404).send({ error: 'Not found' });
     return rows[0];
   });
 
-  // POST /api/databases/request - request a new database
-  app.post('/request', { preHandler }, async (req, reply) => {
-    const { config_id, db_alias } = req.body;
-    if (!config_id || !db_alias) return reply.code(400).send({ error: 'config_id and db_alias are required' });
-    if (!/^[a-zA-Z0-9_\u0400-\u04FF ]{2,64}$/.test(db_alias))
-      return reply.code(400).send({ error: 'Invalid db_alias (2-64 chars, letters/digits/underscore/space)' });
+  // Заявка на новую базу
+  app.post('/request', { preHandler: authMiddleware }, async (req, reply) => {
+    const { configuration, desired_name } = req.body;
+    const CONFIGS = ['BP', 'UT', 'Roznica', 'UNF'];
+    if (!CONFIGS.includes(configuration)) {
+      return reply.code(400).send({ error: 'Invalid configuration' });
+    }
 
-    // Check tariff limits
-    const { rows: limits } = await query(
-      `SELECT tf.max_bases, COUNT(d.id)::int AS current_bases
-       FROM tenants t
-       JOIN tariffs tf ON tf.id = t.tariff_id
-       LEFT JOIN databases d ON d.tenant_id = t.id AND d.status NOT IN ('deleted')
-       WHERE t.id = $1
-       GROUP BY tf.max_bases`,
-      [req.user.sub]
+    // Проверка лимита по тарифу
+    const { rows: planRows } = await app.db.query(
+      `SELECT p.max_databases, COUNT(d.id) as current
+       FROM plans p
+       JOIN tenants t ON t.plan_id = p.id
+       LEFT JOIN databases d ON d.tenant_id = t.id AND d.status != 'blocked'
+       WHERE t.id = $1 GROUP BY p.max_databases`,
+      [req.tenant.id]
     );
-    const lim = limits[0];
-    if (lim && lim.current_bases >= lim.max_bases)
-      return reply.code(429).send({ error: `Tariff limit reached: max ${lim.max_bases} database(s). Upgrade your plan.` });
+    const plan = planRows[0];
+    if (plan && Number(plan.current) >= Number(plan.max_databases)) {
+      return reply.code(402).send({ error: 'Database limit reached for your plan' });
+    }
 
-    const { rows } = await query(
-      `INSERT INTO provision_requests (tenant_id, config_id, db_alias) VALUES ($1, $2, $3) RETURNING *`,
-      [req.user.sub, config_id, db_alias]
+    const { rows } = await app.db.query(
+      `INSERT INTO database_requests (tenant_id, configuration, desired_name)
+       VALUES ($1,$2,$3) RETURNING *`,
+      [req.tenant.id, configuration, desired_name]
     );
-
-    // Notify admin via queue
-    await databaseQueue.add('notify_admin_new_request', { requestId: rows[0].id });
-    return reply.code(201).send({ message: 'Request submitted. Awaiting admin approval.', request: rows[0] });
+    return reply.code(201).send(rows[0]);
   });
 
-  // GET /api/databases/requests - my provision requests
-  app.get('/requests/list', { preHandler }, async (req) => {
-    const { rows } = await query(
-      `SELECT pr.*, c.name AS config_name
-       FROM provision_requests pr
-       JOIN onec_configs c ON c.id = pr.config_id
-       WHERE pr.tenant_id = $1
-       ORDER BY pr.created_at DESC`,
-      [req.user.sub]
+  // Пользователи базы
+  app.get('/:id/users', { preHandler: authMiddleware }, async (req, reply) => {
+    const { rows: dbRows } = await app.db.query(
+      'SELECT id FROM databases WHERE id=$1 AND tenant_id=$2',
+      [req.params.id, req.tenant.id]
     );
-    return rows;
+    if (!dbRows[0]) return reply.code(404).send({ error: 'Not found' });
+
+    const users = await onecService.getUsers(req.params.id, app.db);
+    return users;
   });
 
-  // GET /api/databases/:id/users - 1C users in this database
-  app.get('/:id/users', { preHandler }, async (req, reply) => {
-    const { rows: db } = await query(
-      'SELECT id FROM databases WHERE id = $1 AND tenant_id = $2',
-      [req.params.id, req.user.sub]
+  // Добавить пользователя
+  app.post('/:id/users', { preHandler: authMiddleware }, async (req, reply) => {
+    const { rows: dbRows } = await app.db.query(
+      'SELECT * FROM databases WHERE id=$1 AND tenant_id=$2 AND status=$3',
+      [req.params.id, req.tenant.id, 'active']
     );
-    if (!db.length) return reply.code(404).send({ error: 'Not found' });
-    const { rows } = await query(
-      'SELECT * FROM db_users_cache WHERE database_id = $1 ORDER BY name',
+    if (!dbRows[0]) return reply.code(404).send({ error: 'Not found or not active' });
+
+    // Проверка лимита пользователей
+    const { rows: planRows } = await app.db.query(
+      `SELECT p.max_users_per_db FROM plans p JOIN tenants t ON t.plan_id=p.id WHERE t.id=$1`,
+      [req.tenant.id]
+    );
+    const { rows: userRows } = await app.db.query(
+      'SELECT COUNT(*) as cnt FROM db_users WHERE database_id=$1 AND is_active=TRUE',
       [req.params.id]
     );
-    return rows;
+    if (Number(userRows[0].cnt) >= Number(planRows[0]?.max_users_per_db)) {
+      return reply.code(402).send({ error: 'User limit reached for your plan' });
+    }
+
+    await onecService.createUser(dbRows[0], req.body);
+    return reply.code(201).send({ message: 'User created' });
   });
-}
+
+  // Удалить пользователя
+  app.delete('/:id/users/:username', { preHandler: authMiddleware }, async (req, reply) => {
+    const { rows: dbRows } = await app.db.query(
+      'SELECT * FROM databases WHERE id=$1 AND tenant_id=$2',
+      [req.params.id, req.tenant.id]
+    );
+    if (!dbRows[0]) return reply.code(404).send({ error: 'Not found' });
+    await onecService.deleteUser(dbRows[0], req.params.username);
+    return { message: 'User deleted' };
+  });
+};

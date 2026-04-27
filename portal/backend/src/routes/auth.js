@@ -1,134 +1,120 @@
-import bcrypt from 'bcrypt';
-import { nanoid } from 'nanoid';
-import { query } from '../config/db.js';
-import { config } from '../config/index.js';
-import { sendVerificationEmail, sendPasswordResetEmail } from '../services/mailer.js';
+'use strict';
 
-const BCRYPT_ROUNDS = 12;
+const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const { mailService } = require('../services/mail.service');
 
-export async function authRoutes(app) {
-  // POST /api/auth/register
-  app.post('/register', {
-    config: { rateLimit: { max: 5, timeWindow: '15 minutes' } },
-  }, async (req, reply) => {
-    const { email, password, org_name, phone } = req.body;
-    if (!email || !password) return reply.code(400).send({ error: 'Email and password are required' });
-    if (password.length < 8) return reply.code(400).send({ error: 'Password must be at least 8 characters' });
+module.exports = async function authRoutes(app) {
+  // Регистрация
+  app.post('/register', async (req, reply) => {
+    const { email, password, full_name, company_name } = req.body;
+    if (!email || !password) return reply.code(400).send({ error: 'Email and password required' });
 
-    const existing = await query('SELECT id FROM tenants WHERE email = $1', [email.toLowerCase()]);
-    if (existing.rows.length > 0) return reply.code(409).send({ error: 'Email already registered' });
+    const hash = await bcrypt.hash(password, 12);
+    const token = crypto.randomBytes(32).toString('hex');
 
-    const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
-    const verifyToken = nanoid(32);
-    const verifyExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
-    const { rows } = await query(
-      `INSERT INTO tenants (email, password_hash, org_name, phone, verify_token, verify_expires, tariff_id)
-       VALUES ($1, $2, $3, $4, $5, $6, 1) RETURNING id, email, role`,
-      [email.toLowerCase(), passwordHash, org_name, phone, verifyToken, verifyExpires]
-    );
-
-    await sendVerificationEmail(email, verifyToken).catch(console.error);
-    return reply.code(201).send({ message: 'Registration successful. Please check your email to verify your account.' });
+    try {
+      const { rows } = await app.db.query(
+        `INSERT INTO tenants (email, password_hash, full_name, company_name, email_verify_token,
+          plan_id)
+         VALUES ($1,$2,$3,$4,$5, (SELECT id FROM plans WHERE name='Starter' LIMIT 1))
+         RETURNING id, email`,
+        [email.toLowerCase(), hash, full_name, company_name, token]
+      );
+      await mailService.sendVerification(email, token);
+      return reply.code(201).send({ message: 'Registration successful. Check your email.' });
+    } catch (err) {
+      if (err.code === '23505') return reply.code(409).send({ error: 'Email already registered' });
+      throw err;
+    }
   });
 
-  // GET /api/auth/verify/:token
-  app.get('/verify/:token', async (req, reply) => {
-    const { token } = req.params;
-    const { rows } = await query(
-      `UPDATE tenants SET email_verified = true, verify_token = NULL, verify_expires = NULL
-       WHERE verify_token = $1 AND verify_expires > NOW() AND email_verified = false
-       RETURNING id`,
+  // Подтверждение email
+  app.get('/verify-email', async (req, reply) => {
+    const { token } = req.query;
+    const { rows } = await app.db.query(
+      `UPDATE tenants SET email_verified=TRUE, email_verify_token=NULL
+       WHERE email_verify_token=$1 RETURNING id`,
       [token]
     );
-    if (!rows.length) return reply.code(400).send({ error: 'Invalid or expired token' });
-    return reply.redirect(`${config.appUrl}/?verified=1`);
+    if (!rows[0]) return reply.code(400).send({ error: 'Invalid token' });
+    return { message: 'Email verified. You can now log in.' };
   });
 
-  // POST /api/auth/login
-  app.post('/login', {
-    config: { rateLimit: { max: 10, timeWindow: '15 minutes' } },
-  }, async (req, reply) => {
+  // Вход
+  app.post('/login', async (req, reply) => {
     const { email, password } = req.body;
-    const { rows } = await query(
-      'SELECT id, email, password_hash, role, email_verified, is_active FROM tenants WHERE email = $1',
-      [email?.toLowerCase()]
+    const { rows } = await app.db.query(
+      'SELECT * FROM tenants WHERE email=$1',
+      [email.toLowerCase()]
     );
     const tenant = rows[0];
-    if (!tenant) return reply.code(401).send({ error: 'Invalid credentials' });
-    const valid = await bcrypt.compare(password, tenant.password_hash);
-    if (!valid) return reply.code(401).send({ error: 'Invalid credentials' });
-    if (!tenant.email_verified) return reply.code(403).send({ error: 'Please verify your email first' });
-    if (!tenant.is_active) return reply.code(403).send({ error: 'Account is disabled. Contact support.' });
-
-    const accessToken = app.jwt.sign(
-      { sub: tenant.id, role: tenant.role },
-      { expiresIn: config.jwt.accessTtl }
-    );
-    const refreshToken = nanoid(64);
-    const rtHash = await bcrypt.hash(refreshToken, 8);
-    await query(
-      `INSERT INTO refresh_tokens (tenant_id, token_hash, expires_at)
-       VALUES ($1, $2, NOW() + INTERVAL '30 days')`,
-      [tenant.id, rtHash]
-    );
-
-    reply.setCookie('access_token', accessToken, {
-      httpOnly: true, secure: true, sameSite: 'Strict', path: '/', maxAge: 900,
-    });
-    reply.setCookie('refresh_token', refreshToken, {
-      httpOnly: true, secure: true, sameSite: 'Strict', path: '/api/auth', maxAge: 60 * 60 * 24 * 30,
-    });
-    return { access_token: accessToken, role: tenant.role };
-  });
-
-  // POST /api/auth/refresh
-  app.post('/refresh', async (req, reply) => {
-    const rt = req.cookies?.refresh_token;
-    if (!rt) return reply.code(401).send({ error: 'No refresh token' });
-    const { rows } = await query(
-      `SELECT rt.id, rt.tenant_id, rt.token_hash, t.role, t.is_active
-       FROM refresh_tokens rt
-       JOIN tenants t ON t.id = rt.tenant_id
-       WHERE rt.expires_at > NOW()
-       ORDER BY rt.created_at DESC LIMIT 50`,
-      []
-    );
-    let matched = null;
-    for (const row of rows) {
-      if (await bcrypt.compare(rt, row.token_hash)) { matched = row; break; }
+    if (!tenant || !await bcrypt.compare(password, tenant.password_hash)) {
+      return reply.code(401).send({ error: 'Invalid credentials' });
     }
-    if (!matched) return reply.code(401).send({ error: 'Invalid refresh token' });
-    if (!matched.is_active) return reply.code(403).send({ error: 'Account disabled' });
+    if (!tenant.email_verified) return reply.code(403).send({ error: 'Email not verified' });
+    if (!tenant.is_active) return reply.code(403).send({ error: 'Account is disabled' });
 
-    const accessToken = app.jwt.sign(
-      { sub: matched.tenant_id, role: matched.role },
-      { expiresIn: config.jwt.accessTtl }
-    );
-    reply.setCookie('access_token', accessToken, {
-      httpOnly: true, secure: true, sameSite: 'Strict', path: '/', maxAge: 900,
-    });
-    return { access_token: accessToken };
+    const accessToken  = app.jwt.sign({ sub: tenant.id, admin: tenant.is_admin }, { expiresIn: '15m' });
+    const refreshToken = app.jwt.sign({ sub: tenant.id, type: 'refresh' }, { expiresIn: '30d' });
+
+    await app.db.query('UPDATE tenants SET refresh_token=$1 WHERE id=$2', [refreshToken, tenant.id]);
+
+    return reply.send({ accessToken, refreshToken, is_admin: tenant.is_admin });
   });
 
-  // POST /api/auth/logout
+  // Обновление токена
+  app.post('/refresh', async (req, reply) => {
+    const { refreshToken } = req.body;
+    try {
+      const payload = app.jwt.verify(refreshToken);
+      const { rows } = await app.db.query(
+        'SELECT id, is_active FROM tenants WHERE id=$1 AND refresh_token=$2',
+        [payload.sub, refreshToken]
+      );
+      if (!rows[0] || !rows[0].is_active) return reply.code(401).send({ error: 'Invalid token' });
+      const accessToken = app.jwt.sign({ sub: payload.sub }, { expiresIn: '15m' });
+      return { accessToken };
+    } catch {
+      return reply.code(401).send({ error: 'Invalid token' });
+    }
+  });
+
+  // Выход
   app.post('/logout', async (req, reply) => {
-    reply.clearCookie('access_token', { path: '/' });
-    reply.clearCookie('refresh_token', { path: '/api/auth' });
+    const { refreshToken } = req.body;
+    if (refreshToken) {
+      await app.db.query('UPDATE tenants SET refresh_token=NULL WHERE refresh_token=$1', [refreshToken]);
+    }
     return { message: 'Logged out' };
   });
 
-  // GET /api/auth/me
-  app.get('/me', { preHandler: [async (req, rep) => { await req.jwtVerify().catch(() => rep.code(401).send({ error: 'Unauthorized' })); }] }, async (req) => {
-    const { rows } = await query(
-      `SELECT t.id, t.email, t.org_name, t.phone, t.role, t.email_verified,
-              t.created_at, tf.code AS tariff_code, tf.name AS tariff_name,
-              tf.max_bases, tf.max_users, tf.max_disk_gb
-       FROM tenants t
-       LEFT JOIN tariffs tf ON tf.id = t.tariff_id
-       WHERE t.id = $1`,
-      [req.user.sub]
+  // Запрос сброса пароля
+  app.post('/forgot-password', async (req, reply) => {
+    const { email } = req.body;
+    const token = crypto.randomBytes(32).toString('hex');
+    const expires = new Date(Date.now() + 3600000); // 1 час
+    await app.db.query(
+      'UPDATE tenants SET reset_password_token=$1, reset_password_expires=$2 WHERE email=$3',
+      [token, expires, email.toLowerCase()]
     );
-    return rows[0];
+    await mailService.sendPasswordReset(email, token);
+    return { message: 'If this email exists, a reset link has been sent.' };
   });
-}
+
+  // Сброс пароля
+  app.post('/reset-password', async (req, reply) => {
+    const { token, password } = req.body;
+    const { rows } = await app.db.query(
+      'SELECT id FROM tenants WHERE reset_password_token=$1 AND reset_password_expires > NOW()',
+      [token]
+    );
+    if (!rows[0]) return reply.code(400).send({ error: 'Invalid or expired token' });
+    const hash = await bcrypt.hash(password, 12);
+    await app.db.query(
+      'UPDATE tenants SET password_hash=$1, reset_password_token=NULL, reset_password_expires=NULL WHERE id=$2',
+      [hash, rows[0].id]
+    );
+    return { message: 'Password updated. You can now log in.' };
+  });
+};
