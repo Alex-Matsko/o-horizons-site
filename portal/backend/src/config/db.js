@@ -1,29 +1,33 @@
 import pg from 'pg';
-import { logger } from '../utils/logger.js';
+import { config } from './index.js';
 
 const { Pool } = pg;
 
 export const pool = new Pool({
-  host:     process.env.PORTAL_DB_HOST     || 'portal-db',
-  port:     parseInt(process.env.PORTAL_DB_PORT || '5432'),
-  database: process.env.PORTAL_DB_NAME     || 'portal',
-  user:     process.env.PORTAL_DB_USER     || 'portal_user',
-  password: process.env.PORTAL_DB_PASSWORD,
+  host: config.db.host,
+  port: config.db.port,
+  database: config.db.database,
+  user: config.db.user,
+  password: config.db.password,
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 5000,
 });
 
-export const query = (text, params) => pool.query(text, params);
+pool.on('error', (err) => {
+  console.error('[DB] Unexpected error on idle client', err);
+});
 
-export const testConnection = async () => {
-  try {
-    const client = await pool.connect();
-    await client.query('SELECT 1');
-    client.release();
-    logger.info('PostgreSQL connected');
-  } catch (err) {
-    logger.error('PostgreSQL connection failed:', err.message);
-    throw err;
+export async function query(text, params) {
+  const start = Date.now();
+  const res = await pool.query(text, params);
+  const duration = Date.now() - start;
+  if (duration > 1000) {
+    console.warn('[DB] Slow query detected', { text, duration });
   }
-};
+  return res;
+}
+
+export async function getClient() {
+  return pool.connect();
+}

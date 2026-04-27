@@ -1,12 +1,16 @@
 import Redis from 'ioredis';
-import { logger } from '../utils/logger.js';
+import { config } from './index.js';
 
 export const redis = new Redis({
-  host:     process.env.REDIS_HOST     || 'portal-redis',
-  port:     parseInt(process.env.REDIS_PORT || '6379'),
-  password: process.env.REDIS_PASSWORD || undefined,
+  host: config.redis.host,
+  port: config.redis.port,
+  password: config.redis.password,
   maxRetriesPerRequest: null,
+  retryStrategy(times) {
+    return Math.min(times * 100, 3000);
+  },
 });
 
-redis.on('connect',  () => logger.info('Redis connected'));
-redis.on('error',    (e) => logger.error('Redis error:', e.message));
+redis.on('error', (err) => {
+  console.error('[Redis] Connection error:', err.message);
+});
