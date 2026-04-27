@@ -7,19 +7,23 @@ export async function authenticate(request, reply) {
 }
 
 export async function requireAdmin(request, reply) {
-  await authenticate(request, reply);
+  try {
+    await request.jwtVerify();
+  } catch {
+    return reply.code(401).send({ error: 'Unauthorized' });
+  }
   if (request.user?.role !== 'admin') {
-    reply.code(403).send({ error: 'Forbidden' });
+    return reply.code(403).send({ error: 'Forbidden' });
   }
 }
 
 export async function requireVerified(request, reply) {
   try {
     await request.jwtVerify();
-    if (!request.user?.emailVerified) {
-      reply.code(403).send({ error: 'Email not verified' });
-    }
   } catch {
-    reply.code(401).send({ error: 'Unauthorized' });
+    return reply.code(401).send({ error: 'Unauthorized' });
+  }
+  if (!request.user?.emailVerified) {
+    return reply.code(403).send({ error: 'Email not verified', code: 'EMAIL_NOT_VERIFIED' });
   }
 }
