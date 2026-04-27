@@ -7,13 +7,13 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - mailer
       - portal-api
       - portal-frontend
     restart: unless-stopped
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
 
   mailer:
     build:
@@ -34,12 +34,14 @@ services:
     expose:
       - "3001"
     depends_on:
-      - portal-db
-      - portal-redis
+      portal-db:
+        condition: service_healthy
+      portal-redis:
+        condition: service_started
     restart: unless-stopped
-    networks:
-      - default
-      - portal-internal
+    volumes:
+      - portal_backups:/backups
+      - portal_ssh_key:/run/secrets:ro
 
   portal-worker:
     build:
@@ -49,12 +51,14 @@ services:
     command: ["node", "src/worker.js"]
     env_file: ./portal/.env
     depends_on:
-      - portal-db
-      - portal-redis
+      portal-db:
+        condition: service_healthy
+      portal-redis:
+        condition: service_started
     restart: unless-stopped
-    networks:
-      - default
-      - portal-internal
+    volumes:
+      - portal_backups:/backups
+      - portal_ssh_key:/run/secrets:ro
 
   portal-frontend:
     build:
@@ -74,11 +78,14 @@ services:
     environment:
       POSTGRES_DB: portal
       POSTGRES_USER: portal_user
-      POSTGRES_PASSWORD: ${PORTAL_DB_PASSWORD}
+      POSTGRES_PASSWORD: "${PORTAL_DB_PASSWORD}"
     volumes:
       - portal_db_data:/var/lib/postgresql/data
-    networks:
-      - portal-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portal_user -d portal"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   portal-redis:
     image: redis:7-alpine
@@ -87,12 +94,8 @@ services:
     expose:
       - "6379"
     command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
-    networks:
-      - portal-internal
 
 volumes:
   portal_db_data:
-
-networks:
-  portal-internal:
-    driver: bridge
+  portal_backups:
+  portal_ssh_key:
