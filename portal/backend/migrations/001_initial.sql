@@ -1,6 +1,9 @@
+-- 001_initial.sql - Portal database schema
+
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-CREATE TABLE tariffs (
+-- Tariff plans
+CREATE TABLE IF NOT EXISTS tariffs (
   id           SERIAL PRIMARY KEY,
   code         VARCHAR(32) UNIQUE NOT NULL,
   name         VARCHAR(128) NOT NULL,
@@ -13,11 +16,14 @@ CREATE TABLE tariffs (
 );
 
 INSERT INTO tariffs (code, name, max_bases, max_users, max_disk_gb, price_rub) VALUES
-  ('starter',   'Стартер',     1,  5,  10,  0),
-  ('business',  'Бизнес',      3, 15,  50,  4900),
-  ('corporate', 'Корпоратив', 10, 50, 200, 14900);
+  ('starter',   'Стартер',      1,  5,  10,      0),
+  ('business',  'Бизнес',       3, 15,  50,   4900),
+  ('corporate', 'Корпоратив',  10, 50, 200,  14900),
+  ('enterprise','Энтерпрайз',  30,200,1000,  49900)
+ON CONFLICT (code) DO NOTHING;
 
-CREATE TABLE tenants (
+-- Tenants (clients)
+CREATE TABLE IF NOT EXISTS tenants (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email           VARCHAR(256) UNIQUE NOT NULL,
   password_hash   TEXT NOT NULL,
@@ -33,16 +39,18 @@ CREATE TABLE tenants (
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE refresh_tokens (
+-- Refresh tokens
+CREATE TABLE IF NOT EXISTS refresh_tokens (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id   UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   token_hash  TEXT NOT NULL,
   expires_at  TIMESTAMPTZ NOT NULL,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-CREATE INDEX idx_refresh_tokens_tenant ON refresh_tokens(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_tenant ON refresh_tokens(tenant_id);
 
-CREATE TABLE onec_configs (
+-- 1C configs catalog
+CREATE TABLE IF NOT EXISTS onec_configs (
   id          SERIAL PRIMARY KEY,
   code        VARCHAR(64) UNIQUE NOT NULL,
   name        VARCHAR(128) NOT NULL,
@@ -52,12 +60,14 @@ CREATE TABLE onec_configs (
 );
 
 INSERT INTO onec_configs (code, name, cf_filename, platform) VALUES
-  ('bp_3_0',     '1С:Бухгалтерия 3.0',        'bp_3_0.cf',     '8.3'),
-  ('ut_11',      '1С:Управление торговлей 11', 'ut_11.cf',      '8.3'),
-  ('unf_1_6',    '1С:УНФ 1.6',                'unf_1_6.cf',    '8.3'),
-  ('retail_2_3', '1С:Розница 2.3',             'retail_2_3.cf', '8.3');
+  ('bp_3_0',     '1С:Бухгалтерия 3.0',         'bp_3_0.cf',     '8.3'),
+  ('ut_11',      '1С:Управление торговлей 11',  'ut_11.cf',      '8.3'),
+  ('unf_1_6',    '1С:УНФ 1.6',                 'unf_1_6.cf',    '8.3'),
+  ('retail_2_3', '1С:Розница 2.3',              'retail_2_3.cf', '8.3')
+ON CONFLICT (code) DO NOTHING;
 
-CREATE TABLE databases (
+-- Client databases
+CREATE TABLE IF NOT EXISTS databases (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id       UUID NOT NULL REFERENCES tenants(id) ON DELETE RESTRICT,
   config_id       INT NOT NULL REFERENCES onec_configs(id),
@@ -73,10 +83,11 @@ CREATE TABLE databases (
   created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-CREATE INDEX idx_databases_tenant ON databases(tenant_id);
-CREATE INDEX idx_databases_status ON databases(status);
+CREATE INDEX IF NOT EXISTS idx_databases_tenant ON databases(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_databases_status ON databases(status);
 
-CREATE TABLE provision_requests (
+-- Provision requests
+CREATE TABLE IF NOT EXISTS provision_requests (
   id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id     UUID NOT NULL REFERENCES tenants(id),
   database_id   UUID REFERENCES databases(id),
@@ -89,9 +100,10 @@ CREATE TABLE provision_requests (
   created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-CREATE INDEX idx_provision_requests_status ON provision_requests(status);
+CREATE INDEX IF NOT EXISTS idx_provision_requests_status ON provision_requests(status);
 
-CREATE TABLE provision_steps (
+-- Provision steps log
+CREATE TABLE IF NOT EXISTS provision_steps (
   id          SERIAL PRIMARY KEY,
   request_id  UUID NOT NULL REFERENCES provision_requests(id) ON DELETE CASCADE,
   step        INT NOT NULL,
@@ -100,10 +112,11 @@ CREATE TABLE provision_steps (
   message     TEXT,
   started_at  TIMESTAMPTZ,
   finished_at TIMESTAMPTZ,
-  UNIQUE (request_id, step)
+  UNIQUE(request_id, step)
 );
 
-CREATE TABLE db_users_cache (
+-- 1C users cache
+CREATE TABLE IF NOT EXISTS db_users_cache (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   database_id UUID NOT NULL REFERENCES databases(id) ON DELETE CASCADE,
   onec_uuid   VARCHAR(64),
@@ -114,9 +127,10 @@ CREATE TABLE db_users_cache (
   synced_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE (database_id, login)
 );
-CREATE INDEX idx_db_users_database ON db_users_cache(database_id);
+CREATE INDEX IF NOT EXISTS idx_db_users_database ON db_users_cache(database_id);
 
-CREATE TABLE backups (
+-- Backups
+CREATE TABLE IF NOT EXISTS backups (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   database_id UUID NOT NULL REFERENCES databases(id) ON DELETE CASCADE,
   tenant_id   UUID NOT NULL REFERENCES tenants(id),
@@ -129,19 +143,21 @@ CREATE TABLE backups (
   finished_at TIMESTAMPTZ,
   expires_at  TIMESTAMPTZ
 );
-CREATE INDEX idx_backups_database ON backups(database_id);
-CREATE INDEX idx_backups_tenant ON backups(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_backups_database ON backups(database_id);
+CREATE INDEX IF NOT EXISTS idx_backups_tenant ON backups(tenant_id);
 
-CREATE TABLE healthcheck_history (
-  id          SERIAL PRIMARY KEY,
+-- Healthcheck history
+CREATE TABLE IF NOT EXISTS healthcheck_history (
+  id          BIGSERIAL PRIMARY KEY,
   database_id UUID NOT NULL REFERENCES databases(id) ON DELETE CASCADE,
   is_up       BOOLEAN NOT NULL,
   latency_ms  INT,
   checked_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-CREATE INDEX idx_health_database_time ON healthcheck_history(database_id, checked_at DESC);
+CREATE INDEX IF NOT EXISTS idx_health_database_time ON healthcheck_history(database_id, checked_at DESC);
 
-CREATE TABLE audit_log (
+-- Audit log
+CREATE TABLE IF NOT EXISTS audit_log (
   id          BIGSERIAL PRIMARY KEY,
   tenant_id   UUID REFERENCES tenants(id),
   action      VARCHAR(128) NOT NULL,
@@ -151,16 +167,22 @@ CREATE TABLE audit_log (
   ip          VARCHAR(64),
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-CREATE INDEX idx_audit_tenant ON audit_log(tenant_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_tenant ON audit_log(tenant_id, created_at DESC);
 
+-- updated_at trigger
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN NEW.updated_at = NOW(); RETURN NEW; END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_tenants_updated_at ON tenants;
 CREATE TRIGGER trg_tenants_updated_at BEFORE UPDATE ON tenants
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+DROP TRIGGER IF EXISTS trg_databases_updated_at ON databases;
 CREATE TRIGGER trg_databases_updated_at BEFORE UPDATE ON databases
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+DROP TRIGGER IF EXISTS trg_provision_requests_updated_at ON provision_requests;
 CREATE TRIGGER trg_provision_requests_updated_at BEFORE UPDATE ON provision_requests
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
