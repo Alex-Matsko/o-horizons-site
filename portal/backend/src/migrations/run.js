@@ -5,18 +5,19 @@ import { pool } from '../config/db.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-async function run() {
-  const sql = readFileSync(
-    join(__dirname, '../../../migrations/001_initial.sql'),
-    'utf8'
-  );
-  console.log('[migrate] Running 001_initial.sql...');
-  await pool.query(sql);
-  console.log('[migrate] Done.');
-  process.exit(0);
+async function runMigrations() {
+  const client = await pool.connect();
+  try {
+    const sql = readFileSync(join(__dirname, '001_initial.sql'), 'utf8');
+    await client.query(sql);
+    console.log('[Migrations] Done.');
+  } catch (err) {
+    console.error('[Migrations] Failed:', err.message);
+    process.exit(1);
+  } finally {
+    client.release();
+    await pool.end();
+  }
 }
 
-run().catch((err) => {
-  console.error('[migrate] FAILED:', err.message);
-  process.exit(1);
-});
+runMigrations();
