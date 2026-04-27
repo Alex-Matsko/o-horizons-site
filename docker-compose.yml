@@ -34,16 +34,14 @@ services:
     expose:
       - "3001"
     depends_on:
-      portal-db:
-        condition: service_healthy
-      portal-redis:
-        condition: service_healthy
+      - portal-db
+      - portal-redis
     restart: unless-stopped
+    volumes:
+      - portal_backups:/backups
     networks:
       - default
       - portal-internal
-    volumes:
-      - portal_backups:/backups
 
   portal-worker:
     build:
@@ -53,16 +51,14 @@ services:
     command: ["node", "src/worker.js"]
     env_file: ./portal/.env
     depends_on:
-      portal-db:
-        condition: service_healthy
-      portal-redis:
-        condition: service_healthy
+      - portal-db
+      - portal-redis
     restart: unless-stopped
+    volumes:
+      - portal_backups:/backups
     networks:
       - default
       - portal-internal
-    volumes:
-      - portal_backups:/backups
 
   portal-frontend:
     build:
@@ -87,11 +83,6 @@ services:
       - portal_db_data:/var/lib/postgresql/data
     networks:
       - portal-internal
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U portal_user -d portal"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
 
   portal-redis:
     image: redis:7-alpine
@@ -102,11 +93,6 @@ services:
     command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
     networks:
       - portal-internal
-    healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
 volumes:
   portal_db_data:
