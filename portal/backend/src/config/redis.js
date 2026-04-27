@@ -1,16 +1,11 @@
-import Redis from 'ioredis';
-import { config } from './index.js';
+'use strict';
 
-export const redis = new Redis({
-  host: config.redis.host,
-  port: config.redis.port,
-  password: config.redis.password,
-  maxRetriesPerRequest: null,
-  retryStrategy(times) {
-    return Math.min(times * 100, 3000);
-  },
-});
+const { config } = require('./index.js');
 
-redis.on('error', (err) => {
-  console.error('[Redis] Connection error:', err.message);
-});
+const redisConfig = {
+  host:     config.redis.host,
+  port:     config.redis.port,
+  password: config.redis.password || undefined,
+};
+
+module.exports = { redisConfig };

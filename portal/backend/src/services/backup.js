@@ -1,68 +1,68 @@
-import { NodeSSH } from 'node-ssh';
-import { query } from '../config/db.js';
-import { config } from '../config/index.js';
-import { notifyTelegram } from './telegram.js';
-import dayjs from 'dayjs';
+'use strict';
 
-export async function runBackup(backupId) {
-  const { rows: bkRows } = await query(
-    `SELECT b.*, d.onec_ib_name, d.db_name, t.email
-     FROM backups b
-     JOIN databases d ON d.id = b.database_id
-     JOIN tenants t ON t.id = b.tenant_id
-     WHERE b.id = $1`,
-    [backupId]
-  );
-  if (!bkRows.length) throw new Error('Backup not found');
-  const b = bkRows[0];
+const { NodeSSH }    = require('node-ssh');
+const { config }     = require('../config/index.js');
+const { notifyTelegram } = require('./telegram.js');
 
-  await query('UPDATE backups SET status = \'running\' WHERE id = $1', [backupId]);
-
-  const ssh = new NodeSSH();
-  const ts = dayjs().format('YYYYMMDD_HHmmss');
-  const filename = `${b.db_name}_${ts}.backup`;
-  const remotePath = `/tmp/${filename}`;
-  const localPath = `${config.backups.localPath}/${filename}`;
+/**
+ * Создаёт резервную копию базы 1С через SSH + pg_dump
+ * @param {object} params
+ * @param {string} params.dbId          - UUID базы в портале
+ * @param {string} params.pgDbName      - имя PostgreSQL базы
+ * @param {string} params.tenantEmail   - email клиента
+ * @param {object} pool                 - pg Pool портала
+ */
+async function createBackup({ dbId, pgDbName, tenantEmail }, pool) {
+  const ssh       = new NodeSSH();
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const fileName  = `backup_${pgDbName}_${timestamp}.dump`;
+  const remotePath = `${config.backups.localPath}/${fileName}`;
 
   try {
     await ssh.connect({
-      host: config.onec.serverHost,
-      username: config.onec.sshUser,
+      host:           config.onec.serverHost,
+      username:       config.onec.sshUser,
       privateKeyPath: config.onec.sshKeyPath,
     });
 
-    const res = await ssh.execCommand(
-      `pg_dump -U postgres -Fc "${b.db_name}" -f "${remotePath}"`
+    // pg_dump создаёт binary dump
+    const result = await ssh.execCommand(
+      `pg_dump -U postgres -Fc "${pgDbName}" -f "${remotePath}"`
     );
-    if (res.code !== 0) throw new Error(`pg_dump: ${res.stderr}`);
+    if (result.code !== 0 && result.stderr) {
+      throw new Error(`pg_dump failed: ${result.stderr}`);
+    }
 
-    await ssh.getFile(localPath, remotePath);
-    await ssh.execCommand(`rm "${remotePath}"`);
-
-    const { size } = await import('fs').then(fs => fs.promises.stat(localPath));
-    const expires = dayjs().add(config.backups.retentionDays, 'day').toDate();
-
-    await query(
-      `UPDATE backups SET status = 'done', file_path = $2, file_size = $3, finished_at = NOW(), expires_at = $4 WHERE id = $1`,
-      [backupId, localPath, size, expires]
+    // Записываем в БД портала
+    await pool.query(
+      `INSERT INTO backups (database_id, file_name, file_path, status, size_bytes)
+       VALUES ($1, $2, $3, 'completed',
+         (SELECT COALESCE((SELECT size FROM (
+           SELECT pg_database_size($4) AS size
+         ) s), 0))
+       )`,
+      [dbId, fileName, remotePath, pgDbName]
     );
+
+    await notifyTelegram(
+      `✅ <b>Бекап готов</b>\nКлиент: ${tenantEmail}\nФайл: ${fileName}`
+    );
+
+    return { fileName, remotePath };
   } catch (err) {
-    await query('UPDATE backups SET status = \'failed\', error = $2, finished_at = NOW() WHERE id = $1', [backupId, err.message]);
-    await notifyTelegram(`❌ <b>Ошибка бекапа</b>\nБаза: ${b.onec_ib_name}\nОшибка: ${err.message}`);
+    await pool.query(
+      `INSERT INTO backups (database_id, file_name, file_path, status, error_message)
+       VALUES ($1, $2, $3, 'failed', $4)`,
+      [dbId, fileName, remotePath, err.message]
+    ).catch(() => {});
+
+    await notifyTelegram(
+      `❌ <b>Ошибка бекапа</b>\nКлиент: ${tenantEmail}\n${err.message}`
+    );
     throw err;
   } finally {
     ssh.dispose();
   }
 }
 
-export async function cleanupExpiredBackups() {
-  const { rows } = await query(
-    `SELECT id, file_path FROM backups WHERE expires_at < NOW() AND status = 'done'`
-  );
-  const { unlink } = await import('fs').then(m => m.promises);
-  for (const row of rows) {
-    try { await unlink(row.file_path); } catch {}
-    await query('DELETE FROM backups WHERE id = $1', [row.id]);
-  }
-  console.log(`[Backup] Cleaned up ${rows.length} expired backups`);
-}
+module.exports = { createBackup };

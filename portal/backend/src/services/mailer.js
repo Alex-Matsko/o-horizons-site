@@ -1,45 +1,36 @@
-import nodemailer from 'nodemailer';
-import { config } from '../config/index.js';
+'use strict';
 
-const transporter = nodemailer.createTransport({
-  host: config.smtp.host,
-  port: config.smtp.port,
-  secure: config.smtp.secure,
-  auth: { user: config.smtp.user, pass: config.smtp.pass },
-});
+const nodemailer  = require('nodemailer');
+const { config }  = require('../config/index.js');
 
-export async function sendMail({ to, subject, html }) {
-  return transporter.sendMail({ from: config.smtp.from, to, subject, html });
+let _transporter = null;
+
+function getTransporter() {
+  if (_transporter) return _transporter;
+  _transporter = nodemailer.createTransport({
+    host:   config.smtp.host,
+    port:   config.smtp.port,
+    secure: config.smtp.secure,
+    auth: {
+      user: config.smtp.user,
+      pass: config.smtp.pass,
+    },
+  });
+  return _transporter;
 }
 
-export async function sendVerificationEmail(email, token) {
-  const url = `${config.appUrl}/api/auth/verify/${token}`;
-  return sendMail({
-    to: email,
-    subject: 'Подтверждение email — O-Horizons 1С Портал',
-    html: `
-      <div style="font-family:sans-serif;max-width:480px;margin:auto">
-        <h2>Добро пожаловать в O-Horizons 1С Портал</h2>
-        <p>Для подтверждения email перейдите по ссылке:</p>
-        <a href="${url}" style="display:inline-block;background:#01696f;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none">Подтвердить email</a>
-        <p style="margin-top:16px;color:#666">Ссылка действительна 24 часа.</p>
-      </div>
-    `,
+async function sendMail({ to, subject, html }) {
+  if (!config.smtp.host) {
+    console.warn('[mailer] SMTP not configured — skipping email to', to);
+    return;
+  }
+  const transporter = getTransporter();
+  await transporter.sendMail({
+    from:    config.smtp.from || config.smtp.user,
+    to,
+    subject,
+    html,
   });
 }
 
-export async function sendPasswordResetEmail(email, token) {
-  const url = `${config.appUrl}/reset-password?token=${token}`;
-  return sendMail({
-    to: email,
-    subject: 'Сброс пароля — O-Horizons 1С Портал',
-    html: `
-      <div style="font-family:sans-serif;max-width:480px;margin:auto">
-        <h2>Сброс пароля</h2>
-        <p>Для сброса пароля перейдите по ссылке:</p>
-        <a href="${url}" style="display:inline-block;background:#01696f;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none">Сбросить пароль</a>
-        <p style="margin-top:16px;color:#666">Ссылка действительна 1 час.</p>
-      </div>
-    `,
-  });
-}
+module.exports = { sendMail };
