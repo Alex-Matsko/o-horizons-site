@@ -39,6 +39,7 @@ services:
     restart: unless-stopped
     volumes:
       - portal_backups:/backups
+      - portal_ssh:/run/secrets:ro
     networks:
       - default
       - portal-internal
@@ -56,6 +57,7 @@ services:
     restart: unless-stopped
     volumes:
       - portal_backups:/backups
+      - portal_ssh:/run/secrets:ro
     networks:
       - default
       - portal-internal
@@ -97,6 +99,7 @@ services:
 volumes:
   portal_db_data:
   portal_backups:
+  portal_ssh:
 
 networks:
   portal-internal:
