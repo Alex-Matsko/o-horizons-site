@@ -1,86 +1,52 @@
-import path from 'path';
 import { query } from '../config/db.js';
-import { requireVerified } from '../middleware/auth.js';
+import { requireAuth, requireActiveAccount } from '../middleware/auth.js';
 import { backupQueue } from '../queues/index.js';
-import { config } from '../config/index.js';
 
-export async function backupRoutes(fastify) {
-  // GET /api/backups?databaseId=
-  fastify.get('/', { preHandler: [requireVerified] }, async (req, reply) => {
-    const { tenantId } = req.user;
-    const { databaseId } = req.query;
-    if (!databaseId) return reply.code(400).send({ error: 'databaseId required' });
+export async function backupRoutes(app) {
+  const preHandler = [requireAuth, requireActiveAccount];
 
-    // Verify ownership
-    const dbRes = await query(
-      `SELECT id FROM databases WHERE id = $1 AND tenant_id = $2`,
-      [databaseId, tenantId]
-    );
-    if (!dbRes.rows.length) return reply.code(404).send({ error: 'Database not found' });
-
-    const res = await query(
-      `SELECT id, file_name, size_bytes, type, status, error_message,
-              started_at, completed_at, expires_at, created_at
-       FROM backups WHERE database_id = $1 ORDER BY created_at DESC LIMIT 50`,
-      [databaseId]
-    );
-    return res.rows;
+  // GET /api/backups?database_id=...
+  app.get('/', { preHandler }, async (req) => {
+    const { database_id } = req.query;
+    let sql = `
+      SELECT b.*, d.name AS db_name
+      FROM backups b
+      JOIN databases d ON d.id = b.database_id
+      WHERE b.tenant_id = $1
+    `;
+    const params = [req.user.sub];
+    if (database_id) { sql += ' AND b.database_id = $2'; params.push(database_id); }
+    sql += ' ORDER BY b.created_at DESC LIMIT 50';
+    const { rows } = await query(sql, params);
+    return rows;
   });
 
-  // POST /api/backups — create manual backup
-  fastify.post('/', { preHandler: [requireVerified] }, async (req, reply) => {
-    const { tenantId, sub: userId } = req.user;
-    const { databaseId } = req.body;
-    if (!databaseId) return reply.code(400).send({ error: 'databaseId required' });
+  // POST /api/backups - create manual backup
+  app.post('/', { preHandler }, async (req, reply) => {
+    const { database_id } = req.body;
+    if (!database_id) return reply.code(400).send({ error: 'database_id is required' });
 
-    // Verify ownership and active status
-    const dbRes = await query(
-      `SELECT id, infobase_name FROM databases WHERE id = $1 AND tenant_id = $2 AND status = 'active'`,
-      [databaseId, tenantId]
+    const { rows: db } = await query(
+      `SELECT id, status FROM databases WHERE id = $1 AND tenant_id = $2`,
+      [database_id, req.user.sub]
     );
-    if (!dbRes.rows.length) return reply.code(404).send({ error: 'Active database not found' });
+    if (!db.length) return reply.code(404).send({ error: 'Database not found' });
+    if (db[0].status !== 'running') return reply.code(400).send({ error: 'Database is not running' });
 
-    // Check for running backup
-    const runningRes = await query(
-      `SELECT id FROM backups WHERE database_id = $1 AND status = 'running'`,
-      [databaseId]
+    // Check no backup already running
+    const { rows: running } = await query(
+      `SELECT id FROM backups WHERE database_id = $1 AND status IN ('pending','running')`,
+      [database_id]
     );
-    if (runningRes.rows.length > 0) {
-      return reply.code(409).send({ error: 'A backup is already running' });
-    }
+    if (running.length) return reply.code(409).send({ error: 'A backup is already in progress' });
 
-    const { infobase_name } = dbRes.rows[0];
-    const fileName = `${infobase_name}_${Date.now()}.dt`;
-    const filePath = path.join(config.backups.localPath, fileName);
-
-    const backupRes = await query(
-      `INSERT INTO backups (database_id, file_path, file_name, type, status, created_by)
-       VALUES ($1, $2, $3, 'manual', 'pending', $4) RETURNING id`,
-      [databaseId, filePath, fileName, userId]
+    const { rows } = await query(
+      `INSERT INTO backups (database_id, tenant_id, type, expires_at)
+       VALUES ($1, $2, 'manual', NOW() + INTERVAL '${14} days')
+       RETURNING *`,
+      [database_id, req.user.sub]
     );
-    const backupId = backupRes.rows[0].id;
-
-    await backupQueue.add('create-backup', { backupId, databaseId, infobaseName: infobase_name, filePath });
-
-    return reply.code(202).send({ id: backupId, message: 'Backup queued' });
-  });
-
-  // DELETE /api/backups/:id
-  fastify.delete('/:id', { preHandler: [requireVerified] }, async (req, reply) => {
-    const { tenantId } = req.user;
-    const { id } = req.params;
-
-    // Verify ownership via join
-    const res = await query(
-      `SELECT b.id, b.file_path, b.status
-       FROM backups b JOIN databases d ON d.id = b.database_id
-       WHERE b.id = $1 AND d.tenant_id = $2`,
-      [id, tenantId]
-    );
-    if (!res.rows.length) return reply.code(404).send({ error: 'Not found' });
-    if (res.rows[0].status === 'running') return reply.code(409).send({ error: 'Cannot delete running backup' });
-
-    await query(`DELETE FROM backups WHERE id = $1`, [id]);
-    return { message: 'Deleted' };
+    await backupQueue.add('create_backup', { backupId: rows[0].id });
+    return reply.code(201).send(rows[0]);
   });
 }

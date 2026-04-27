@@ -1,218 +1,134 @@
 import bcrypt from 'bcrypt';
-import crypto from 'crypto';
 import { nanoid } from 'nanoid';
 import { query } from '../config/db.js';
-import { sendEmailVerification, sendPasswordReset } from '../services/mail.js';
+import { config } from '../config/index.js';
+import { sendVerificationEmail, sendPasswordResetEmail } from '../services/mailer.js';
 
-export async function authRoutes(fastify) {
+const BCRYPT_ROUNDS = 12;
+
+export async function authRoutes(app) {
   // POST /api/auth/register
-  fastify.post('/register', {
-    schema: {
-      body: {
-        type: 'object',
-        required: ['email', 'password', 'fullName', 'companyName'],
-        properties: {
-          email: { type: 'string', format: 'email' },
-          password: { type: 'string', minLength: 8 },
-          fullName: { type: 'string', minLength: 2 },
-          companyName: { type: 'string', minLength: 2 },
-        },
-      },
-    },
+  app.post('/register', {
+    config: { rateLimit: { max: 5, timeWindow: '15 minutes' } },
   }, async (req, reply) => {
-    const { email, password, fullName, companyName } = req.body;
+    const { email, password, org_name, phone } = req.body;
+    if (!email || !password) return reply.code(400).send({ error: 'Email and password are required' });
+    if (password.length < 8) return reply.code(400).send({ error: 'Password must be at least 8 characters' });
 
-    const existing = await query('SELECT id FROM users WHERE email = $1', [email.toLowerCase()]);
-    if (existing.rows.length > 0) {
-      return reply.code(409).send({ error: 'Email already registered' });
-    }
+    const existing = await query('SELECT id FROM tenants WHERE email = $1', [email.toLowerCase()]);
+    if (existing.rows.length > 0) return reply.code(409).send({ error: 'Email already registered' });
 
-    const slug = nanoid(10).toLowerCase();
-    const passwordHash = await bcrypt.hash(password, 12);
+    const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
+    const verifyToken = nanoid(32);
+    const verifyExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-    const tenantRes = await query(
-      `INSERT INTO tenants (company_name, slug, plan) VALUES ($1, $2, 'starter') RETURNING id`,
-      [companyName, slug]
-    );
-    const tenantId = tenantRes.rows[0].id;
-
-    const userRes = await query(
-      `INSERT INTO users (tenant_id, email, password_hash, full_name, role)
-       VALUES ($1, $2, $3, $4, 'client') RETURNING id`,
-      [tenantId, email.toLowerCase(), passwordHash, fullName]
-    );
-    const userId = userRes.rows[0].id;
-
-    const token = nanoid(64);
-    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
-    await query(
-      `INSERT INTO tokens (user_id, type, token_hash, expires_at)
-       VALUES ($1, 'email_verify', $2, now() + interval '24 hours')`,
-      [userId, tokenHash]
+    const { rows } = await query(
+      `INSERT INTO tenants (email, password_hash, org_name, phone, verify_token, verify_expires, tariff_id)
+       VALUES ($1, $2, $3, $4, $5, $6, 1) RETURNING id, email, role`,
+      [email.toLowerCase(), passwordHash, org_name, phone, verifyToken, verifyExpires]
     );
 
-    await sendEmailVerification(email, token);
-
-    return reply.code(201).send({ message: 'Registered. Please verify your email.' });
+    await sendVerificationEmail(email, verifyToken).catch(console.error);
+    return reply.code(201).send({ message: 'Registration successful. Please check your email to verify your account.' });
   });
 
-  // GET /api/auth/verify-email
-  fastify.get('/verify-email', async (req, reply) => {
-    const { token } = req.query;
-    if (!token) return reply.code(400).send({ error: 'Token required' });
-
-    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
-    const res = await query(
-      `SELECT t.id, t.user_id, t.expires_at, t.used_at
-       FROM tokens t WHERE t.token_hash = $1 AND t.type = 'email_verify'`,
-      [tokenHash]
+  // GET /api/auth/verify/:token
+  app.get('/verify/:token', async (req, reply) => {
+    const { token } = req.params;
+    const { rows } = await query(
+      `UPDATE tenants SET email_verified = true, verify_token = NULL, verify_expires = NULL
+       WHERE verify_token = $1 AND verify_expires > NOW() AND email_verified = false
+       RETURNING id`,
+      [token]
     );
-    if (!res.rows.length) return reply.code(400).send({ error: 'Invalid token' });
-
-    const row = res.rows[0];
-    if (row.used_at) return reply.code(400).send({ error: 'Token already used' });
-    if (new Date(row.expires_at) < new Date()) return reply.code(400).send({ error: 'Token expired' });
-
-    await query(`UPDATE users SET email_verified = true WHERE id = $1`, [row.user_id]);
-    await query(`UPDATE tokens SET used_at = now() WHERE id = $1`, [row.id]);
-
-    return { message: 'Email verified successfully' };
+    if (!rows.length) return reply.code(400).send({ error: 'Invalid or expired token' });
+    return reply.redirect(`${config.appUrl}/?verified=1`);
   });
 
   // POST /api/auth/login
-  fastify.post('/login', {
-    schema: {
-      body: {
-        type: 'object',
-        required: ['email', 'password'],
-        properties: {
-          email: { type: 'string' },
-          password: { type: 'string' },
-        },
-      },
-    },
+  app.post('/login', {
+    config: { rateLimit: { max: 10, timeWindow: '15 minutes' } },
   }, async (req, reply) => {
     const { email, password } = req.body;
-
-    const res = await query(
-      `SELECT u.*, t.company_name, t.plan, t.status as tenant_status
-       FROM users u JOIN tenants t ON t.id = u.tenant_id
-       WHERE u.email = $1`,
-      [email.toLowerCase()]
+    const { rows } = await query(
+      'SELECT id, email, password_hash, role, email_verified, is_active FROM tenants WHERE email = $1',
+      [email?.toLowerCase()]
     );
-    if (!res.rows.length) return reply.code(401).send({ error: 'Invalid credentials' });
-
-    const user = res.rows[0];
-    const valid = await bcrypt.compare(password, user.password_hash);
+    const tenant = rows[0];
+    if (!tenant) return reply.code(401).send({ error: 'Invalid credentials' });
+    const valid = await bcrypt.compare(password, tenant.password_hash);
     if (!valid) return reply.code(401).send({ error: 'Invalid credentials' });
-    if (!user.email_verified) return reply.code(403).send({ error: 'Email not verified', code: 'EMAIL_NOT_VERIFIED' });
-    if (user.status !== 'active') return reply.code(403).send({ error: 'Account suspended' });
+    if (!tenant.email_verified) return reply.code(403).send({ error: 'Please verify your email first' });
+    if (!tenant.is_active) return reply.code(403).send({ error: 'Account is disabled. Contact support.' });
 
-    const accessToken = fastify.jwt.sign(
-      { sub: user.id, role: user.role, tenantId: user.tenant_id, emailVerified: true },
-      { expiresIn: '15m' }
+    const accessToken = app.jwt.sign(
+      { sub: tenant.id, role: tenant.role },
+      { expiresIn: config.jwt.accessTtl }
     );
     const refreshToken = nanoid(64);
-    const refreshHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+    const rtHash = await bcrypt.hash(refreshToken, 8);
     await query(
-      `INSERT INTO tokens (user_id, type, token_hash, expires_at)
-       VALUES ($1, 'refresh', $2, now() + interval '30 days')`,
-      [user.id, refreshHash]
+      `INSERT INTO refresh_tokens (tenant_id, token_hash, expires_at)
+       VALUES ($1, $2, NOW() + INTERVAL '30 days')`,
+      [tenant.id, rtHash]
     );
 
-    await query(`UPDATE users SET last_login_at = now() WHERE id = $1`, [user.id]);
-
-    return {
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.id,
-        email: user.email,
-        fullName: user.full_name,
-        role: user.role,
-        companyName: user.company_name,
-        plan: user.plan,
-      },
-    };
+    reply.setCookie('access_token', accessToken, {
+      httpOnly: true, secure: true, sameSite: 'Strict', path: '/', maxAge: 900,
+    });
+    reply.setCookie('refresh_token', refreshToken, {
+      httpOnly: true, secure: true, sameSite: 'Strict', path: '/api/auth', maxAge: 60 * 60 * 24 * 30,
+    });
+    return { access_token: accessToken, role: tenant.role };
   });
 
   // POST /api/auth/refresh
-  fastify.post('/refresh', async (req, reply) => {
-    const { refreshToken } = req.body || {};
-    if (!refreshToken) return reply.code(400).send({ error: 'Refresh token required' });
-
-    const tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
-    const res = await query(
-      `SELECT t.id, t.user_id, t.expires_at, t.used_at
-       FROM tokens t WHERE t.token_hash = $1 AND t.type = 'refresh'`,
-      [tokenHash]
+  app.post('/refresh', async (req, reply) => {
+    const rt = req.cookies?.refresh_token;
+    if (!rt) return reply.code(401).send({ error: 'No refresh token' });
+    const { rows } = await query(
+      `SELECT rt.id, rt.tenant_id, rt.token_hash, t.role, t.is_active
+       FROM refresh_tokens rt
+       JOIN tenants t ON t.id = rt.tenant_id
+       WHERE rt.expires_at > NOW()
+       ORDER BY rt.created_at DESC LIMIT 50`,
+      []
     );
-    if (!res.rows.length || res.rows[0].used_at || new Date(res.rows[0].expires_at) < new Date()) {
-      return reply.code(401).send({ error: 'Invalid or expired refresh token' });
+    let matched = null;
+    for (const row of rows) {
+      if (await bcrypt.compare(rt, row.token_hash)) { matched = row; break; }
     }
+    if (!matched) return reply.code(401).send({ error: 'Invalid refresh token' });
+    if (!matched.is_active) return reply.code(403).send({ error: 'Account disabled' });
 
-    const { user_id } = res.rows[0];
-    await query(`UPDATE tokens SET used_at = now() WHERE id = $1`, [res.rows[0].id]);
-
-    const userRes = await query(
-      `SELECT u.*, t.plan FROM users u JOIN tenants t ON t.id = u.tenant_id WHERE u.id = $1`,
-      [user_id]
+    const accessToken = app.jwt.sign(
+      { sub: matched.tenant_id, role: matched.role },
+      { expiresIn: config.jwt.accessTtl }
     );
-    const user = userRes.rows[0];
-
-    const accessToken = fastify.jwt.sign(
-      { sub: user.id, role: user.role, tenantId: user.tenant_id, emailVerified: user.email_verified },
-      { expiresIn: '15m' }
-    );
-    const newRefreshToken = nanoid(64);
-    const newRefreshHash = crypto.createHash('sha256').update(newRefreshToken).digest('hex');
-    await query(
-      `INSERT INTO tokens (user_id, type, token_hash, expires_at)
-       VALUES ($1, 'refresh', $2, now() + interval '30 days')`,
-      [user_id, newRefreshHash]
-    );
-
-    return { accessToken, refreshToken: newRefreshToken };
+    reply.setCookie('access_token', accessToken, {
+      httpOnly: true, secure: true, sameSite: 'Strict', path: '/', maxAge: 900,
+    });
+    return { access_token: accessToken };
   });
 
-  // POST /api/auth/forgot-password
-  fastify.post('/forgot-password', async (req, reply) => {
-    const { email } = req.body || {};
-    if (!email) return reply.code(400).send({ error: 'Email required' });
-
-    const res = await query('SELECT id FROM users WHERE email = $1', [email.toLowerCase()]);
-    // Always respond 200 to prevent email enumeration
-    if (!res.rows.length) return { message: 'If this email exists, a reset link has been sent.' };
-
-    const token = nanoid(64);
-    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
-    await query(
-      `INSERT INTO tokens (user_id, type, token_hash, expires_at)
-       VALUES ($1, 'password_reset', $2, now() + interval '1 hour')`,
-      [res.rows[0].id, tokenHash]
-    );
-    await sendPasswordReset(email, token);
-    return { message: 'If this email exists, a reset link has been sent.' };
+  // POST /api/auth/logout
+  app.post('/logout', async (req, reply) => {
+    reply.clearCookie('access_token', { path: '/' });
+    reply.clearCookie('refresh_token', { path: '/api/auth' });
+    return { message: 'Logged out' };
   });
 
-  // POST /api/auth/reset-password
-  fastify.post('/reset-password', async (req, reply) => {
-    const { token, password } = req.body || {};
-    if (!token || !password) return reply.code(400).send({ error: 'Token and password required' });
-    if (password.length < 8) return reply.code(400).send({ error: 'Password too short' });
-
-    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
-    const res = await query(
-      `SELECT id, user_id, expires_at, used_at FROM tokens WHERE token_hash = $1 AND type = 'password_reset'`,
-      [tokenHash]
+  // GET /api/auth/me
+  app.get('/me', { preHandler: [async (req, rep) => { await req.jwtVerify().catch(() => rep.code(401).send({ error: 'Unauthorized' })); }] }, async (req) => {
+    const { rows } = await query(
+      `SELECT t.id, t.email, t.org_name, t.phone, t.role, t.email_verified,
+              t.created_at, tf.code AS tariff_code, tf.name AS tariff_name,
+              tf.max_bases, tf.max_users, tf.max_disk_gb
+       FROM tenants t
+       LEFT JOIN tariffs tf ON tf.id = t.tariff_id
+       WHERE t.id = $1`,
+      [req.user.sub]
     );
-    if (!res.rows.length || res.rows[0].used_at || new Date(res.rows[0].expires_at) < new Date()) {
-      return reply.code(400).send({ error: 'Invalid or expired token' });
-    }
-
-    const passwordHash = await bcrypt.hash(password, 12);
-    await query(`UPDATE users SET password_hash = $1 WHERE id = $2`, [passwordHash, res.rows[0].user_id]);
-    await query(`UPDATE tokens SET used_at = now() WHERE id = $1`, [res.rows[0].id]);
-    return { message: 'Password updated' };
+    return rows[0];
   });
 }

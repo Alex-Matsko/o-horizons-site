@@ -1,29 +1,30 @@
-export async function authenticate(request, reply) {
+import { query } from '../config/db.js';
+
+export async function requireAuth(request, reply) {
   try {
     await request.jwtVerify();
   } catch {
-    reply.code(401).send({ error: 'Unauthorized' });
+    return reply.code(401).send({ error: 'Unauthorized' });
   }
 }
 
 export async function requireAdmin(request, reply) {
   try {
     await request.jwtVerify();
+    if (request.user.role !== 'admin') {
+      return reply.code(403).send({ error: 'Forbidden' });
+    }
   } catch {
     return reply.code(401).send({ error: 'Unauthorized' });
-  }
-  if (request.user?.role !== 'admin') {
-    return reply.code(403).send({ error: 'Forbidden' });
   }
 }
 
-export async function requireVerified(request, reply) {
-  try {
-    await request.jwtVerify();
-  } catch {
-    return reply.code(401).send({ error: 'Unauthorized' });
-  }
-  if (!request.user?.emailVerified) {
-    return reply.code(403).send({ error: 'Email not verified', code: 'EMAIL_NOT_VERIFIED' });
+export async function requireActiveAccount(request, reply) {
+  const { rows } = await query(
+    'SELECT is_active FROM tenants WHERE id = $1',
+    [request.user.sub]
+  );
+  if (!rows[0]?.is_active) {
+    return reply.code(403).send({ error: 'Account is not active' });
   }
 }
