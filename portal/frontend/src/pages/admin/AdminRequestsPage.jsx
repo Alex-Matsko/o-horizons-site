@@ -1,89 +1,157 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '../../hooks/useAuth.jsx';
-
-const API = import.meta.env.VITE_API_URL || '';
+import { useEffect, useState } from 'react';
+import api from '../../lib/api';
 
 const STATUS_LABELS = {
-  pending: { label: 'Ожидает', cls: 'bg-yellow-500/20 text-yellow-300' },
-  approved: { label: 'Одобрено', cls: 'bg-teal-500/20 text-teal-300' },
-  rejected: { label: 'Отклонено', cls: 'bg-red-500/20 text-red-300' },
-  processing: { label: 'В работе', cls: 'bg-blue-500/20 text-blue-300' },
-  done: { label: 'Готово', cls: 'bg-green-500/20 text-green-300' },
+  PENDING: 'Ожидает',
+  APPROVED: 'Одобрено',
+  REJECTED: 'Отклонено',
+  PROVISIONING: 'Создаётся',
+  ACTIVE: 'Активна',
+  ERROR: 'Ошибка',
+};
+
+const STATUS_COLORS = {
+  PENDING: 'bg-yellow-100 text-yellow-800',
+  APPROVED: 'bg-blue-100 text-blue-800',
+  REJECTED: 'bg-red-100 text-red-800',
+  PROVISIONING: 'bg-purple-100 text-purple-800',
+  ACTIVE: 'bg-green-100 text-green-800',
+  ERROR: 'bg-red-200 text-red-900',
 };
 
 export default function AdminRequestsPage() {
-  const { token } = useAuth();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(null);
+  const [comment, setComment] = useState('');
+  const [selectedId, setSelectedId] = useState(null);
+  const [error, setError] = useState('');
 
-  const load = () => {
-    fetch(`${API}/api/admin/requests`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
-      .then((d) => { setRequests(Array.isArray(d) ? d : d.requests || []); setLoading(false); })
-      .catch(() => setLoading(false));
+  const fetchRequests = async () => {
+    try {
+      const { data } = await api.get('/admin/pending');
+      setRequests(data);
+    } catch (e) {
+      setError('Ошибка загрузки заявок');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => { load(); }, [token]);
+  useEffect(() => { fetchRequests(); }, []);
 
-  const updateStatus = async (id, status) => {
-    await fetch(`${API}/api/admin/requests/${id}`, {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status }),
-    });
-    load();
+  const handleApprove = async (id) => {
+    setActionLoading(id + '_approve');
+    try {
+      await api.post(`/admin/databases/${id}/approve`, { comment });
+      setComment('');
+      setSelectedId(null);
+      await fetchRequests();
+    } catch (e) {
+      setError(e.response?.data?.error || 'Ошибка одобрения');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleReject = async (id) => {
+    const reason = prompt('Причина отклонения:');
+    if (!reason) return;
+    setActionLoading(id + '_reject');
+    try {
+      await api.post(`/admin/databases/${id}/reject`, { reason });
+      await fetchRequests();
+    } catch (e) {
+      setError(e.response?.data?.error || 'Ошибка отклонения');
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   if (loading) return (
-    <div className="flex justify-center items-center h-64">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500" />
+    <div className="flex items-center justify-center h-64">
+      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-500" />
     </div>
   );
 
   return (
-    <div className="p-6 space-y-4">
-      <h1 className="text-xl font-semibold text-white">Заявки на базы</h1>
-
+    <div>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">Заявки на базы</h1>
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">{error}</div>
+      )}
       {requests.length === 0 ? (
-        <p className="text-gray-400 py-8 text-center">Заявок пока нет</p>
+        <div className="text-center py-16 text-gray-400">
+          <p className="text-lg">Нет ожидающих заявок</p>
+        </div>
       ) : (
-        <div className="space-y-3">
-          {requests.map((r) => {
-            const s = STATUS_LABELS[r.status] || { label: r.status, cls: 'bg-gray-700 text-gray-300' };
-            return (
-              <div key={r.id} className="bg-gray-800 border border-gray-700 rounded-xl p-5 space-y-3">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-0.5">
-                    <p className="font-medium text-white">{r.display_name || r.config_name}</p>
-                    <p className="text-sm text-gray-400">
-                      Клиент: <span className="text-gray-300">{r.tenant_name || r.tenant_id}</span>
-                      {' · '}{new Date(r.created_at).toLocaleDateString('ru-RU')}
-                    </p>
-                    {r.comment && <p className="text-sm text-gray-400 italic">"{r.comment}"</p>}
+        <div className="space-y-4">
+          {requests.map((req) => (
+            <div key={req.id} className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="font-semibold text-gray-900 text-lg">{req.name}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[req.status] || 'bg-gray-100 text-gray-700'}`}>
+                      {STATUS_LABELS[req.status] || req.status}
+                    </span>
                   </div>
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${s.cls}`}>{s.label}</span>
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-sm text-gray-600">
+                    <span><span className="font-medium">Клиент:</span> {req.tenant_name}</span>
+                    <span><span className="font-medium">Email:</span> {req.tenant_email}</span>
+                    <span><span className="font-medium">Конфигурация:</span> {req.config_type}</span>
+                    <span><span className="font-medium">Пользователей:</span> {req.max_users}</span>
+                    <span><span className="font-medium">Заявка:</span> {new Date(req.requested_at || req.created_at).toLocaleString('ru-RU')}</span>
+                    {req.comment && <span><span className="font-medium">Комментарий:</span> {req.comment}</span>}
+                  </div>
                 </div>
-                {r.status === 'pending' && (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => updateStatus(r.id, 'approved')}
-                      className="px-3 py-1.5 bg-teal-600 hover:bg-teal-500 text-white rounded-lg text-sm transition-colors"
-                    >
-                      Одобрить
-                    </button>
-                    <button
-                      onClick={() => updateStatus(r.id, 'rejected')}
-                      className="px-3 py-1.5 bg-red-700 hover:bg-red-600 text-white rounded-lg text-sm transition-colors"
-                    >
-                      Отклонить
-                    </button>
+                {req.status === 'PENDING' && (
+                  <div className="flex flex-col gap-2 min-w-[160px]">
+                    {selectedId === req.id ? (
+                      <div className="flex flex-col gap-2">
+                        <textarea
+                          className="border border-gray-300 rounded px-2 py-1 text-sm resize-none"
+                          rows={2}
+                          placeholder="Комментарий (необязательно)"
+                          value={comment}
+                          onChange={(e) => setComment(e.target.value)}
+                        />
+                        <button
+                          onClick={() => handleApprove(req.id)}
+                          disabled={actionLoading === req.id + '_approve'}
+                          className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-lg font-medium disabled:opacity-50"
+                        >
+                          {actionLoading === req.id + '_approve' ? 'Запуск...' : '✓ Подтвердить'}
+                        </button>
+                        <button
+                          onClick={() => { setSelectedId(null); setComment(''); }}
+                          className="text-gray-500 hover:text-gray-700 text-sm px-4 py-1"
+                        >
+                          Отмена
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => setSelectedId(req.id)}
+                          className="bg-teal-600 hover:bg-teal-700 text-white text-sm px-4 py-2 rounded-lg font-medium"
+                        >
+                          Одобрить
+                        </button>
+                        <button
+                          onClick={() => handleReject(req.id)}
+                          disabled={actionLoading === req.id + '_reject'}
+                          className="bg-red-50 hover:bg-red-100 text-red-700 text-sm px-4 py-2 rounded-lg font-medium border border-red-200 disabled:opacity-50"
+                        >
+                          {actionLoading === req.id + '_reject' ? 'Отклонение...' : 'Отклонить'}
+                        </button>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       )}
     </div>
