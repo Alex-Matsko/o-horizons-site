@@ -1,5 +1,5 @@
+'use strict';
 const db = require('../db');
-const mailer = require('../services/mailer');
 const { Queue } = require('bullmq');
 
 const provisionQueue = new Queue('provision', {
@@ -7,148 +7,218 @@ const provisionQueue = new Queue('provision', {
 });
 
 module.exports = async (app) => {
-  // GET /api/admin/requests
+
+  // ─── STATS ───────────────────────────────────────────────────────────────
+  app.get('/stats', { preHandler: [app.adminOnly] }, async () => {
+    const { rows } = await db.query(`
+      SELECT
+        (SELECT COUNT(*) FROM tenants WHERE role='client') AS total_clients,
+        (SELECT COUNT(*) FROM tenants WHERE role='client' AND created_at > NOW()-INTERVAL '30 days') AS new_clients_30d,
+        (SELECT COUNT(*) FROM databases) AS total_databases,
+        (SELECT COUNT(*) FROM databases WHERE status='active') AS active_databases,
+        (SELECT COUNT(*) FROM provision_requests WHERE status='pending') AS pending_requests,
+        (SELECT COUNT(*) FROM backups WHERE status='success' AND created_at > NOW()-INTERVAL '24h') AS backups_24h,
+        (SELECT COALESCE(SUM(disk_used_mb),0) FROM databases) AS total_storage_mb
+    `);
+    return rows[0];
+  });
+
+  // ─── REQUESTS (provision_requests) ───────────────────────────────────────
+
+  // GET /api/admin/pending  — alias used by frontend AdminRequestsPage
+  app.get('/pending', { preHandler: [app.adminOnly] }, async (req) => {
+    const { rows } = await db.query(`
+      SELECT pr.*, d.name AS db_name, d.url,
+             t.email AS tenant_email, t.org_name AS tenant_name,
+             c.name AS config_name, c.code AS config_code
+      FROM provision_requests pr
+      JOIN tenants t ON t.id = pr.tenant_id
+      LEFT JOIN databases d ON d.id = pr.database_id
+      LEFT JOIN onec_configs c ON c.id = pr.config_id
+      WHERE pr.status = 'pending'
+      ORDER BY pr.created_at ASC
+    `);
+    return rows;
+  });
+
+  // GET /api/admin/requests?status=pending|all
   app.get('/requests', { preHandler: [app.adminOnly] }, async (req) => {
     const { status = 'pending' } = req.query;
     const { rows } = await db.query(
-      `SELECT r.*, t.email, t.company_name, tr.name AS tariff_name
-       FROM db_requests r
-       JOIN tenants t ON t.id=r.tenant_id
-       JOIN tariffs tr ON tr.id=t.tariff_id
-       WHERE ($1='all' OR r.status=$1)
-       ORDER BY r.created_at DESC`,
+      `SELECT pr.*, d.name AS db_name, d.url,
+              t.email AS tenant_email, t.org_name AS tenant_name,
+              c.name AS config_name
+       FROM provision_requests pr
+       JOIN tenants t ON t.id = pr.tenant_id
+       LEFT JOIN databases d ON d.id = pr.database_id
+       LEFT JOIN onec_configs c ON c.id = pr.config_id
+       WHERE ($1 = 'all' OR pr.status = $1)
+       ORDER BY pr.created_at DESC`,
       [status]
     );
     return rows;
   });
 
-  // POST /api/admin/requests/:id/approve
-  app.post('/requests/:id/approve', { preHandler: [app.adminOnly] }, async (req, reply) => {
+  // POST /api/admin/databases/:id/approve
+  app.post('/databases/:id/approve', { preHandler: [app.adminOnly] }, async (req, reply) => {
     const { id } = req.params;
-    const { rows } = await db.query(
-      'SELECT * FROM db_requests WHERE id=$1 AND status=$2', [id, 'pending']
-    );
-    if (!rows.length) return reply.code(404).send({ error: 'Заявка не найдена' });
-    const reqRow = rows[0];
+    const { comment } = req.body || {};
 
-    // Generate safe db_name (slug)
-    const slug = reqRow.db_name_requested
+    const { rows } = await db.query(
+      `SELECT pr.*, c.code AS config_code, c.platform, t.email AS tenant_email
+       FROM provision_requests pr
+       JOIN onec_configs c ON c.id = pr.config_id
+       JOIN tenants t ON t.id = pr.tenant_id
+       WHERE pr.id = $1 AND pr.status = 'pending'`,
+      [id]
+    );
+    if (!rows.length) return reply.code(404).send({ error: 'Заявка не найдена или уже обработана' });
+    const pr = rows[0];
+
+    // Create database record if not exists
+    const slug = pr.db_alias
       .toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 48) + '_' + Date.now().toString(36);
 
-    // Create DB record with status 'provisioning'
     const { rows: dbRows } = await db.query(
-      `INSERT INTO databases_1c(tenant_id,name,db_name,configuration,platform_version,status,url_path)
-       VALUES($1,$2,$3,$4,$5,'provisioning',$6) RETURNING *`,
-      [reqRow.tenant_id, reqRow.db_name_requested, slug,
-       reqRow.configuration, reqRow.platform_version, slug]
+      `INSERT INTO databases (tenant_id, config_id, name, db_name, status)
+       VALUES ($1, $2, $3, $4, 'pending_approval')
+       ON CONFLICT (db_name) DO UPDATE SET updated_at = NOW()
+       RETURNING *`,
+      [pr.tenant_id, pr.config_id, pr.db_alias, slug]
     );
     const dbRow = dbRows[0];
 
-    // Update request
+    // Update provision_request
     await db.query(
-      `UPDATE db_requests SET status='approved', database_id=$1, updated_at=NOW() WHERE id=$2`,
-      [dbRow.id, id]
+      `UPDATE provision_requests
+       SET status = 'approved', admin_note = $1, database_id = $2,
+           approved_by = $3, approved_at = NOW(), updated_at = NOW()
+       WHERE id = $4`,
+      [comment || null, dbRow.id, req.user.id, id]
     );
 
-    // Enqueue provisioning job
-    await provisionQueue.add('provision', { dbId: dbRow.id, reqId: id, dbRow, reqRow }, {
-      attempts: 3, backoff: { type: 'fixed', delay: 15000 },
-    });
+    // Enqueue provisioning
+    await provisionQueue.add('provision', {
+      dbId: dbRow.id, requestId: id,
+      slug, configCode: pr.config_code, platform: pr.platform,
+      tenantEmail: pr.tenant_email,
+    }, { attempts: 3, backoff: { type: 'fixed', delay: 15000 } });
 
     return { ok: true, database_id: dbRow.id };
   });
 
-  // POST /api/admin/requests/:id/reject
-  app.post('/requests/:id/reject', { preHandler: [app.adminOnly] }, async (req, reply) => {
-    const { admin_note } = req.body || {};
+  // POST /api/admin/databases/:id/reject
+  app.post('/databases/:id/reject', { preHandler: [app.adminOnly] }, async (req, reply) => {
+    const { reason } = req.body || {};
     const { rows } = await db.query(
-      `UPDATE db_requests SET status='rejected', admin_note=$1, updated_at=NOW()
-       WHERE id=$2 AND status='pending' RETURNING *`,
-      [admin_note || null, req.params.id]
+      `UPDATE provision_requests
+       SET status = 'rejected', admin_note = $1, updated_at = NOW()
+       WHERE id = $2 AND status = 'pending'
+       RETURNING *`,
+      [reason || null, req.params.id]
     );
     if (!rows.length) return reply.code(404).send({ error: 'Заявка не найдена' });
     return { ok: true };
   });
 
-  // GET /api/admin/tenants
-  app.get('/tenants', { preHandler: [app.adminOnly] }, async (req) => {
-    const { rows } = await db.query(
-      `SELECT t.id,t.email,t.company_name,t.role,t.is_active,t.email_verified,t.created_at,
-              tr.name AS tariff_name,
-              (SELECT COUNT(*) FROM databases_1c d WHERE d.tenant_id=t.id) AS db_count
-       FROM tenants t LEFT JOIN tariffs tr ON tr.id=t.tariff_id
-       ORDER BY t.created_at DESC`
-    );
+  // ─── DATABASES ───────────────────────────────────────────────────────────
+
+  // GET /api/admin/databases — all databases
+  app.get('/databases', { preHandler: [app.adminOnly] }, async () => {
+    const { rows } = await db.query(`
+      SELECT d.*, t.email AS tenant_email, t.org_name AS tenant_name,
+             c.name AS config_name
+      FROM databases d
+      JOIN tenants t ON t.id = d.tenant_id
+      LEFT JOIN onec_configs c ON c.id = d.config_id
+      ORDER BY d.created_at DESC
+    `);
     return rows;
+  });
+
+  // PATCH /api/admin/databases/:id/suspend — suspend / unsuspend
+  app.patch('/databases/:id/suspend', { preHandler: [app.adminOnly] }, async (req, reply) => {
+    const { suspend } = req.body;
+    const newStatus = suspend ? 'suspended' : 'active';
+    const { rows } = await db.query(
+      `UPDATE databases SET status = $1, updated_at = NOW()
+       WHERE id = $2 RETURNING *`,
+      [newStatus, req.params.id]
+    );
+    if (!rows.length) return reply.code(404).send({ error: 'База не найдена' });
+    return rows[0];
+  });
+
+  // PATCH /api/admin/databases/:id/status — set arbitrary status
+  app.patch('/databases/:id/status', { preHandler: [app.adminOnly] }, async (req, reply) => {
+    const allowed = ['active', 'suspended', 'error', 'provisioning', 'pending_approval'];
+    const { status } = req.body;
+    if (!allowed.includes(status)) return reply.code(400).send({ error: 'Неверный статус' });
+    const { rows } = await db.query(
+      `UPDATE databases SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
+      [status, req.params.id]
+    );
+    if (!rows.length) return reply.code(404).send({ error: 'База не найдена' });
+    return rows[0];
+  });
+
+  // ─── TENANTS ─────────────────────────────────────────────────────────────
+
+  // GET /api/admin/tenants
+  app.get('/tenants', { preHandler: [app.adminOnly] }, async () => {
+    const { rows } = await db.query(`
+      SELECT t.id, t.email, t.org_name AS name, t.phone, t.role,
+             t.is_active, t.email_verified, t.created_at,
+             tr.name AS tariff,
+             (SELECT COUNT(*) FROM databases d WHERE d.tenant_id = t.id) AS db_count
+      FROM tenants t
+      LEFT JOIN tariffs tr ON tr.id = t.tariff_id
+      ORDER BY t.created_at DESC
+    `);
+    // Map is_active -> blocked for frontend compatibility
+    return rows.map(r => ({ ...r, blocked: !r.is_active }));
+  });
+
+  // PATCH /api/admin/tenants/:id — block/unblock
+  app.patch('/tenants/:id', { preHandler: [app.adminOnly] }, async (req, reply) => {
+    const { blocked } = req.body;
+    const { rows } = await db.query(
+      `UPDATE tenants SET is_active = $1, updated_at = NOW()
+       WHERE id = $2 RETURNING id, is_active`,
+      [!blocked, req.params.id]
+    );
+    if (!rows.length) return reply.code(404).send({ error: 'Клиент не найден' });
+    return { ...rows[0], blocked: !rows[0].is_active };
   });
 
   // PATCH /api/admin/tenants/:id/tariff
   app.patch('/tenants/:id/tariff', { preHandler: [app.adminOnly] }, async (req, reply) => {
     const { tariff_id } = req.body;
     const { rows } = await db.query(
-      'UPDATE tenants SET tariff_id=$1, updated_at=NOW() WHERE id=$2 RETURNING id',
+      `UPDATE tenants SET tariff_id = $1, updated_at = NOW()
+       WHERE id = $2 RETURNING id`,
       [tariff_id, req.params.id]
     );
     if (!rows.length) return reply.code(404).send({ error: 'Клиент не найден' });
     return { ok: true };
   });
 
-  // PATCH /api/admin/tenants/:id/toggle
-  app.patch('/tenants/:id/toggle', { preHandler: [app.adminOnly] }, async (req, reply) => {
-    const { rows } = await db.query(
-      'UPDATE tenants SET is_active=NOT is_active, updated_at=NOW() WHERE id=$1 RETURNING id,is_active',
-      [req.params.id]
-    );
-    if (!rows.length) return reply.code(404).send({ error: 'Клиент не найден' });
-    return rows[0];
-  });
+  // ─── CONFIGURATIONS ───────────────────────────────────────────────────────
 
-  // GET /api/admin/databases
-  app.get('/databases', { preHandler: [app.adminOnly] }, async () => {
+  app.get('/configurations', { preHandler: [app.adminOnly] }, async () => {
     const { rows } = await db.query(
-      `SELECT d.*, t.email, t.company_name FROM databases_1c d
-       JOIN tenants t ON t.id=d.tenant_id ORDER BY d.created_at DESC`
+      `SELECT * FROM onec_configs WHERE is_active = true ORDER BY name`
     );
     return rows;
   });
 
-  // PATCH /api/admin/databases/:id/status
-  app.patch('/databases/:id/status', { preHandler: [app.adminOnly] }, async (req, reply) => {
-    const { status } = req.body;
-    const allowed = ['active','suspended','deleted','provisioning','error'];
-    if (!allowed.includes(status)) return reply.code(400).send({ error: 'Неверный статус' });
+  app.post('/configurations', { preHandler: [app.adminOnly] }, async (req, reply) => {
+    const { code, name, cf_filename, platform } = req.body;
     const { rows } = await db.query(
-      'UPDATE databases_1c SET status=$1, updated_at=NOW() WHERE id=$2 RETURNING *',
-      [status, req.params.id]
+      `INSERT INTO onec_configs (code, name, cf_filename, platform)
+       VALUES ($1, $2, $3, $4) RETURNING *`,
+      [code, name, cf_filename, platform || '8.3']
     );
-    if (!rows.length) return reply.code(404).send({ error: 'База не найдена' });
-    // Notify tenant if activated
-    if (status === 'active') {
-      const { rows: tRows } = await db.query('SELECT email FROM tenants WHERE id=$1', [rows[0].tenant_id]);
-      const url = `${process.env.ONEC_PUBLIC_URL}/${rows[0].url_path}`;
-      await mailer.sendDbReady(tRows[0].email, rows[0].name, url).catch(() => {});
-      // Add notification
-      await db.query(
-        `INSERT INTO notifications(tenant_id,type,title,body) VALUES($1,$2,$3,$4)`,
-        [rows[0].tenant_id, 'db_ready', `База «${rows[0].name}» готова`,
-         `Ваша база 1С доступна по адресу: ${url}`]
-      );
-    }
-    return rows[0];
-  });
-
-  // GET /api/admin/stats
-  app.get('/stats', { preHandler: [app.adminOnly] }, async () => {
-    const { rows } = await db.query(`
-      SELECT
-        (SELECT COUNT(*) FROM tenants WHERE role='client') AS total_clients,
-        (SELECT COUNT(*) FROM tenants WHERE role='client' AND created_at > NOW()-INTERVAL '30 days') AS new_clients_30d,
-        (SELECT COUNT(*) FROM databases_1c) AS total_databases,
-        (SELECT COUNT(*) FROM databases_1c WHERE status='active') AS active_databases,
-        (SELECT COUNT(*) FROM db_requests WHERE status='pending') AS pending_requests,
-        (SELECT COUNT(*) FROM backups WHERE status='success' AND created_at > NOW()-INTERVAL '24h') AS backups_24h,
-        (SELECT COALESCE(SUM(size_mb),0) FROM databases_1c) AS total_storage_mb
-    `);
-    return rows[0];
+    return reply.code(201).send(rows[0]);
   });
 };
