@@ -1,6 +1,4 @@
-'use strict';
-
-const config = {
+export const config = {
   env:    process.env.NODE_ENV || 'development',
   port:   parseInt(process.env.PORT || '3001'),
   appUrl: process.env.APP_URL || 'http://localhost:3001',
@@ -60,5 +58,3 @@ const config = {
     email: process.env.ADMIN_EMAIL,
   },
 };
-
-module.exports = { config };
