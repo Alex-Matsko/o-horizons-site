@@ -1,103 +1,101 @@
 import { useEffect, useState } from 'react';
-import api from '../../lib/api';
+import { api } from '../../lib/api.js';
 
 export default function AdminTenantsPage() {
   const [tenants, setTenants] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [search, setSearch] = useState('');
+  const [error,   setError]   = useState('');
+  const [search,  setSearch]  = useState('');
 
-  useEffect(() => {
-    api.get('/admin/tenants')
-      .then(({ data }) => setTenants(data))
+  const load = () => {
+    setError('');
+    api.admin.tenants()
+      .then(r => setTenants(r.tenants || r.data || []))
       .catch(() => setError('Ошибка загрузки клиентов'))
       .finally(() => setLoading(false));
-  }, []);
+  };
 
-  const filtered = tenants.filter((t) =>
-    t.name?.toLowerCase().includes(search.toLowerCase()) ||
-    t.email?.toLowerCase().includes(search.toLowerCase())
+  useEffect(() => { load(); }, []);
+
+  const filtered = tenants.filter(t =>
+    (t.company_name || t.org_name || '').toLowerCase().includes(search.toLowerCase()) ||
+    (t.email || '').toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleBlock = async (id, blocked) => {
+  const handleBlock = async (id, isActive) => {
     try {
-      await api.patch(`/admin/tenants/${id}`, { blocked: !blocked });
-      setTenants((prev) => prev.map((t) => t.id === id ? { ...t, blocked: !blocked } : t));
-    } catch {
-      alert('Ошибка обновления');
-    }
+      await api.admin.updateTenant(id, { is_active: !isActive });
+      setTenants(prev => prev.map(t => t.id === id ? { ...t, is_active: !isActive } : t));
+    } catch { alert('Ошибка обновления'); }
   };
 
   if (loading) return (
     <div className="flex items-center justify-center h-64">
-      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-500" />
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500" />
     </div>
   );
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Клиенты</h1>
+    <div className="p-6 space-y-5">
+      <div className="flex items-center justify-between">
+        <h1 className="text-lg font-bold text-white">Клиенты</h1>
         <span className="text-sm text-gray-500">{tenants.length} всего</span>
       </div>
+
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">{error}</div>
+        <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-red-400 text-sm">{error}</div>
       )}
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Поиск по имени или email..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full max-w-sm border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-        />
-      </div>
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+
+      <input
+        type="text"
+        placeholder="Поиск по названию или email..."
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        className="w-full max-w-sm bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-teal-500/50 transition-colors"
+      />
+
+      <div className="bg-[#1c1b19] rounded-xl border border-white/8 overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="border-b border-white/8">
             <tr>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Клиент</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Email</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Тариф</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Баз</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Регистрация</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Статус</th>
-              <th className="px-4 py-3"></th>
+              {['Клиент', 'Email', 'Тариф', 'Баз', 'Регистрация', 'Статус', ''].map(h => (
+                <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500">{h}</th>
+              ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-white/5">
             {filtered.length === 0 ? (
-              <tr><td colSpan={7} className="text-center py-8 text-gray-400">Ничего не найдено</td></tr>
-            ) : filtered.map((t) => (
-              <tr key={t.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 font-medium text-gray-900">{t.name}</td>
-                <td className="px-4 py-3 text-gray-600">{t.email}</td>
+              <tr><td colSpan={7} className="text-center py-10 text-gray-500">Ничего не найдено</td></tr>
+            ) : filtered.map(t => (
+              <tr key={t.id} className="hover:bg-white/3">
+                <td className="px-4 py-3 font-medium text-white">{t.company_name || t.org_name || '—'}</td>
+                <td className="px-4 py-3 text-gray-400">{t.email || '—'}</td>
                 <td className="px-4 py-3">
-                  <span className="text-xs bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full font-medium">
-                    {t.tariff || 'Starter'}
+                  <span className="text-xs bg-teal-500/15 text-teal-400 px-2 py-0.5 rounded-full">
+                    {t.tariff_name || t.plan || '—'}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-gray-600">{t.db_count ?? 0}</td>
-                <td className="px-4 py-3 text-gray-500">
+                <td className="px-4 py-3 text-gray-400 tabular-nums">{t.db_count ?? '—'}</td>
+                <td className="px-4 py-3 text-gray-500 text-xs">
                   {t.created_at ? new Date(t.created_at).toLocaleDateString('ru-RU') : '—'}
                 </td>
                 <td className="px-4 py-3">
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                    t.blocked ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+                    t.is_active !== false ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'
                   }`}>
-                    {t.blocked ? 'Заблокирован' : 'Активен'}
+                    {t.is_active !== false ? 'Активен' : 'Заблокирован'}
                   </span>
                 </td>
                 <td className="px-4 py-3">
                   <button
-                    onClick={() => handleBlock(t.id, t.blocked)}
-                    className={`text-xs px-3 py-1 rounded font-medium border ${
-                      t.blocked
-                        ? 'border-green-300 text-green-700 hover:bg-green-50'
-                        : 'border-red-300 text-red-700 hover:bg-red-50'
+                    onClick={() => handleBlock(t.id, t.is_active !== false)}
+                    className={`text-xs px-3 py-1 rounded-lg border transition-colors ${
+                      t.is_active !== false
+                        ? 'border-red-500/30 text-red-400 hover:bg-red-500/10'
+                        : 'border-green-500/30 text-green-400 hover:bg-green-500/10'
                     }`}
                   >
-                    {t.blocked ? 'Разблокировать' : 'Заблокировать'}
+                    {t.is_active !== false ? 'Заблокировать' : 'Разблокировать'}
                   </button>
                 </td>
               </tr>

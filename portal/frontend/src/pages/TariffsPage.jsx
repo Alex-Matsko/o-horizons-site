@@ -1,57 +1,87 @@
 import { useEffect, useState } from 'react';
 import { api } from '../lib/api.js';
+import { useAuth } from '../hooks/useAuth.jsx';
 
 export default function TariffsPage() {
+  const { user } = useAuth();
   const [tariffs, setTariffs] = useState([]);
-  const [current, setCurrent] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [switching, setSwitching] = useState(null);
 
   useEffect(() => {
-    Promise.all([api.tariffs.list(), api.me.tariff()])
-      .then(([t, me]) => { setTariffs(t.tariffs || []); setCurrent(me.tariff); })
+    api.tariffs.list()
+      .then(r => setTariffs(r.tariffs || []))
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
-  async function handleSwitch(id) {
-    if (!confirm('Сменить тариф?')) return;
-    setSwitching(id);
-    try { const r = await api.me.switchTariff(id); setCurrent(r.tariff); alert('Тариф изменён'); }
-    catch (e) { alert(e.message); }
-    finally { setSwitching(null); }
-  }
+  const currentTariffId = user?.tariff?.id || user?.tariff_id;
 
-  if (loading) return <div className="p-8 text-gray-400">Загрузка...</div>;
+  if (loading) return (
+    <div className="flex items-center justify-center h-64">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500" />
+    </div>
+  );
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-xl font-bold text-gray-900">Тарифы</h1>
-      {current && (
-        <div className="bg-teal-50 border border-teal-200 rounded-lg px-4 py-3 text-sm text-teal-800">
-          Текущий тариф: <strong>{current.name}</strong>
+    <div className="space-y-6 p-6">
+      <h1 className="text-lg font-bold text-white">Тарифы и лимиты</h1>
+
+      {user?.tariff && (
+        <div className="bg-teal-500/10 border border-teal-500/20 rounded-xl px-4 py-3 text-sm text-teal-300">
+          Текущий тариф: <strong>{user.tariff.name || user.tariff}</strong>
         </div>
       )}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {tariffs.map(t => (
-          <div key={t.id} className={`bg-white rounded-xl border p-5 ${current?.id === t.id ? 'border-teal-400 ring-1 ring-teal-400' : 'border-gray-200'}`}>
-            <h3 className="font-bold text-gray-900 mb-1">{t.name}</h3>
-            <div className="text-2xl font-bold text-teal-600 mb-3">{t.price_rub ? `${t.price_rub} ₽/мес` : 'Бесплатно'}</div>
-            <ul className="text-sm text-gray-600 space-y-1 mb-4">
-              <li>✓ До {t.max_databases} баз</li>
-              <li>✓ До {t.max_users} пользователей на базу</li>
-              <li>✓ Хранение бэкапов {t.backup_retention_days} дней</li>
-            </ul>
-            {current?.id !== t.id ? (
-              <button onClick={() => handleSwitch(t.id)} disabled={!!switching}
-                className="w-full border border-teal-600 text-teal-600 rounded-lg py-1.5 text-sm font-medium hover:bg-teal-50 disabled:opacity-50 transition-colors">
-                {switching === t.id ? 'Переключение...' : 'Перейти'}
-              </button>
-            ) : (
-              <div className="w-full text-center text-teal-700 text-sm font-medium py-1.5">✓ Текущий тариф</div>
-            )}
-          </div>
-        ))}
-      </div>
+
+      {tariffs.length === 0 ? (
+        <div className="bg-[#1c1b19] border border-white/8 rounded-xl p-10 text-center text-gray-500">
+          Тарифы не найдены
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {tariffs.map(t => {
+            const isCurrent = t.id === currentTariffId || t.code === user?.plan;
+            return (
+              <div
+                key={t.id}
+                className={`bg-[#1c1b19] rounded-xl border p-5 transition-all ${
+                  isCurrent ? 'border-teal-500/40 ring-1 ring-teal-500/20' : 'border-white/8'
+                }`}
+              >
+                <h3 className="font-bold text-white mb-1">{t.name}</h3>
+                <div className="text-2xl font-bold text-teal-400 mb-3">
+                  {t.price ? `${t.price.toLocaleString('ru-RU')} ₽/мес` : 'Бесплатно'}
+                </div>
+                <ul className="text-sm text-gray-400 space-y-1.5 mb-4">
+                  <li className="flex items-center gap-2">
+                    <span className="text-teal-500">✓</span>
+                    До {t.max_bases ?? t.max_databases ?? '—'} баз
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-teal-500">✓</span>
+                    До {t.max_users ?? '—'} пользователей на базу
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-teal-500">✓</span>
+                    {t.max_disk_gb ?? t.max_storage_gb ?? '—'} ГБ хранилища
+                  </li>
+                </ul>
+                {isCurrent ? (
+                  <div className="w-full text-center text-teal-400 text-sm font-medium py-2">
+                    ✓ Текущий тариф
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => alert('Для смены тарифа свяжитесь с поддержкой')}
+                    className="w-full border border-teal-500/30 text-teal-400 rounded-lg py-2 text-sm font-medium hover:bg-teal-500/10 transition-colors"
+                  >
+                    Перейти
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
