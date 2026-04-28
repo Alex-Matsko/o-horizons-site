@@ -22,11 +22,13 @@ export default function AdminDashboardPage() {
     try {
       const [s, p, t] = await Promise.all([
         api.admin.stats().catch(() => ({})),
-        api.admin.pendingDbs().catch(() => ({ databases: [], requests: [] })),
+        api.admin.requests().catch(() => ({ requests: [] })),
         api.admin.tenants().catch(() => ({ tenants: [] })),
       ]);
       setStats(s.stats || s);
-      setPending(p.requests || p.databases || []);
+      // Бэкенд может вернуть { requests: [] } или { databases: [] } — работаем с обоими
+      const allRequests = p.requests || p.databases || [];
+      setPending(allRequests.filter(r => !r.status || r.status === 'PENDING'));
       setTenants(t.tenants || []);
     } catch (e) {
       setError(e.message);
@@ -79,7 +81,7 @@ export default function AdminDashboardPage() {
       )}
 
       {/* Заявки */}
-      {pending.length > 0 && (
+      {pending.length > 0 ? (
         <section>
           <h2 className="text-sm font-semibold text-gray-300 mb-3">⏳ Заявки на создание баз ({pending.length})</h2>
           <div className="bg-[#1c1b19] rounded-xl border border-white/8 overflow-hidden">
@@ -109,9 +111,7 @@ export default function AdminDashboardPage() {
             </table>
           </div>
         </section>
-      )}
-
-      {pending.length === 0 && (
+      ) : (
         <div className="bg-[#1c1b19] border border-white/8 rounded-xl p-6 text-center text-gray-500 text-sm">
           Нет ожидающих заявок
         </div>
