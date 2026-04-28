@@ -4,11 +4,13 @@ services:
     container_name: portal-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${PORTAL_DB_NAME:-portal}
-      POSTGRES_USER: ${PORTAL_DB_USER:-portal}
+      POSTGRES_DB:       ${PORTAL_DB_NAME:-portal}
+      POSTGRES_USER:     ${PORTAL_DB_USER:-portal}
       POSTGRES_PASSWORD: ${PORTAL_DB_PASS}
     volumes:
       - portal_db_data:/var/lib/postgresql/data
+      # Запускаем миграции при старте
+      - ./migrations:/docker-entrypoint-initdb.d:ro
     networks:
       - portal-net
     healthcheck:
@@ -47,7 +49,8 @@ services:
     networks:
       - portal-net
     volumes:
-      - /opt/1c/backups:/backups:ro
+      # rw: бэкап-рут через backend тоже пишет (напр., предпросмотр файлов)
+      - ${BACKUP_LOCAL_PATH:-/opt/1c/backups}:/backups:rw
     healthcheck:
       test: ['CMD-SHELL', 'wget -qO- http://localhost:3001/health || exit 1']
       interval: 15s
@@ -71,9 +74,9 @@ services:
     networks:
       - portal-net
     volumes:
-      - /opt/1c/backups:/backups:rw
-      - /opt/1c/templates:/templates:ro
-      - ${SSH_KEY_PATH:-/root/.ssh/portal_deploy}:/root/.ssh/portal_deploy:ro
+      - ${BACKUP_LOCAL_PATH:-/opt/1c/backups}:/backups:rw
+      - ${ONEC_TEMPLATES_PATH:-/opt/1c/templates}:/templates:ro
+      - ${ONEC_SERVER_SSH_KEY_PATH:-/root/.ssh/portal_deploy}:/root/.ssh/portal_deploy:ro
 
   portal-frontend:
     build:
@@ -83,20 +86,26 @@ services:
     restart: unless-stopped
     networks:
       - portal-net
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:80/ || exit 1']
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   portal-nginx:
     image: nginx:alpine
     container_name: portal-nginx
     restart: unless-stopped
     ports:
-      - '8080:80'
+      - '${PORTAL_NGINX_PORT:-8080}:80'
     volumes:
       - ./nginx/1c.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       portal-backend:
         condition: service_healthy
       portal-frontend:
-        condition: service_started
+        condition: service_healthy
       portal-worker:
         condition: service_started
     networks:
