@@ -4,13 +4,14 @@ const BASE = import.meta.env.VITE_API_URL
 
 let _token = null;
 let _onUnauthorized = null;
+let _refreshing = null; // один одновременный refresh
 
 export function setToken(t)  { _token = t; }
 export function getToken()   { return _token; }
 export function clearToken() { _token = null; }
 export function setUnauthorizedHandler(fn) { _onUnauthorized = fn; }
 
-async function request(path, options = {}) {
+async function request(path, options = {}, _retry = false) {
   const res = await fetch(`${BASE}${path}`, {
     ...options,
     credentials: 'include',
@@ -21,10 +22,20 @@ async function request(path, options = {}) {
     },
   });
 
-  if (res.status === 401) {
-    clearToken();
-    try { sessionStorage.removeItem('auth_token'); } catch {}
-    if (_onUnauthorized) _onUnauthorized();
+  // При 401 один раз пробуем обновить токен, повторяем запрос
+  if (res.status === 401 && !_retry) {
+    if (_onUnauthorized) {
+      // Дедуплицируем refresh: если уже идёт — ждём
+      if (!_refreshing) _refreshing = _onUnauthorized().finally(() => { _refreshing = null; });
+      try {
+        await _refreshing;
+        // Токен обновлён — повторяем запрос один раз
+        return request(path, options, true);
+      } catch {
+        // refresh не удался — падаем с ошибкой
+        throw new Error('Сессия истекла. Войдите снова.');
+      }
+    }
     throw new Error('Сессия истекла. Войдите снова.');
   }
 
@@ -46,7 +57,7 @@ export const api = {
     login:          (data)  => api.post('/auth/login', data),
     me:             ()      => api.get('/auth/me'),
     logout:         ()      => api.post('/auth/logout', {}),
-    refresh:        ()      => api.post('/auth/refresh', {}),
+    refresh:        ()      => request('/auth/refresh', { method: 'POST', body: JSON.stringify({}) }, true),
     verify:         (token) => api.get(`/auth/verify-email?token=${token}`),
     forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
     resetPassword:  (data)  => api.post('/auth/reset-password', data),
@@ -87,16 +98,15 @@ export const api = {
   },
 
   admin: {
-    stats:         ()               => api.get('/admin/stats'),
-    requests:      ()               => api.get('/admin/requests'),
-    pendingDbs:    ()               => api.get('/admin/requests'),
-    approveDb:     (id)             => api.patch(`/admin/requests/${id}`, { action: 'approve' }),
-    rejectDb:      (id, reason)     => api.patch(`/admin/requests/${id}`, { action: 'reject', reason }),
-    updateRequest: (id, data)       => api.patch(`/admin/requests/${id}`, data),
-    tenants:       ()               => api.get('/admin/tenants'),
-    updateTenant:  (id, data)       => api.patch(`/admin/tenants/${id}`, data),
-    databases:     ()               => api.get('/admin/databases'),
-    updateDb:      (id, data)       => api.patch(`/admin/databases/${id}`, data),
+    stats:         ()           => api.get('/admin/stats'),
+    requests:      ()           => api.get('/admin/requests'),
+    approveDb:     (id)         => api.patch(`/admin/requests/${id}`, { action: 'approve' }),
+    rejectDb:      (id, reason) => api.patch(`/admin/requests/${id}`, { action: 'reject', reason }),
+    updateRequest: (id, data)   => api.patch(`/admin/requests/${id}`, data),
+    tenants:       ()           => api.get('/admin/tenants'),
+    updateTenant:  (id, data)   => api.patch(`/admin/tenants/${id}`, data),
+    databases:     ()           => api.get('/admin/databases'),
+    updateDb:      (id, data)   => api.patch(`/admin/databases/${id}`, data),
   },
 };
 
