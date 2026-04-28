@@ -9,7 +9,6 @@ services:
       POSTGRES_PASSWORD: ${PORTAL_DB_PASS}
     volumes:
       - portal_db_data:/var/lib/postgresql/data
-      # Запускаем миграции при старте
       - ./migrations:/docker-entrypoint-initdb.d:ro
     networks:
       - portal-net
@@ -49,7 +48,6 @@ services:
     networks:
       - portal-net
     volumes:
-      # rw: бэкап-рут через backend тоже пишет (напр., предпросмотр файлов)
       - ${BACKUP_LOCAL_PATH:-/opt/1c/backups}:/backups:rw
     healthcheck:
       test: ['CMD-SHELL', 'wget -qO- http://localhost:3001/health || exit 1']
@@ -86,12 +84,14 @@ services:
     restart: unless-stopped
     networks:
       - portal-net
+    # nginx:alpine имеет nc (netcat) — используем его вместо wget
+    # wget в healthcheck контексте не работает в некоторых Alpine-сборках
     healthcheck:
-      test: ['CMD-SHELL', 'wget -qO- http://localhost:80/ || exit 1']
-      interval: 15s
-      timeout: 5s
+      test: ['CMD-SHELL', 'nc -z localhost 80 || exit 1']
+      interval: 10s
+      timeout: 3s
       retries: 3
-      start_period: 10s
+      start_period: 5s
 
   portal-nginx:
     image: nginx:alpine
