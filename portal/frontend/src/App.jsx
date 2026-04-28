@@ -1,5 +1,6 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth.jsx';
+import { useEffect } from 'react';
 
 import Layout from './components/Layout.jsx';
 import AdminLayout from './components/AdminLayout.jsx';
@@ -23,7 +24,7 @@ import AdminDatabasesPage from './pages/admin/AdminDatabasesPage.jsx';
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="flex items-center justify-center h-screen bg-[#0f0e0d]">
       <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-500" />
     </div>
   );
@@ -34,6 +35,18 @@ function AdminRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) return null;
   return user?.role === 'admin' ? children : <Navigate to="/dashboard" replace />;
+}
+
+function NotFound() {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-[#0f0e0d] text-center px-4">
+      <div className="text-5xl font-bold text-white mb-2">404</div>
+      <div className="text-gray-400 mb-6">Страница не найдена</div>
+      <a href="/dashboard" className="text-teal-400 hover:text-teal-300 text-sm font-medium transition-colors">
+        ← Вернуться на главную
+      </a>
+    </div>
+  );
 }
 
 export default function App() {
@@ -65,7 +78,7 @@ export default function App() {
       </Route>
 
       {/* 404 */}
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

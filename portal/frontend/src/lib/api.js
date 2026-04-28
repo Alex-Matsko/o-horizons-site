@@ -3,10 +3,12 @@ const BASE = import.meta.env.VITE_API_URL
   : '/api';
 
 let _token = null;
+let _onUnauthorized = null;
 
 export function setToken(t)  { _token = t; }
 export function getToken()   { return _token; }
 export function clearToken() { _token = null; }
+export function setUnauthorizedHandler(fn) { _onUnauthorized = fn; }
 
 async function request(path, options = {}) {
   const res = await fetch(`${BASE}${path}`, {
@@ -18,6 +20,13 @@ async function request(path, options = {}) {
       ...options.headers,
     },
   });
+
+  if (res.status === 401) {
+    clearToken();
+    try { sessionStorage.removeItem('auth_token'); } catch {}
+    if (_onUnauthorized) _onUnauthorized();
+    throw new Error('Сессия истекла. Войдите снова.');
+  }
 
   if (res.status === 204) return null;
 
@@ -79,16 +88,13 @@ export const api = {
 
   admin: {
     stats:         ()               => api.get('/admin/stats'),
-    // Заявки на базы
     requests:      ()               => api.get('/admin/requests'),
     pendingDbs:    ()               => api.get('/admin/requests'),
     approveDb:     (id)             => api.patch(`/admin/requests/${id}`, { action: 'approve' }),
     rejectDb:      (id, reason)     => api.patch(`/admin/requests/${id}`, { action: 'reject', reason }),
     updateRequest: (id, data)       => api.patch(`/admin/requests/${id}`, data),
-    // Клиенты
     tenants:       ()               => api.get('/admin/tenants'),
     updateTenant:  (id, data)       => api.patch(`/admin/tenants/${id}`, data),
-    // Базы
     databases:     ()               => api.get('/admin/databases'),
     updateDb:      (id, data)       => api.patch(`/admin/databases/${id}`, data),
   },

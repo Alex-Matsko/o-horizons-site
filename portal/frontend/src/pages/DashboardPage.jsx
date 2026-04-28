@@ -13,9 +13,9 @@ function KpiCard({ label, value, sub, color = 'teal' }) {
   };
   return (
     <div className="bg-[#1a1917] border border-white/8 rounded-xl p-5">
-      <div className="text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-2">{label}</div>
+      <div className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-2">{label}</div>
       <div className={`text-2xl font-bold ${colors[color]} leading-none mb-1`}>{value}</div>
-      {sub && <div className="text-xs text-gray-600 mt-1">{sub}</div>}
+      {sub && <div className="text-xs text-gray-400 mt-1">{sub}</div>}
     </div>
   );
 }
@@ -27,29 +27,29 @@ function DbCard({ db }) {
       <div className="flex items-start justify-between mb-4">
         <div className="min-w-0 flex-1">
           <div className="text-sm font-semibold text-gray-100 truncate mb-1">{db.name}</div>
-          <div className="text-xs text-gray-500">{db.config_name || 'Конфигурация'}</div>
+          <div className="text-xs text-gray-400">{db.config_name || 'Конфигурация'}</div>
         </div>
         <StatusBadge status={db.status} />
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-4 text-xs">
         <div>
-          <div className="text-gray-600 mb-0.5">Пользователей</div>
-          <div className="text-gray-300 font-medium">{db.users_count ?? '—'}</div>
+          <div className="text-gray-400 mb-0.5">Пользователей</div>
+          <div className="text-gray-200 font-medium">{db.users_count ?? '—'}</div>
         </div>
         <div>
-          <div className="text-gray-600 mb-0.5">Размер БД</div>
-          <div className="text-gray-300 font-medium">
+          <div className="text-gray-400 mb-0.5">Размер БД</div>
+          <div className="text-gray-200 font-medium">
             {db.size_mb ? `${(db.size_mb / 1024).toFixed(1)} ГБ` : '—'}
           </div>
         </div>
         <div>
-          <div className="text-gray-600 mb-0.5">Версия платформы</div>
-          <div className="text-gray-300 font-medium">{db.onec_version || '—'}</div>
+          <div className="text-gray-400 mb-0.5">Версия платформы</div>
+          <div className="text-gray-200 font-medium">{db.onec_version || '—'}</div>
         </div>
         <div>
-          <div className="text-gray-600 mb-0.5">Последний бэкап</div>
-          <div className="text-gray-300 font-medium">{db.last_backup || '—'}</div>
+          <div className="text-gray-400 mb-0.5">Последний бэкап</div>
+          <div className="text-gray-200 font-medium">{db.last_backup || '—'}</div>
         </div>
       </div>
 
@@ -64,13 +64,13 @@ function DbCard({ db }) {
         )}
         <Link
           to={`/databases/${db.id}/users`}
-          className="flex items-center gap-1.5 flex-1 justify-center bg-white/5 hover:bg-white/8 text-gray-400 hover:text-gray-200 rounded-lg py-2 text-xs font-medium transition-colors"
+          className="flex items-center gap-1.5 flex-1 justify-center bg-white/5 hover:bg-white/8 text-gray-300 hover:text-gray-100 rounded-lg py-2 text-xs font-medium transition-colors"
         >
           <Users size={12} />Пользователи
         </Link>
         <Link
-          to={`/databases/${db.id}/backups`}
-          className="flex items-center gap-1.5 flex-1 justify-center bg-white/5 hover:bg-white/8 text-gray-400 hover:text-gray-200 rounded-lg py-2 text-xs font-medium transition-colors"
+          to={`/backups`}
+          className="flex items-center gap-1.5 flex-1 justify-center bg-white/5 hover:bg-white/8 text-gray-300 hover:text-gray-100 rounded-lg py-2 text-xs font-medium transition-colors"
         >
           <HardDrive size={12} />Бэкапы
         </Link>
@@ -108,9 +108,9 @@ export default function DashboardPage() {
     <div className="space-y-6 max-w-6xl">
       <div className="flex items-center justify-between">
         <div>
-          <div className="text-[10px] font-semibold uppercase tracking-widest text-gray-600 mb-1">ПАНЕЛЬ УПРАВЛЕНИЯ</div>
+          <div className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-1">ПАНЕЛЬ УПРАВЛЕНИЯ</div>
           <h1 className="text-xl font-bold text-white">Ваша инфраструктура 1С</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Управляйте базами, пользователями и резервными копиями</p>
+          <p className="text-sm text-gray-400 mt-0.5">Управляйте базами, пользователями и резервными копиями</p>
         </div>
         <Link
           to="/databases/request"
@@ -150,16 +150,16 @@ export default function DashboardPage() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-gray-300">Базы данных 1С</h2>
-          <Link to="/databases" className="flex items-center gap-1 text-xs text-gray-500 hover:text-teal-400 transition-colors">
+          <Link to="/databases" className="flex items-center gap-1 text-xs text-gray-400 hover:text-teal-400 transition-colors">
             Все базы <ChevronRight size={12} />
           </Link>
         </div>
 
         {databases.length === 0 ? (
           <div className="bg-[#1a1917] border border-dashed border-white/10 rounded-xl p-12 text-center">
-            <Database size={32} className="mx-auto text-gray-700 mb-3" />
-            <h3 className="text-sm font-medium text-gray-500 mb-1">Нет баз данных</h3>
-            <p className="text-xs text-gray-700 mb-4">Закажите первую базу 1С для начала работы</p>
+            <Database size={32} className="mx-auto text-gray-600 mb-3" />
+            <h3 className="text-sm font-medium text-gray-400 mb-1">Нет баз данных</h3>
+            <p className="text-xs text-gray-500 mb-4">Закажите первую базу 1С для начала работы</p>
             <Link to="/databases/request" className="text-teal-500 hover:text-teal-400 text-xs font-medium">
               Заказать базу →
             </Link>

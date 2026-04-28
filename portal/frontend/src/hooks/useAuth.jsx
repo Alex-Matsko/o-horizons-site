@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { api, setToken } from '../lib/api.js';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { api, setToken, setUnauthorizedHandler } from '../lib/api.js';
 
 const AuthContext = createContext(null);
 
@@ -7,6 +7,19 @@ export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null);
   const [token, setTkn]       = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const logout = useCallback(() => {
+    api.auth.logout().catch(() => {});
+    setToken(null);
+    setTkn(null);
+    setUser(null);
+    try { sessionStorage.removeItem('auth_token'); } catch {}
+  }, []);
+
+  // Регистрируем глобальный обработчик 401 — автовыход при истёкшем JWT
+  useEffect(() => {
+    setUnauthorizedHandler(logout);
+  }, [logout]);
 
   useEffect(() => {
     try {
@@ -39,19 +52,10 @@ export function AuthProvider({ children }) {
     setTkn(t);
     try { sessionStorage.setItem('auth_token', t); } catch {}
 
-    // Загружаем полный профиль
     const me = await api.auth.me();
     const u = me.user || me;
     setUser(u);
     return u;
-  };
-
-  const logout = () => {
-    api.auth.logout().catch(() => {});
-    setToken(null);
-    setTkn(null);
-    setUser(null);
-    try { sessionStorage.removeItem('auth_token'); } catch {}
   };
 
   return (

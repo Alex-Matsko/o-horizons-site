@@ -44,7 +44,7 @@ export default function Layout() {
           </div>
           <div>
             <div className="text-sm font-bold text-white leading-none">O-Horizons / 1С</div>
-            <div className="text-[10px] text-gray-500 mt-0.5 uppercase tracking-wider">ПОРТАЛ</div>
+            <div className="text-[10px] text-gray-400 mt-0.5 uppercase tracking-wider">ПОРТАЛ</div>
           </div>
         </div>
 
@@ -55,7 +55,7 @@ export default function Layout() {
             </div>
             <div className="min-w-0">
               <div className="text-xs font-medium text-gray-200 truncate">{orgName}</div>
-              <div className="text-[10px] text-gray-500">Тариф: <span className="text-teal-400">{user?.tariff?.name || 'Не выбран'}</span></div>
+              <div className="text-[10px] text-gray-400">Тариф: <span className="text-teal-400">{user?.tariff?.name || 'Не выбран'}</span></div>
             </div>
           </div>
         </div>
@@ -67,7 +67,7 @@ export default function Layout() {
             return (
               <div key={item.to}>
                 {showGroup && (
-                  <div className="text-[10px] font-semibold text-gray-600 uppercase tracking-widest px-3 pt-4 pb-1">
+                  <div className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest px-3 pt-4 pb-1">
                     {item.group}
                   </div>
                 )}
@@ -88,7 +88,7 @@ export default function Layout() {
         <div className="px-3 pb-4 border-t border-white/8 pt-3">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+            className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
           >
             <LogOut size={14} />Выйти
           </button>
@@ -122,7 +122,7 @@ export default function Layout() {
           </button>
           <div className="hidden lg:block" />
           <div className="flex items-center gap-3">
-            <button className="text-gray-500 hover:text-gray-200 transition-colors">
+            <button className="text-gray-400 hover:text-gray-200 transition-colors">
               <Bell size={18} />
             </button>
             <NavLink to="/profile" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
