@@ -2,7 +2,6 @@
   "name": "portal-backend",
   "version": "1.0.0",
   "description": "O-Horizons 1C SaaS Portal Backend",
-  "type": "module",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",

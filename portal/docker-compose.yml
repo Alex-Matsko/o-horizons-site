@@ -62,7 +62,7 @@ services:
       dockerfile: Dockerfile
     container_name: portal-worker
     restart: unless-stopped
-    command: node src/worker.js
+    command: node --input-type=module src/worker.js
     env_file: .env
     depends_on:
       portal-db:
