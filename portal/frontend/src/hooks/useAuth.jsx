@@ -4,11 +4,10 @@ import { api, setToken } from '../lib/api.js';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser]     = useState(null);
-  const [token, setTkn]     = useState(null);
+  const [user, setUser]       = useState(null);
+  const [token, setTkn]       = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Восстановление сессии из sessionStorage (работает в отличие от localStorage)
   useEffect(() => {
     try {
       const saved = sessionStorage.getItem('auth_token');
@@ -17,26 +16,34 @@ export function AuthProvider({ children }) {
         setTkn(saved);
         api.auth.me()
           .then((r) => setUser(r.user || r))
-          .catch(() => { sessionStorage.removeItem('auth_token'); setToken(null); setTkn(null); })
+          .catch(() => {
+            sessionStorage.removeItem('auth_token');
+            setToken(null);
+            setTkn(null);
+          })
           .finally(() => setLoading(false));
       } else {
         setLoading(false);
       }
     } catch {
-      // sessionStorage недоступен (iframe sandbox) — работаем без персистенции
       setLoading(false);
     }
   }, []);
 
   const login = async (email, password) => {
+    // Бэкенд отдаёт { ok, token, role } — без объекта user
     const r = await api.auth.login({ email, password });
-    // Бэкенд возвращает { token, user }
     const t = r.token;
-    const u = r.user;
+    if (!t) throw new Error('Нет токена в ответе сервера');
+
     setToken(t);
     setTkn(t);
-    setUser(u);
     try { sessionStorage.setItem('auth_token', t); } catch {}
+
+    // Загружаем полный профиль через /me
+    const me = await api.auth.me();
+    const u = me.user || me;
+    setUser(u);
     return u;
   };
 
