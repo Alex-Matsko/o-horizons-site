@@ -1,6 +1,5 @@
-'use strict';
-
-const { Pool } = require('pg');
+import pg from 'pg';
+const { Pool } = pg;
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -9,9 +8,7 @@ const pool = new Pool({
   connectionTimeoutMillis: 5000,
 });
 
-// Проверяем подключение при старте
-pool.on('error', (err) => {
-  console.error('Unexpected PostgreSQL pool error', err);
-});
+pool.on('error', (err) => console.error('Unexpected PostgreSQL pool error', err));
 
-module.exports = pool;
+export const query = (text, params) => pool.query(text, params);
+export default pool;
