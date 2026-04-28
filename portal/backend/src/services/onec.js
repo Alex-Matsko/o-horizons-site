@@ -1,62 +1,86 @@
+'use strict';
 const axios = require('axios');
 
-// 1C REST API base (OData)
-const base1C = (dbPath, version = '8.3.27') => {
-  const host = process.env.ONEC_HOST;
-  return axios.create({
-    baseURL: `http://${host}/${dbPath}/odata/standard.odata`,
-    auth: {
-      username: process.env.ONEC_ADMIN_USER,
-      password: process.env.ONEC_ADMIN_PASS,
-    },
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    timeout: 15000,
-  });
-};
+/**
+ * Create an axios instance pointed at a specific 1C database OData endpoint.
+ * dbUrl — full URL stored in databases.url (e.g. http://1c-host/basename)
+ */
+const api = (dbUrl) => axios.create({
+  baseURL: `${dbUrl}/odata/standard.odata`,
+  auth: {
+    username: process.env.ONEC_ADMIN_USER,
+    password: process.env.ONEC_ADMIN_PASS,
+  },
+  headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+  timeout: 15_000,
+});
 
-// Get users list from a 1C database
-exports.getUsers = async (dbPath) => {
+/**
+ * GET list of users from 1C database (Catalog_Пользователи)
+ * Returns raw OData value array (filtered: not deleted)
+ */
+exports.getUsers = async (dbUrl) => {
   try {
-    const api = base1C(dbPath);
-    const res = await api.get('/Catalog_Пользователи?$format=json&$select=Code,Description,НаименованиеПолное,ПометкаУдаления');
+    const res = await api(dbUrl).get(
+      '/Catalog_Пользователи' +
+      '?$format=json' +
+      '&$select=Ref_Key,Code,Description,IBUserLogin,ПометкаУдаления'
+    );
     return (res.data.value || []).filter(u => !u.ПометкаУдаления);
   } catch (err) {
-    console.error(`[1C] getUsers error for ${dbPath}:`, err.message);
+    console.error(`[1C] getUsers error for ${dbUrl}:`, err.message);
     return [];
   }
 };
 
-// Create user in 1C database
-exports.createUser = async (dbPath, userData) => {
-  const api = base1C(dbPath);
-  const res = await api.post('/Catalog_Пользователи', {
-    Description: userData.username,
-    НаименованиеПолное: userData.full_name || userData.username,
+/**
+ * Create a new user in 1C database
+ * @param {string} dbUrl
+ * @param {{ login: string, name: string }} userData
+ */
+exports.createUser = async (dbUrl, userData) => {
+  const res = await api(dbUrl).post('/Catalog_Пользователи', {
+    Description:          userData.name  || userData.login,
+    IBUserLogin:          userData.login,
+    ПометкаУдаления: false,
     ФизическоеЛицо_Key: '00000000-0000-0000-0000-000000000000',
   });
   return res.data;
 };
 
-// Toggle user active state
-exports.toggleUser = async (dbPath, userKey, active) => {
-  const api = base1C(dbPath);
-  await api.patch(`/Catalog_Пользователи(guid'${userKey}')`, {
-    ПометкаУдаления: !active,
-  });
+/**
+ * Enable or disable a user in 1C by their Ref_Key (UUID)
+ * @param {string} dbUrl
+ * @param {string} refKey  — onec_uuid from db_users_cache
+ * @param {boolean} active — true = enable, false = disable
+ */
+exports.setUserActive = async (dbUrl, refKey, active) => {
+  await api(dbUrl).patch(
+    `/Catalog_Пользователи(guid'${refKey}')`,
+    { ПометкаУдаления: !active }
+  );
 };
 
-// Check if 1C database is accessible (health)
-exports.checkHealth = async (dbPath) => {
-  const startTs = Date.now();
+// Backward-compat alias (used in older code)
+exports.toggleUser = exports.setUserActive;
+
+/**
+ * Health check — ping the 1C web-server for a database
+ * @returns {{ ok: boolean, responseMs: number }}
+ */
+exports.checkHealth = async (dbUrl) => {
+  const t0 = Date.now();
   try {
-    const host = process.env.ONEC_HOST;
-    const res = await axios.get(`http://${host}/${dbPath}/`, {
-      auth: { username: process.env.ONEC_ADMIN_USER, password: process.env.ONEC_ADMIN_PASS },
-      timeout: 8000,
+    const res = await axios.get(dbUrl, {
+      auth: {
+        username: process.env.ONEC_ADMIN_USER,
+        password: process.env.ONEC_ADMIN_PASS,
+      },
+      timeout: 8_000,
       validateStatus: (s) => s < 500,
     });
-    return { ok: res.status < 400, responseMs: Date.now() - startTs };
+    return { ok: res.status < 400, responseMs: Date.now() - t0 };
   } catch {
-    return { ok: false, responseMs: Date.now() - startTs };
+    return { ok: false, responseMs: Date.now() - t0 };
   }
 };
