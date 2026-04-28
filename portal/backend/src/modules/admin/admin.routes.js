@@ -6,7 +6,20 @@ export async function adminRoutes(app) {
   app.addHook('preHandler', authenticate);
   app.addHook('preHandler', requireRole('SUPER_ADMIN'));
 
-  // Pending database requests
+  // GET /admin/pending — alias for frontend
+  app.get('/pending', async (req, reply) => {
+    const { rows } = await query(
+      `SELECT d.*, t.name as tenant_name, t.email as tenant_email, c.name as config_name
+       FROM databases d
+       LEFT JOIN tenants t ON t.id=d.tenant_id
+       LEFT JOIN configurations c ON c.id=d.config_id
+       WHERE d.status='PENDING'
+       ORDER BY d.requested_at ASC`
+    );
+    reply.send(rows);
+  });
+
+  // GET /admin/databases/pending
   app.get('/databases/pending', async (req, reply) => {
     const { rows } = await query(
       `SELECT d.*, t.name as tenant_name, t.email as tenant_email, c.name as config_name
@@ -19,7 +32,20 @@ export async function adminRoutes(app) {
     reply.send(rows);
   });
 
-  // Approve
+  // GET /admin/databases — all databases
+  app.get('/databases', async (req, reply) => {
+    const { rows } = await query(
+      `SELECT d.*, t.name as tenant_name, t.email as tenant_email, c.name as config_name
+       FROM databases d
+       LEFT JOIN tenants t ON t.id=d.tenant_id
+       LEFT JOIN configurations c ON c.id=d.config_id
+       WHERE d.deleted_at IS NULL
+       ORDER BY d.created_at DESC`
+    );
+    reply.send(rows);
+  });
+
+  // POST /admin/databases/:id/approve
   app.post('/databases/:id/approve', async (req, reply) => {
     try {
       const db = await dbService.approveDatabase(req.params.id, req.body?.comment);
@@ -29,7 +55,7 @@ export async function adminRoutes(app) {
     }
   });
 
-  // Reject
+  // POST /admin/databases/:id/reject
   app.post('/databases/:id/reject', async (req, reply) => {
     try {
       const db = await dbService.rejectDatabase(req.params.id, req.body?.reason);
@@ -39,10 +65,22 @@ export async function adminRoutes(app) {
     }
   });
 
-  // All tenants
+  // PATCH /admin/databases/:id/suspend
+  app.patch('/databases/:id/suspend', async (req, reply) => {
+    const { suspend } = req.body;
+    const newStatus = suspend ? 'SUSPENDED' : 'ACTIVE';
+    const { rows } = await query(
+      `UPDATE databases SET status=$1, updated_at=NOW() WHERE id=$2 AND deleted_at IS NULL RETURNING *`,
+      [newStatus, req.params.id]
+    );
+    if (!rows.length) return reply.code(404).send({ error: 'Database not found' });
+    reply.send(rows[0]);
+  });
+
+  // GET /admin/tenants
   app.get('/tenants', async (req, reply) => {
     const { rows } = await query(
-      `SELECT t.*, tar.name as tariff_name,
+      `SELECT t.*, tar.name as tariff,
        (SELECT COUNT(*) FROM databases d WHERE d.tenant_id=t.id AND d.deleted_at IS NULL) as db_count
        FROM tenants t LEFT JOIN tariffs tar ON tar.id=t.tariff_id
        ORDER BY t.created_at DESC`
@@ -50,7 +88,19 @@ export async function adminRoutes(app) {
     reply.send(rows);
   });
 
-  // Stats
+  // PATCH /admin/tenants/:id — block/unblock
+  app.patch('/tenants/:id', async (req, reply) => {
+    const { blocked } = req.body;
+    const newStatus = blocked ? 'BLOCKED' : 'ACTIVE';
+    const { rows } = await query(
+      `UPDATE tenants SET status=$1, updated_at=NOW() WHERE id=$2 RETURNING *`,
+      [newStatus, req.params.id]
+    );
+    if (!rows.length) return reply.code(404).send({ error: 'Tenant not found' });
+    reply.send(rows[0]);
+  });
+
+  // GET /admin/stats
   app.get('/stats', async (req, reply) => {
     const [tenants, dbs, pending] = await Promise.all([
       query(`SELECT COUNT(*) FROM tenants WHERE status='ACTIVE'`),
@@ -64,12 +114,13 @@ export async function adminRoutes(app) {
     });
   });
 
-  // List configurations
+  // GET /admin/configurations
   app.get('/configurations', async (req, reply) => {
     const { rows } = await query(`SELECT * FROM configurations WHERE is_active=true ORDER BY name`);
     reply.send(rows);
   });
 
+  // POST /admin/configurations
   app.post('/configurations', async (req, reply) => {
     const { name, short_name, version, template_path, platform_versions } = req.body;
     const { rows } = await query(
