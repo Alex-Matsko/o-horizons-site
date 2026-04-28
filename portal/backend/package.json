@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "description": "O-Horizons 1C SaaS Portal Backend",
   "main": "src/app.js",
-  "type": "module",
   "scripts": {
     "start": "node src/app.js",
-    "worker": "node src/worker.mjs",
-    "dev": "node --watch src/app.js",
+    "worker": "node --experimental-vm-modules src/worker.mjs",
+    "dev": "nodemon src/app.js",
     "migrate": "psql $DATABASE_URL -f migrations/0001_initial.sql"
   },
   "dependencies": {
