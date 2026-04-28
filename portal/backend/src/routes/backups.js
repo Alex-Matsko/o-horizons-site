@@ -1,121 +1,87 @@
-'use strict';
-
-const { authMiddleware } = require('../middleware/auth');
+const db = require('../db');
 const { Queue } = require('bullmq');
-const path = require('path');
-const fs = require('fs');
+const { authenticate } = require('../middleware/auth');
 
-const backupQueue = new Queue('backup-db', {
-  connection: { url: process.env.REDIS_URL },
+const backupQueue = new Queue('backups', {
+  connection: { host: process.env.REDIS_HOST || 'redis', port: 6379 },
 });
 
-module.exports = async function backupRoutes(app) {
-  // GET /api/databases/:id/backups — список бэкапов
-  app.get('/:id/backups', { preHandler: authMiddleware }, async (req, reply) => {
-    const { rows: dbRows } = await app.db.query(
-      'SELECT id FROM databases WHERE id = $1 AND tenant_id = $2',
-      [req.params.id, req.tenant.id]
-    );
-    if (!dbRows[0]) return reply.code(404).send({ error: 'Database not found' });
-
-    // Колонка называется size_bytes согласно миграции 001_initial.sql
-    const { rows } = await app.db.query(
-      `SELECT id, type, status, size_bytes, error_message,
-              started_at, completed_at, expires_at, created_at
-       FROM backups
-       WHERE database_id = $1
-       ORDER BY created_at DESC
-       LIMIT 100`,
-      [req.params.id]
-    );
+module.exports = async (app) => {
+  // GET /api/backups — все бэкапы клиента
+  app.get('/', { preHandler: [app.authenticate] }, async (req) => {
+    const { database_id, page = 1, limit = 20 } = req.query;
+    const offset = (page - 1) * limit;
+    let query = `SELECT b.*, d.name AS db_name, d.configuration
+                 FROM backups b JOIN databases_1c d ON d.id=b.database_id
+                 WHERE b.tenant_id=$1`;
+    const params = [req.user.sub];
+    if (database_id) { query += ` AND b.database_id=$2`; params.push(database_id); }
+    query += ` ORDER BY b.created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+    const { rows } = await db.query(query, params);
     return rows;
   });
 
-  // POST /api/databases/:id/backups — создать бэкап вручную
-  app.post('/:id/backups', { preHandler: authMiddleware }, async (req, reply) => {
-    const { rows: dbRows } = await app.db.query(
-      `SELECT * FROM databases WHERE id = $1 AND tenant_id = $2 AND status = 'active'`,
-      [req.params.id, req.tenant.id]
-    );
-    if (!dbRows[0]) return reply.code(404).send({ error: 'Database not found or not active' });
-    const db = dbRows[0];
+  // POST /api/backups/create — ручной бэкап
+  app.post('/create', { preHandler: [app.authenticate] }, async (req, reply) => {
+    const { database_id } = req.body;
+    if (!database_id) return reply.code(400).send({ error: 'database_id обязателен' });
 
-    // Проверяем нет ли уже запущенного бэкапа
-    const { rows: runningRows } = await app.db.query(
-      `SELECT id FROM backups WHERE database_id = $1 AND status IN ('pending','running')`,
-      [req.params.id]
+    // Verify ownership
+    const { rows } = await db.query(
+      'SELECT * FROM databases_1c WHERE id=$1 AND tenant_id=$2 AND status=$3',
+      [database_id, req.user.sub, 'active']
     );
-    if (runningRows.length > 0) {
-      return reply.code(409).send({ error: 'A backup is already in progress for this database.' });
-    }
+    if (!rows.length) return reply.code(404).send({ error: 'База не найдена или недоступна' });
+    const dbRow = rows[0];
 
-    const { rows: bRows } = await app.db.query(
-      `INSERT INTO backups (database_id, type, status, created_by)
-       VALUES ($1, 'manual', 'pending', $2)
-       RETURNING id, created_at`,
-      [req.params.id, req.user.id]
+    // Check for running backup
+    const { rows: running } = await db.query(
+      `SELECT id FROM backups WHERE database_id=$1 AND status IN ('pending','running')`,
+      [database_id]
     );
-    const backup = bRows[0];
+    if (running.length) return reply.code(409).send({ error: 'Бэкап уже выполняется' });
 
-    await backupQueue.add(
-      'backup',
-      {
-        backupId: backup.id,
-        databaseId: req.params.id,
-        infobaseName: db.infobase_name,
-      },
-      { attempts: 2, backoff: { type: 'exponential', delay: 30000 } }
+    // Create backup record
+    const tariff = await db.query(
+      `SELECT tr.backup_retention_days FROM tenants ten
+       JOIN tariffs tr ON tr.id=ten.tariff_id WHERE ten.id=$1`, [req.user.sub]
+    );
+    const retentionDays = tariff.rows[0]?.backup_retention_days || 7;
+    const expiresAt = new Date(Date.now() + retentionDays * 86400000);
+
+    const { rows: backup } = await db.query(
+      `INSERT INTO backups(database_id,tenant_id,type,status,expires_at,started_at)
+       VALUES($1,$2,'manual','pending',$3,NOW()) RETURNING *`,
+      [database_id, req.user.sub, expiresAt]
     );
 
-    return reply.code(202).send({ message: 'Backup queued', backup_id: backup.id });
+    await backupQueue.add('backup', { backupId: backup[0].id, dbRow, tenantId: req.user.sub }, {
+      attempts: 3, backoff: { type: 'exponential', delay: 10000 },
+    });
+
+    return reply.code(201).send({ ok: true, backup: backup[0] });
   });
 
-  // DELETE /api/databases/:id/backups/:bid — удалить бэкап
-  app.delete('/:id/backups/:bid', { preHandler: authMiddleware }, async (req, reply) => {
-    const { rows: dbRows } = await app.db.query(
-      'SELECT id FROM databases WHERE id = $1 AND tenant_id = $2',
-      [req.params.id, req.tenant.id]
+  // GET /api/backups/:id/download — ссылка на скачивание
+  app.get('/:id/download', { preHandler: [app.authenticate] }, async (req, reply) => {
+    const { rows } = await db.query(
+      'SELECT * FROM backups WHERE id=$1 AND tenant_id=$2 AND status=$3',
+      [req.params.id, req.user.sub, 'success']
     );
-    if (!dbRows[0]) return reply.code(404).send({ error: 'Database not found' });
-
-    const { rows } = await app.db.query(
-      `SELECT * FROM backups WHERE id = $1 AND database_id = $2 AND status = 'done'`,
-      [req.params.bid, req.params.id]
-    );
-    if (!rows[0]) return reply.code(404).send({ error: 'Backup not found or not completed' });
-
-    // Удаляем файл с диска
-    if (rows[0].file_path && fs.existsSync(rows[0].file_path)) {
-      try { fs.unlinkSync(rows[0].file_path); } catch (e) { /* log but continue */ }
-    }
-
-    await app.db.query('DELETE FROM backups WHERE id = $1', [req.params.bid]);
-    return { message: 'Backup deleted' };
+    if (!rows.length) return reply.code(404).send({ error: 'Бэкап не найден' });
+    const backup = rows[0];
+    if (!backup.file_path) return reply.code(404).send({ error: 'Файл бэкапа недоступен' });
+    // Signed download URL (serve via nginx X-Accel-Redirect)
+    return { download_url: `/api/backups/file/${backup.id}` };
   });
 
-  // GET /api/databases/:id/backups/:bid/download — скачать бэкап
-  app.get('/:id/backups/:bid/download', { preHandler: authMiddleware }, async (req, reply) => {
-    const { rows: dbRows } = await app.db.query(
-      'SELECT id FROM databases WHERE id = $1 AND tenant_id = $2',
-      [req.params.id, req.tenant.id]
+  // DELETE /api/backups/:id
+  app.delete('/:id', { preHandler: [app.authenticate] }, async (req, reply) => {
+    const { rows } = await db.query(
+      'DELETE FROM backups WHERE id=$1 AND tenant_id=$2 RETURNING id',
+      [req.params.id, req.user.sub]
     );
-    if (!dbRows[0]) return reply.code(404).send({ error: 'Database not found' });
-
-    const { rows } = await app.db.query(
-      `SELECT * FROM backups WHERE id = $1 AND database_id = $2 AND status = 'done'`,
-      [req.params.bid, req.params.id]
-    );
-    if (!rows[0] || !rows[0].file_path) return reply.code(404).send({ error: 'Backup not ready or missing file' });
-
-    const filePath = rows[0].file_path;
-    if (!fs.existsSync(filePath)) return reply.code(404).send({ error: 'Backup file not found on disk. It may have been deleted.' });
-
-    const stat = fs.statSync(filePath);
-    const filename = path.basename(filePath);
-
-    reply.header('Content-Disposition', `attachment; filename="${filename}"`);
-    reply.header('Content-Type', 'application/octet-stream');
-    reply.header('Content-Length', stat.size);
-    return reply.send(fs.createReadStream(filePath));
+    if (!rows.length) return reply.code(404).send({ error: 'Не найдено' });
+    return { ok: true };
   });
 };

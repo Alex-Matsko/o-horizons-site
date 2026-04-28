@@ -1,140 +1,154 @@
--- 0001_initial.sql
--- Инициальная схема базы данных 1С портала
-
+-- O-Horizons 1C Portal: Initial Schema
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-CREATE TABLE IF NOT EXISTS plans (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name VARCHAR(100) NOT NULL,
+-- TARIFFS
+CREATE TABLE IF NOT EXISTS tariffs (
+  id SERIAL PRIMARY KEY,
+  slug VARCHAR(32) UNIQUE NOT NULL,
+  name VARCHAR(64) NOT NULL,
+  price_month INTEGER NOT NULL DEFAULT 0,
   max_databases INTEGER NOT NULL DEFAULT 1,
-  max_users_per_db INTEGER NOT NULL DEFAULT 3,
-  max_storage_gb INTEGER NOT NULL DEFAULT 5,
-  price NUMERIC(10,2) DEFAULT 0,
-  is_active BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  max_users INTEGER NOT NULL DEFAULT 3,
+  max_storage_gb INTEGER NOT NULL DEFAULT 15,
+  backup_retention_days INTEGER NOT NULL DEFAULT 7,
+  monitoring BOOLEAN NOT NULL DEFAULT FALSE,
+  sla BOOLEAN NOT NULL DEFAULT FALSE,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+INSERT INTO tariffs (slug,name,price_month,max_databases,max_users,max_storage_gb,backup_retention_days,monitoring,sla) VALUES
+  ('starter',  'Starter',   3500,  1,  3,  15, 7,  FALSE, FALSE),
+  ('business', 'Business',  8900,  5,  10, 50, 30, TRUE,  FALSE),
+  ('corporate','Corporate', 18500, 20, 50, 200,90, TRUE,  TRUE)
+ON CONFLICT (slug) DO NOTHING;
+
+-- TENANTS (клиенты)
 CREATE TABLE IF NOT EXISTS tenants (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_name VARCHAR(128),
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
-  email_verified BOOLEAN DEFAULT FALSE,
-  email_verify_token VARCHAR(255),
-  reset_password_token VARCHAR(255),
-  reset_password_expires TIMESTAMPTZ,
-  full_name VARCHAR(255),
-  company_name VARCHAR(255),
-  phone VARCHAR(50),
-  is_active BOOLEAN DEFAULT TRUE,
-  is_admin BOOLEAN DEFAULT FALSE,
-  plan_id UUID REFERENCES plans(id),
-  refresh_token TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  role VARCHAR(16) NOT NULL DEFAULT 'client',
+  tariff_id INTEGER REFERENCES tariffs(id) DEFAULT 1,
+  email_verified BOOLEAN NOT NULL DEFAULT FALSE,
+  verify_token VARCHAR(128),
+  verify_token_expires TIMESTAMPTZ,
+  reset_token VARCHAR(128),
+  reset_token_expires TIMESTAMPTZ,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  telegram VARCHAR(64),
+  phone VARCHAR(32),
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+CREATE INDEX IF NOT EXISTS idx_tenants_email ON tenants(email);
 
-CREATE TABLE IF NOT EXISTS databases (
+-- Insert default admin
+INSERT INTO tenants (company_name, email, password_hash, role, email_verified)
+VALUES ('O-Horizons', 'admin@o-horizons.com', '$REPLACE_WITH_BCRYPT_HASH', 'admin', TRUE)
+ON CONFLICT (email) DO NOTHING;
+
+-- 1C DATABASES
+CREATE TABLE IF NOT EXISTS databases_1c (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-  name VARCHAR(255) NOT NULL,
-  slug VARCHAR(100) UNIQUE NOT NULL,
-  configuration VARCHAR(100) NOT NULL,
-  version_1c VARCHAR(20) NOT NULL DEFAULT '8.3.27',
-  status VARCHAR(50) DEFAULT 'pending',
-  web_url TEXT,
-  apache_config_path TEXT,
-  db_name VARCHAR(100),
-  db_host VARCHAR(255) DEFAULT 'localhost',
-  db_port INTEGER DEFAULT 5432,
-  db_user VARCHAR(100),
-  error_message TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  name VARCHAR(128) NOT NULL,
+  db_name VARCHAR(64) UNIQUE NOT NULL,
+  configuration VARCHAR(64) NOT NULL,
+  platform_version VARCHAR(16) NOT NULL DEFAULT '8.3.27',
+  status VARCHAR(32) NOT NULL DEFAULT 'pending',
+  url_path VARCHAR(128),
+  pg_database VARCHAR(64),
+  size_mb INTEGER DEFAULT 0,
+  user_count INTEGER DEFAULT 0,
+  comment TEXT,
+  last_health_check TIMESTAMPTZ,
+  health_status VARCHAR(16) DEFAULT 'unknown',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+CREATE INDEX IF NOT EXISTS idx_db1c_tenant ON databases_1c(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_db1c_status ON databases_1c(status);
 
-CREATE TABLE IF NOT EXISTS database_requests (
+-- DB REQUESTS (заявки на создание)
+CREATE TABLE IF NOT EXISTS db_requests (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id UUID NOT NULL REFERENCES tenants(id),
-  database_id UUID REFERENCES databases(id),
-  configuration VARCHAR(100) NOT NULL,
-  desired_name VARCHAR(255) NOT NULL,
-  status VARCHAR(50) DEFAULT 'pending',
-  admin_comment TEXT,
-  approved_by UUID REFERENCES tenants(id),
-  approved_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  db_name_requested VARCHAR(128) NOT NULL,
+  configuration VARCHAR(64) NOT NULL,
+  platform_version VARCHAR(16) NOT NULL DEFAULT '8.3.27',
+  comment TEXT,
+  status VARCHAR(32) NOT NULL DEFAULT 'pending',
+  admin_note TEXT,
+  database_id UUID REFERENCES databases_1c(id),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS db_users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  database_id UUID NOT NULL REFERENCES databases(id) ON DELETE CASCADE,
-  username VARCHAR(255) NOT NULL,
-  full_name VARCHAR(255),
-  role VARCHAR(100),
-  is_active BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(database_id, username)
-);
-
+-- BACKUPS
 CREATE TABLE IF NOT EXISTS backups (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  database_id UUID NOT NULL REFERENCES databases(id) ON DELETE CASCADE,
-  type VARCHAR(20) DEFAULT 'manual',
-  status VARCHAR(30) DEFAULT 'pending',
-  file_path TEXT,
-  file_size_bytes BIGINT,
-  error_message TEXT,
+  database_id UUID NOT NULL REFERENCES databases_1c(id) ON DELETE CASCADE,
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  type VARCHAR(16) NOT NULL DEFAULT 'auto',
+  status VARCHAR(16) NOT NULL DEFAULT 'pending',
+  size_mb INTEGER,
+  file_path VARCHAR(512),
+  error TEXT,
   started_at TIMESTAMPTZ,
-  completed_at TIMESTAMPTZ,
-  expires_at TIMESTAMPTZ DEFAULT NOW() + INTERVAL '30 days',
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  finished_at TIMESTAMPTZ,
+  expires_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+CREATE INDEX IF NOT EXISTS idx_backups_db ON backups(database_id);
+CREATE INDEX IF NOT EXISTS idx_backups_tenant ON backups(tenant_id);
 
-CREATE TABLE IF NOT EXISTS healthcheck_history (
+-- USERS 1C (пользователи внутри баз)
+CREATE TABLE IF NOT EXISTS users_1c (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  database_id UUID NOT NULL REFERENCES databases(id) ON DELETE CASCADE,
-  status VARCHAR(20) NOT NULL,
-  response_time_ms INTEGER,
-  checked_at TIMESTAMPTZ DEFAULT NOW()
+  database_id UUID NOT NULL REFERENCES databases_1c(id) ON DELETE CASCADE,
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  username VARCHAR(128) NOT NULL,
+  full_name VARCHAR(256),
+  roles TEXT[],
+  is_active BOOLEAN DEFAULT TRUE,
+  synced_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users1c_unique ON users_1c(database_id, username);
 
+-- HEALTH CHECKS
+CREATE TABLE IF NOT EXISTS health_checks (
+  id BIGSERIAL PRIMARY KEY,
+  database_id UUID NOT NULL REFERENCES databases_1c(id) ON DELETE CASCADE,
+  status VARCHAR(16) NOT NULL,
+  response_ms INTEGER,
+  checked_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_health_db ON health_checks(database_id, checked_at DESC);
+
+-- AUDIT LOG
 CREATE TABLE IF NOT EXISTS audit_log (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id BIGSERIAL PRIMARY KEY,
   tenant_id UUID REFERENCES tenants(id),
-  action VARCHAR(100) NOT NULL,
-  entity_type VARCHAR(100),
-  entity_id UUID,
-  details JSONB,
-  ip_address VARCHAR(45),
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  action VARCHAR(128) NOT NULL,
+  entity VARCHAR(64),
+  entity_id VARCHAR(128),
+  meta JSONB,
+  ip VARCHAR(64),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS email_queue (
+-- NOTIFICATIONS
+CREATE TABLE IF NOT EXISTS notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  to_email VARCHAR(255) NOT NULL,
-  subject VARCHAR(500) NOT NULL,
-  html_body TEXT NOT NULL,
-  status VARCHAR(20) DEFAULT 'pending',
-  attempts INTEGER DEFAULT 0,
-  last_error TEXT,
-  sent_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  type VARCHAR(64) NOT NULL,
+  title VARCHAR(256) NOT NULL,
+  body TEXT,
+  is_read BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
--- Индексы
-CREATE INDEX IF NOT EXISTS idx_databases_tenant_id ON databases(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_databases_status ON databases(status);
-CREATE INDEX IF NOT EXISTS idx_backups_database_id ON backups(database_id);
-CREATE INDEX IF NOT EXISTS idx_healthcheck_database_id ON healthcheck_history(database_id);
-CREATE INDEX IF NOT EXISTS idx_audit_tenant_id ON audit_log(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_email_queue_status ON email_queue(status);
-
--- Базовые тарифные планы
-INSERT INTO plans (name, max_databases, max_users_per_db, max_storage_gb, price)
-VALUES
-  ('Starter',   1,  3,   5,  0),
-  ('Business',  3,  10,  20, 0),
-  ('Corporate', 10, 50,  100, 0),
-  ('Enterprise', 999, 999, 999, 0)
-ON CONFLICT DO NOTHING;
+CREATE INDEX IF NOT EXISTS idx_notif_tenant ON notifications(tenant_id, is_read);

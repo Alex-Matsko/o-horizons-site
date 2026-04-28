@@ -1,53 +1,62 @@
-import axios from 'axios';
-import { config } from '../config/index.js';
-import { query } from '../config/db.js';
+const axios = require('axios');
 
-function onecClient(db) {
-  const base = `${config.onec.apacheBaseUrl}/${db.onec_ib_name}/odata/standard.odata`;
+// 1C REST API base (OData)
+const base1C = (dbPath, version = '8.3.27') => {
+  const host = process.env.ONEC_HOST;
   return axios.create({
-    baseURL: base,
-    auth: { username: config.onec.apiUser, password: config.onec.apiPass },
-    headers: { Accept: 'application/json;odata=nometadata' },
+    baseURL: `http://${host}/${dbPath}/odata/standard.odata`,
+    auth: {
+      username: process.env.ONEC_ADMIN_USER,
+      password: process.env.ONEC_ADMIN_PASS,
+    },
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     timeout: 15000,
   });
-}
+};
 
-export async function onecSyncUsers(db) {
-  const client = onecClient(db);
-  const res = await client.get('/Catalog_Пользователи?$format=json&$select=Ref_Key,Description,ИмяПользователя,НедействующийПользователь');
-  const items = res.data?.value || [];
-
-  for (const u of items) {
-    await query(
-      `INSERT INTO db_users_cache (database_id, onec_uuid, name, login, is_active, synced_at)
-       VALUES ($1, $2, $3, $4, $5, NOW())
-       ON CONFLICT (database_id, login)
-       DO UPDATE SET name = EXCLUDED.name, is_active = EXCLUDED.is_active, onec_uuid = EXCLUDED.onec_uuid, synced_at = NOW()`,
-      [db.id, u.Ref_Key, u.Description, u.ИмяПользователя, !u.НедействующийПользователь]
-    );
+// Get users list from a 1C database
+exports.getUsers = async (dbPath) => {
+  try {
+    const api = base1C(dbPath);
+    const res = await api.get('/Catalog_Пользователи?$format=json&$select=Code,Description,НаименованиеПолное,ПометкаУдаления');
+    return (res.data.value || []).filter(u => !u.ПометкаУдаления);
+  } catch (err) {
+    console.error(`[1C] getUsers error for ${dbPath}:`, err.message);
+    return [];
   }
-  await query('UPDATE databases SET last_health_at = NOW() WHERE id = $1', [db.id]);
-  return items;
-}
+};
 
-export async function onecCreateUser(db, { name, login, password, roles = [] }) {
-  const client = onecClient(db);
-  const res = await client.post('/Catalog_Пользователи', {
-    Description: name,
-    ИмяПользователя: login,
-    Пароль: password,
-    НедействующийПользователь: false,
+// Create user in 1C database
+exports.createUser = async (dbPath, userData) => {
+  const api = base1C(dbPath);
+  const res = await api.post('/Catalog_Пользователи', {
+    Description: userData.username,
+    НаименованиеПолное: userData.full_name || userData.username,
+    ФизическоеЛицо_Key: '00000000-0000-0000-0000-000000000000',
   });
   return res.data;
-}
+};
 
-export async function onecCheckHealth(db) {
+// Toggle user active state
+exports.toggleUser = async (dbPath, userKey, active) => {
+  const api = base1C(dbPath);
+  await api.patch(`/Catalog_Пользователи(guid'${userKey}')`, {
+    ПометкаУдаления: !active,
+  });
+};
+
+// Check if 1C database is accessible (health)
+exports.checkHealth = async (dbPath) => {
+  const startTs = Date.now();
   try {
-    const client = onecClient(db);
-    const start = Date.now();
-    await client.get('/$metadata', { timeout: 5000 });
-    return { up: true, latency: Date.now() - start };
+    const host = process.env.ONEC_HOST;
+    const res = await axios.get(`http://${host}/${dbPath}/`, {
+      auth: { username: process.env.ONEC_ADMIN_USER, password: process.env.ONEC_ADMIN_PASS },
+      timeout: 8000,
+      validateStatus: (s) => s < 500,
+    });
+    return { ok: res.status < 400, responseMs: Date.now() - startTs };
   } catch {
-    return { up: false, latency: null };
+    return { ok: false, responseMs: Date.now() - startTs };
   }
-}
+};
