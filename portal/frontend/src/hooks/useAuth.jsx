@@ -31,7 +31,6 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    // Бэкенд отдаёт { ok, token, role } — без объекта user
     const r = await api.auth.login({ email, password });
     const t = r.token;
     if (!t) throw new Error('Нет токена в ответе сервера');
@@ -40,7 +39,7 @@ export function AuthProvider({ children }) {
     setTkn(t);
     try { sessionStorage.setItem('auth_token', t); } catch {}
 
-    // Загружаем полный профиль через /me
+    // Загружаем полный профиль
     const me = await api.auth.me();
     const u = me.user || me;
     setUser(u);
