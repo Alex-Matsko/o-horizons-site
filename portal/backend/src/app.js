@@ -14,7 +14,13 @@ app.register(cors, {
 });
 app.register(cookie);
 app.register(jwt, { secret: process.env.JWT_SECRET });
-app.register(rateLimit, { max: 100, timeWindow: '1 minute' });
+app.register(rateLimit, {
+  max: parseInt(process.env.RATE_LIMIT_MAX) || 200,
+  timeWindow: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 60000,
+  skipOnError: true,
+  keyGenerator: (req) => req.ip,
+  skip: (req) => req.url === '/health',
+});
 
 // Decorators
 app.decorate('authenticate', async (req, reply) => {
@@ -37,8 +43,8 @@ app.register(require('./routes/tariffs'),   { prefix: '/api/tariffs' });
 app.register(require('./routes/admin'),     { prefix: '/api/admin' });
 app.register(require('./routes/profile'),   { prefix: '/api/profile' });
 
-// Health
-app.get('/health', async () => ({ ok: true, ts: new Date().toISOString() }));
+// Health — no rate limit, no auth
+app.get('/health', { config: { rateLimit: false } }, async () => ({ ok: true, ts: new Date().toISOString() }));
 
 const start = async () => {
   try {
