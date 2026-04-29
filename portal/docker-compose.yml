@@ -49,6 +49,8 @@ services:
       - portal-net
     volumes:
       - ${BACKUP_LOCAL_PATH:-/opt/1c/backups}:/backups:rw
+      - ${ONEC_TEMPLATES_PATH:-/opt/1c/templates}:/templates:ro
+      - ${SSH_KEY_PATH:-/root/.ssh/portal_deploy}:/root/.ssh/portal_deploy:ro
     healthcheck:
       test: ['CMD-SHELL', 'wget -qO- http://127.0.0.1:3001/health || exit 1']
       interval: 15s
@@ -74,7 +76,7 @@ services:
     volumes:
       - ${BACKUP_LOCAL_PATH:-/opt/1c/backups}:/backups:rw
       - ${ONEC_TEMPLATES_PATH:-/opt/1c/templates}:/templates:ro
-      - ${ONEC_SERVER_SSH_KEY_PATH:-/root/.ssh/portal_deploy}:/root/.ssh/portal_deploy:ro
+      - ${SSH_KEY_PATH:-/root/.ssh/portal_deploy}:/root/.ssh/portal_deploy:ro
 
   portal-frontend:
     build:
