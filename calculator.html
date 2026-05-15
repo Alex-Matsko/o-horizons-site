@@ -290,8 +290,8 @@
     </a>
     <nav class="nav-links">
       <a href="/#services">Услуги</a>
-      <a href="/#audits">Аудиты</a>
-      <a href="/calculator" style="color:#3b82f6;font-weight:600;">Калькулятор</a>
+      <a href="/#pricing">Тарифы</a>
+      <a href="/calculator" class="btn-nav" style="background:rgba(59,130,246,0.15);color:#3b82f6;border:1px solid rgba(59,130,246,0.3);">Калькулятор</a>
       <a href="/#about">О нас</a>
       <a href="/#contact" class="btn-nav">Связаться</a>
     </nav>
@@ -350,72 +350,54 @@
               <input type="checkbox" checked />
               <div class="check-box">✓</div>
               <div class="check-text">
-                <strong>1С Enterprise</strong>
-                <span>Сервер + базы данных</span>
-                <span class="check-price">от +8 000 ₽/мес</span>
+                <strong>1С</strong>
+                <span>Базы данных, бэкапы, обновления</span>
+                <div class="check-price">от 8 000 ₽/мес</div>
               </div>
             </label>
             <label class="check-item" data-price="5000">
               <input type="checkbox" />
               <div class="check-box">✓</div>
               <div class="check-text">
-                <strong>Exchange / почта</strong>
-                <span>Почтовый сервер</span>
-                <span class="check-price">от +5 000 ₽/мес</span>
+                <strong>AD / DNS / DHCP</strong>
+                <span>Доменная инфраструктура</span>
+                <div class="check-price">от 5 000 ₽/мес</div>
               </div>
             </label>
             <label class="check-item" data-price="6000">
               <input type="checkbox" />
               <div class="check-box">✓</div>
               <div class="check-text">
-                <strong>Виртуализация</strong>
-                <span>VMware / Proxmox</span>
-                <span class="check-price">от +6 000 ₽/мес</span>
+                <strong>Почта / Exchange</strong>
+                <span>Корпоративная почта</span>
+                <div class="check-price">от 6 000 ₽/мес</div>
               </div>
             </label>
             <label class="check-item" data-price="4000">
               <input type="checkbox" />
               <div class="check-box">✓</div>
               <div class="check-text">
-                <strong>Битрикс24</strong>
-                <span>On-premise портал</span>
-                <span class="check-price">от +4 000 ₽/мес</span>
-              </div>
-            </label>
-            <label class="check-item" data-price="5500">
-              <input type="checkbox" />
-              <div class="check-box">✓</div>
-              <div class="check-text">
-                <strong>Мониторинг 24/7</strong>
-                <span>Alerting + дежурство</span>
-                <span class="check-price">от +5 500 ₽/мес</span>
+                <strong>VPN / Firewall</strong>
+                <span>Защита периметра</span>
+                <div class="check-price">от 4 000 ₽/мес</div>
               </div>
             </label>
             <label class="check-item" data-price="7000">
               <input type="checkbox" />
               <div class="check-box">✓</div>
               <div class="check-text">
-                <strong>Безопасность</strong>
-                <span>VPN, 2FA, периметр</span>
-                <span class="check-price">от +7 000 ₽/мес</span>
+                <strong>Мониторинг</strong>
+                <span>Zabbix / Prometheus</span>
+                <div class="check-price">от 7 000 ₽/мес</div>
               </div>
             </label>
-            <label class="check-item" data-price="4500">
+            <label class="check-item" data-price="5000">
               <input type="checkbox" />
               <div class="check-box">✓</div>
               <div class="check-text">
                 <strong>Резервное копирование</strong>
-                <span>Политики + тесты</span>
-                <span class="check-price">от +4 500 ₽/мес</span>
-              </div>
-            </label>
-            <label class="check-item" data-price="3500">
-              <input type="checkbox" />
-              <div class="check-box">✓</div>
-              <div class="check-text">
-                <strong>Helpdesk</strong>
-                <span>Поддержка пользователей</span>
-                <span class="check-price">от +3 500 ₽/мес</span>
+                <span>Автоматизированные бэкапы</span>
+                <div class="check-price">от 5 000 ₽/мес</div>
               </div>
             </label>
           </div>
@@ -423,93 +405,141 @@
 
         <!-- SLA -->
         <div class="calc-block">
-          <p class="calc-block-title"><span>⏱️</span> Уровень SLA</p>
-          <div class="check-grid" id="slaGrid">
-            <label class="check-item" data-price="0" data-sla="base">
-              <input type="radio" name="sla" value="base" />
-              <div class="check-box" style="border-radius:50%;">○</div>
+          <p class="calc-block-title"><span>⏱️</span> Уровень сервиса (SLA)</p>
+          <div class="check-grid" id="slaGrid" style="grid-template-columns: repeat(3, 1fr);">
+            <label class="check-item" data-sla="0.8" data-single>
+              <input type="radio" name="sla" value="0.8" />
+              <div class="check-box">✓</div>
               <div class="check-text">
                 <strong>Базовый</strong>
-                <span>Реакция — следующий день</span>
+                <span>8×5, до 8ч реакция</span>
               </div>
             </label>
-            <label class="check-item active" data-price="5000" data-sla="standard">
-              <input type="radio" name="sla" value="standard" checked />
-              <div class="check-box" style="border-radius:50%;">●</div>
+            <label class="check-item active" data-sla="1" data-single>
+              <input type="radio" name="sla" value="1" checked />
+              <div class="check-box">✓</div>
               <div class="check-text">
                 <strong>Стандарт</strong>
-                <span>Реакция — до 4 часов</span>
-                <span class="check-price">+5 000 ₽/мес</span>
+                <span>12×6, до 4ч реакция</span>
               </div>
             </label>
-            <label class="check-item" data-price="12000" data-sla="priority">
-              <input type="radio" name="sla" value="priority" />
-              <div class="check-box" style="border-radius:50%;">○</div>
+            <label class="check-item" data-sla="1.4" data-single>
+              <input type="radio" name="sla" value="1.4" />
+              <div class="check-box">✓</div>
               <div class="check-text">
-                <strong>Приоритет</strong>
-                <span>Реакция — до 1 часа</span>
-                <span class="check-price">+12 000 ₽/мес</span>
-              </div>
-            </label>
-            <label class="check-item" data-price="25000" data-sla="24x7">
-              <input type="radio" name="sla" value="24x7" />
-              <div class="check-box" style="border-radius:50%;">○</div>
-              <div class="check-text">
-                <strong>24×7</strong>
-                <span>Реакция — до 30 минут</span>
-                <span class="check-price">+25 000 ₽/мес</span>
+                <strong>Премиум</strong>
+                <span>24×7, до 1ч реакция</span>
               </div>
             </label>
           </div>
         </div>
 
-      </div>
+        <!-- CONTRACT -->
+        <div class="calc-block">
+          <p class="calc-block-title"><span>📋</span> Срок договора</p>
+          <div class="check-grid" id="contractGrid" style="grid-template-columns: repeat(3, 1fr);">
+            <label class="check-item" data-discount="0" data-single>
+              <input type="radio" name="contract" value="0" />
+              <div class="check-box">✓</div>
+              <div class="check-text">
+                <strong>1 месяц</strong>
+                <span>Без скидки</span>
+              </div>
+            </label>
+            <label class="check-item active" data-discount="5" data-single>
+              <input type="radio" name="contract" value="5" checked />
+              <div class="check-box">✓</div>
+              <div class="check-text">
+                <strong>6 месяцев</strong>
+                <span>Скидка 5%</span>
+              </div>
+            </label>
+            <label class="check-item" data-discount="10" data-single>
+              <input type="radio" name="contract" value="10" />
+              <div class="check-box">✓</div>
+              <div class="check-text">
+                <strong>12 месяцев</strong>
+                <span>Скидка 10%</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+      </div><!-- /calc-left -->
 
       <!-- RIGHT: RESULT -->
       <div class="calc-right">
         <div class="result-panel">
-          <p class="result-title">Предварительный расчёт</p>
-          <div id="resultLines"></div>
+          <p class="result-title">Ваш расчёт</p>
+
+          <div class="result-line">
+            <span>Серверы (физ.)</span>
+            <span id="rServers">—</span>
+          </div>
+          <div class="result-line">
+            <span>Виртуальные машины</span>
+            <span id="rVM">—</span>
+          </div>
+          <div class="result-line">
+            <span>Рабочие места</span>
+            <span id="rUsers">—</span>
+          </div>
+          <div class="result-line">
+            <span>Дополнительные системы</span>
+            <span id="rServices">—</span>
+          </div>
+          <div class="result-line">
+            <span>Коэффициент SLA</span>
+            <span id="rSLA">×1.0</span>
+          </div>
+          <div class="result-line">
+            <span>Скидка по договору</span>
+            <span id="rDiscount">0%</span>
+          </div>
+
           <div class="result-total-wrap">
-            <p class="result-total-label">Итого в месяц (от)</p>
-            <p class="result-total" id="resultTotal">25 000 <sup>₽</sup></p>
-            <p class="result-note">Точная стоимость определяется после аудита инфраструктуры.</p>
+            <p class="result-total-label">Итого в месяц:</p>
+            <div class="result-total"><span id="rTotal">—</span> <sup>₽</sup></div>
+            <p class="result-note">Предварительный расчёт. Финальная стоимость уточняется после аудита инфраструктуры.</p>
           </div>
-          <div class="result-audit">
-            ✓ Аудит от 25 000 ₽ — засчитывается при переходе на сопровождение
+
+          <div class="result-audit" id="auditTip" style="display:none;">
+            💡 При выборе аудита инфраструктуры его стоимость вычитается из первого месяца сопровождения.
           </div>
+
           <div class="result-cta">
-            <button class="btn-primary" onclick="openModal()" style="text-align:center;">Получить точное предложение</button>
-            <a href="/#contact" class="btn-outline" style="text-align:center;">Задать вопрос</a>
+            <button class="btn-primary btn-block" onclick="openModal()">Получить предложение</button>
+            <a href="/#pricing" class="btn-outline btn-block">Посмотреть тарифы</a>
           </div>
         </div>
+      </div><!-- /calc-right -->
+
+    </div><!-- /calc-layout -->
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section section-dark">
+  <div class="container">
+    <p class="section-tag">Как это работает</p>
+    <h2 class="section-title">От расчёта до договора — 3 шага</h2>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-step-num">1</div>
+        <h3>Настройте параметры</h3>
+        <p>Укажите количество серверов, пользователей и нужные системы. Калькулятор пересчитывает стоимость в реальном времени.</p>
       </div>
-
-    </div>
-
-    <!-- HOW IT WORKS -->
-    <div style="padding-top: 16px;">
-      <p class="section-tag">Как это работает</p>
-      <h2 class="section-title">Три шага до договора</h2>
-      <div class="how-steps">
-        <div class="how-step">
-          <div class="how-step-num">1</div>
-          <h3>Оставьте заявку</h3>
-          <p>Заполните форму с расчётом или напишите напрямую. Ответим в течение 2 часов.</p>
-        </div>
-        <div class="how-step">
-          <div class="how-step-num">2</div>
-          <h3>Проведём аудит</h3>
-          <p>Удалённо проверим инфраструктуру и уточним объём. Аудит засчитывается в первый месяц сопровождения.</p>
-        </div>
-        <div class="how-step">
-          <div class="how-step-num">3</div>
-          <h3>Подпишем договор</h3>
-          <p>Фиксируем SLA, объём и стоимость. Никаких скрытых ставок — только предсказуемый платёж.</p>
-        </div>
+      <div class="how-step">
+        <div class="how-step-num">2</div>
+        <h3>Отправьте заявку</h3>
+        <p>Мы получим вашу конфигурацию и свяжемся в течение 2 часов для уточнения деталей и проведения аудита.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-step-num">3</div>
+        <h3>Получите договор</h3>
+        <p>После аудита подготовим финальное предложение с фиксированной ценой и подпишем договор.</p>
       </div>
     </div>
-
   </div>
 </section>
 
@@ -517,172 +547,189 @@
 <footer class="footer">
   <div class="container footer-inner">
     <div class="footer-logo">
-      <span style="font-size:1.4rem;color:#3b82f6;">&#x2B21;</span>
-      <span>Открытые <strong style="color:#94a3b8;">Горизонты</strong></span>
+      <span style="font-size:1.4rem;color:#3b82f6;">⬡</span>
+      <span>Открытые <strong style="color:#64748b;">Горизонты</strong></span>
     </div>
-    <span class="footer-copy">© 2025 ООО «Открытые Горизонты»</span>
+    <p class="footer-copy">© 2025 ООО «Открытые горизонты» · ИНН 6685239460</p>
     <div class="footer-share">
       <a href="/privacy-policy.html">Политика конфиденциальности</a>
+      <span>·</span>
       <a href="/oferta.html">Оферта</a>
     </div>
   </div>
 </footer>
 
 <script>
-// ── CALC LOGIC ──
-const BASE = 15000;
-const PER_SERVER = 3500;
-const PER_VM = 800;
-const PER_USER = 300;
-
-function fmt(n) { return n.toLocaleString('ru-RU'); }
-
-function updateCalc() {
-  const physical = +document.getElementById('rngPhysical').value;
-  const vm       = +document.getElementById('rngVM').value;
-  const users    = +document.getElementById('rngUsers').value;
-
-  document.getElementById('valPhysical').textContent = physical;
-  document.getElementById('valVM').textContent = vm;
-  document.getElementById('valUsers').textContent = users;
-
-  let total = BASE;
-  let lines = [{ label: 'Базовая стоимость', val: BASE }];
-
-  const serverCost = physical * PER_SERVER;
-  if (serverCost) { total += serverCost; lines.push({ label: `Серверы (${physical} шт.)`, val: serverCost }); }
-
-  const vmCost = vm * PER_VM;
-  if (vmCost) { total += vmCost; lines.push({ label: `VM (${vm} шт.)`, val: vmCost }); }
-
-  const userCost = Math.max(0, users - 10) * PER_USER;
-  if (userCost) { total += userCost; lines.push({ label: `Пользователи (${users} м.)`, val: userCost }); }
-
-  // services
-  document.querySelectorAll('#serviceGrid .check-item').forEach(el => {
-    if (el.classList.contains('active')) {
-      const p = +el.dataset.price;
-      const name = el.querySelector('strong').textContent;
-      total += p;
-      lines.push({ label: name, val: p });
-    }
-  });
-
-  // sla
-  const activeSla = document.querySelector('#slaGrid .check-item.active');
-  if (activeSla) {
-    const sp = +activeSla.dataset.price;
-    if (sp) { total += sp; lines.push({ label: 'SLA ' + activeSla.querySelector('strong').textContent, val: sp }); }
-  }
-
-  // render lines
-  const linesEl = document.getElementById('resultLines');
-  linesEl.innerHTML = lines.map(l =>
-    `<div class="result-line"><span>${l.label}</span><span>${fmt(l.val)} ₽</span></div>`
-  ).join('');
-
-  document.getElementById('resultTotal').innerHTML = fmt(total) + ' <sup>₽</sup>';
-}
-
-// ── CHECK ITEMS ──
-document.querySelectorAll('#serviceGrid .check-item').forEach(el => {
-  el.addEventListener('click', () => {
-    el.classList.toggle('active');
-    const cb = el.querySelector('input[type="checkbox"]');
-    cb.checked = !cb.checked;
-    const box = el.querySelector('.check-box');
-    box.textContent = el.classList.contains('active') ? '✓' : '';
-    updateCalc();
-  });
-});
-
-document.querySelectorAll('#slaGrid .check-item').forEach(el => {
-  el.addEventListener('click', () => {
-    document.querySelectorAll('#slaGrid .check-item').forEach(s => {
-      s.classList.remove('active');
-      s.querySelector('.check-box').textContent = '○';
-    });
-    el.classList.add('active');
-    el.querySelector('.check-box').textContent = '●';
-    updateCalc();
-  });
-});
-
 // ── MODAL ──
 function openModal() {
-  // fill summary
-  const physical = document.getElementById('valPhysical').textContent;
-  const vm = document.getElementById('valVM').textContent;
-  const users = document.getElementById('valUsers').textContent;
-  const total = document.getElementById('resultTotal').textContent.replace(/<[^>]+>/g,'').trim();
-
-  const services = [];
-  document.querySelectorAll('#serviceGrid .check-item.active strong').forEach(el => services.push(el.textContent));
-  const slaEl = document.querySelector('#slaGrid .check-item.active strong');
-  const sla = slaEl ? slaEl.textContent : '';
-
-  const summary = `Серверы: ${physical}, VM: ${vm}, Пользователей: ${users}\nСистемы: ${services.join(', ') || 'не выбраны'}\nSLA: ${sla}\nРасчёт: от ${total}/мес`;
-  document.getElementById('calcSummary').value = summary;
-
   document.getElementById('modalOverlay').classList.add('active');
   document.body.style.overflow = 'hidden';
+  syncCalcSummary();
 }
 function closeModal() {
   document.getElementById('modalOverlay').classList.remove('active');
   document.body.style.overflow = '';
 }
-document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
 
-// ── FORM SUBMIT ──
+// ── TOGGLE CHECKS ──
+function setupCheckItems() {
+  document.querySelectorAll('#serviceGrid .check-item').forEach(item => {
+    item.addEventListener('click', function() {
+      this.classList.toggle('active');
+      const cb = this.querySelector('input[type="checkbox"]');
+      cb.checked = !cb.checked;
+      updateCalc();
+    });
+  });
+
+  document.querySelectorAll('[data-single]').forEach(item => {
+    item.addEventListener('click', function() {
+      const grid = this.closest('.check-grid');
+      grid.querySelectorAll('.check-item').forEach(i => i.classList.remove('active'));
+      this.classList.add('active');
+      const radio = this.querySelector('input[type="radio"]');
+      radio.checked = true;
+      updateCalc();
+    });
+  });
+}
+setupCheckItems();
+
+// ── CALC ──
+function updateCalc() {
+  const physical = +document.getElementById('rngPhysical').value;
+  const vms = +document.getElementById('rngVM').value;
+  const users = +document.getElementById('rngUsers').value;
+
+  document.getElementById('valPhysical').textContent = physical;
+  document.getElementById('valVM').textContent = vms;
+  document.getElementById('valUsers').textContent = users;
+
+  const serverCost = physical * 4500 + vms * 1200;
+  const userCost = users * 700;
+
+  let servicesCost = 0;
+  document.querySelectorAll('#serviceGrid .check-item.active').forEach(item => {
+    servicesCost += +(item.dataset.price || 0);
+  });
+
+  const slaActive = document.querySelector('#slaGrid .check-item.active');
+  const slaMult = slaActive ? +(slaActive.dataset.sla || 1) : 1;
+
+  const contractActive = document.querySelector('#contractGrid .check-item.active');
+  const discountPct = contractActive ? +(contractActive.dataset.discount || 0) : 0;
+
+  const subtotal = (serverCost + userCost + servicesCost) * slaMult;
+  const total = Math.round(subtotal * (1 - discountPct / 100) / 100) * 100;
+
+  const fmt = v => v.toLocaleString('ru-RU');
+
+  document.getElementById('rServers').textContent = physical ? fmt(physical * 4500) + ' ₽' : '—';
+  document.getElementById('rVM').textContent = vms ? fmt(vms * 1200) + ' ₽' : '—';
+  document.getElementById('rUsers').textContent = fmt(userCost) + ' ₽';
+  document.getElementById('rServices').textContent = servicesCost ? fmt(servicesCost) + ' ₽' : '—';
+  document.getElementById('rSLA').textContent = '×' + slaMult.toFixed(1);
+  document.getElementById('rDiscount').textContent = discountPct ? discountPct + '%' : '0%';
+  document.getElementById('rTotal').textContent = fmt(total);
+
+  document.getElementById('auditTip').style.display = 'block';
+}
+updateCalc();
+
+// ── SYNC SUMMARY ──
+function syncCalcSummary() {
+  const physical = document.getElementById('rngPhysical').value;
+  const vms = document.getElementById('rngVM').value;
+  const users = document.getElementById('rngUsers').value;
+
+  const services = [];
+  document.querySelectorAll('#serviceGrid .check-item.active strong').forEach(el => services.push(el.textContent.trim()));
+
+  const slaEl = document.querySelector('#slaGrid .check-item.active strong');
+  const sla = slaEl ? slaEl.textContent.trim() : '';
+
+  const conEl = document.querySelector('#contractGrid .check-item.active strong');
+  const contract = conEl ? conEl.textContent.trim() : '';
+
+  const total = document.getElementById('rTotal').textContent;
+
+  document.getElementById('calcSummary').value =
+    `Серверов: ${physical}, ВМ: ${vms}, Рабочих мест: ${users}\n` +
+    `Системы: ${services.join(', ') || 'не выбраны'}\n` +
+    `SLA: ${sla}, Договор: ${contract}\n` +
+    `Расчётная стоимость: ${total} ₽/мес`;
+}
+
+// ── FORM ──
 document.getElementById('calcForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const name    = document.getElementById('nameField').value.trim();
+  const name = document.getElementById('nameField').value.trim();
   const contact = document.getElementById('contactField').value.trim();
   const consent = document.getElementById('consentCheck').checked;
-  const status  = document.getElementById('formStatus');
-
-  if (!name || !contact) { status.textContent = 'Пожалуйста, заполните имя и контакт.'; status.className = 'form-status error'; return; }
-  if (!consent) { status.textContent = 'Необходимо согласие на обработку данных.'; status.className = 'form-status error'; return; }
-
+  const status = document.getElementById('formStatus');
   const btn = document.getElementById('submitBtn');
+
+  if (!name || !contact) {
+    status.textContent = 'Пожалуйста, заполните обязательные поля.';
+    status.className = 'form-status error';
+    return;
+  }
+  if (!consent) {
+    status.textContent = 'Необходимо согласие на обработку данных.';
+    status.className = 'form-status error';
+    return;
+  }
+
   btn.disabled = true;
-  btn.textContent = 'Отправка…';
+  btn.textContent = 'Отправляем...';
   status.textContent = '';
+  status.className = 'form-status';
+
+  syncCalcSummary();
 
   try {
+    const formData = {
+      name,
+      contact,
+      company: document.getElementById('companyField').value.trim(),
+      comment: document.getElementById('commentField').value.trim(),
+      summary: document.getElementById('calcSummary').value,
+      source: 'calculator'
+    };
+
     const res = await fetch('/mailer/send.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name,
-        company:  document.getElementById('companyField').value.trim(),
-        contact,
-        summary:  document.getElementById('calcSummary').value,
-        comment:  document.getElementById('commentField').value.trim(),
-        source:   'calculator'
-      })
+      body: JSON.stringify(formData)
     });
     const data = await res.json();
+
     if (data.ok) {
-      status.textContent = '✓ Заявка отправлена! Свяжемся в течение 2 часов.';
+      status.textContent = '✓ Заявка отправлена! Ответим в течение 2 часов.';
       status.className = 'form-status success';
-      this.reset();
-      setTimeout(closeModal, 3000);
+      document.getElementById('calcForm').reset();
+      document.querySelectorAll('#serviceGrid .check-item').forEach(i => i.classList.remove('active'));
+      document.querySelector('#slaGrid .check-item:nth-child(2)').classList.add('active');
+      document.querySelector('#contractGrid .check-item:nth-child(2)').classList.add('active');
+      updateCalc();
     } else {
       throw new Error(data.error || 'Ошибка сервера');
     }
-  } catch(err) {
-    status.textContent = 'Ошибка отправки. Напишите напрямую: info@o-horizons.com';
+  } catch (err) {
+    status.textContent = 'Ошибка отправки. Напишите нам напрямую: info@o-horizons.com';
     status.className = 'form-status error';
+    console.error(err);
   } finally {
     btn.disabled = false;
     btn.textContent = 'Отправить заявку';
   }
 });
-
-// init
-updateCalc();
 </script>
 </body>
 </html>
