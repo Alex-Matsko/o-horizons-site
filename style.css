@@ -171,7 +171,7 @@ a { text-decoration: none; color: inherit; }
   transition: color 0.2s;
 }
 .nav-phone:hover { color: #3b82f6; }
-@media (max-width: 900px) { .nav-phone { display: none; } }
+@media (max-width: 1080px) { .nav-phone { display: none; } }
 
 /* === MODAL === */
 .modal-overlay {
@@ -478,8 +478,9 @@ a { text-decoration: none; color: inherit; }
 .section-sub {
   font-size: 1rem;
   color: #64748b;
-  max-width: 560px;
-  margin-bottom: 48px;
+  max-width: 600px;
+  margin-bottom: 40px;
+  line-height: 1.7;
 }
 
 /* === SERVICES GRID === */
@@ -487,6 +488,7 @@ a { text-decoration: none; color: inherit; }
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
+  align-items: stretch;
 }
 .service-card {
   background: #151820;
@@ -494,6 +496,9 @@ a { text-decoration: none; color: inherit; }
   border-radius: 14px;
   padding: 28px;
   transition: border-color 0.2s, transform 0.2s;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .service-card:hover {
   border-color: rgba(59,130,246,0.35);
@@ -501,13 +506,14 @@ a { text-decoration: none; color: inherit; }
 }
 .service-icon { font-size: 2rem; margin-bottom: 14px; }
 .service-card h3 { font-size: 1rem; font-weight: 600; color: #e2e8f0; margin-bottom: 10px; }
-.service-card p { font-size: 0.88rem; color: #64748b; line-height: 1.7; }
+.service-card p { font-size: 0.88rem; color: #64748b; line-height: 1.7; flex: 1; }
 
 /* === AUDITS GRID === */
 .audits-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+  align-items: stretch;
 }
 @media (max-width: 900px) { .audits-grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 600px) { .audits-grid { grid-template-columns: 1fr; } }
@@ -517,6 +523,7 @@ a { text-decoration: none; color: inherit; }
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
+  align-items: stretch;
 }
 .audit-card {
   background: #151820;
@@ -526,6 +533,7 @@ a { text-decoration: none; color: inherit; }
   display: flex;
   flex-direction: column;
   gap: 10px;
+  height: 100%;
 }
 .audit-card h3,
 .audit-card h4 { font-size: 0.95rem; font-weight: 600; color: #e2e8f0; margin-bottom: 4px; }
@@ -582,7 +590,7 @@ a { text-decoration: none; color: inherit; }
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   margin-bottom: 20px;
-  align-items: start;
+  align-items: stretch;
 }
 @media (min-width: 901px) {
   .pricing-grid { grid-template-columns: repeat(4, 1fr); }
@@ -594,6 +602,9 @@ a { text-decoration: none; color: inherit; }
   padding: 32px;
   position: relative;
   transition: border-color 0.2s;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 .pricing-card:hover { border-color: rgba(59,130,246,0.3); }
 .pricing-card--featured,
@@ -643,6 +654,7 @@ a { text-decoration: none; color: inherit; }
   gap: 9px;
   margin-bottom: 24px;
   padding: 0;
+  flex: 1;
 }
 .pricing-features li {
   font-size: 0.85rem;
@@ -685,6 +697,7 @@ a { text-decoration: none; color: inherit; }
   transition: all 0.2s;
   cursor: pointer;
   width: 100%;
+  margin-top: auto;
 }
 .btn-card:hover { background: rgba(59,130,246,0.25); }
 .btn-card-white {
@@ -729,6 +742,7 @@ a { text-decoration: none; color: inherit; }
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
+  align-items: stretch;
 }
 @media (max-width: 900px) { .about-grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 600px) { .about-grid { grid-template-columns: 1fr; } }
@@ -741,6 +755,7 @@ a { text-decoration: none; color: inherit; }
   flex-direction: column;
   gap: 10px;
   transition: border-color 0.2s, transform 0.2s;
+  height: 100%;
 }
 .about-card:hover {
   border-color: rgba(59,130,246,0.3);
@@ -748,7 +763,7 @@ a { text-decoration: none; color: inherit; }
 }
 .about-icon { font-size: 2rem; line-height: 1; }
 .about-card h3 { font-size: 0.98rem; font-weight: 600; color: #e2e8f0; }
-.about-card p { font-size: 0.87rem; color: #64748b; line-height: 1.65; }
+.about-card p { font-size: 0.87rem; color: #64748b; line-height: 1.65; flex: 1; }
 .kpi-card {
   background: #151820;
   border: 1px solid rgba(255,255,255,0.07);
@@ -766,13 +781,14 @@ a { text-decoration: none; color: inherit; }
 .kpi-card p { font-size: 0.78rem; color: #64748b; }
 
 /* === FAQ ACCORDION (details/summary native) === */
-.faq-wrapper { max-width: 100%; }
+.faq-wrapper { max-width: 100%; width: 100%; }
 .faq-intro { font-size: 0.9rem; color: #64748b; margin-bottom: 28px; }
 .faq-list {
   border-radius: 16px;
   border: 1px solid rgba(148,163,184,0.15);
   background: #0d0f14;
   overflow: hidden;
+  width: 100%;
 }
 /* native <details> variant */
 .faq-list details.faq-item { border-top: 1px solid rgba(255,255,255,0.05); }
@@ -876,30 +892,56 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* === CONTACT === */
-.contact-inner { text-align: center; max-width: 600px; margin: 0 auto; }
+.contact-inner { text-align: center; max-width: 640px; margin: 0 auto; }
 .contact-inner h2 { font-size: 1.8rem; font-weight: 700; color: #f1f5f9; margin-bottom: 14px; }
 .contact-options {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin-bottom: 36px;
+  align-items: stretch;
 }
 .contact-card {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   background: #151820;
   border: 1px solid rgba(255,255,255,0.07);
   border-radius: 12px;
-  padding: 20px 24px;
+  padding: 18px 16px;
   transition: border-color 0.2s;
+  height: 100%;
   min-height: 80px;
+  box-sizing: border-box;
 }
 .contact-card:hover { border-color: rgba(59,130,246,0.4); }
-.contact-card > span { font-size: 1.8rem; flex-shrink: 0; }
-.contact-card strong { display: block; color: #e2e8f0; font-size: 0.9rem; margin-bottom: 2px; }
-.contact-card p { color: #64748b; font-size: 0.85rem; margin: 0; }
-@media (max-width: 700px) { .contact-options { grid-template-columns: 1fr; } }
+.contact-card > span {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  line-height: 1;
+  width: 2rem;
+  text-align: center;
+}
+.contact-card-text { display: flex; flex-direction: column; min-width: 0; }
+.contact-card strong {
+  display: block;
+  color: #e2e8f0;
+  font-size: 0.85rem;
+  margin-bottom: 2px;
+  white-space: nowrap;
+}
+.contact-card p {
+  color: #64748b;
+  font-size: 0.8rem;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 760px) {
+  .contact-options { grid-template-columns: 1fr; }
+  .contact-card { min-height: 64px; }
+}
 
 /* === FOOTER === */
 .footer {
@@ -1338,4 +1380,31 @@ a { text-decoration: none; color: inherit; }
 @media (max-width: 480px) {
   .oh-chat-win    { right: 12px; bottom: 88px; width: calc(100vw - 24px); }
   .oh-chat-bubble { right: 16px; bottom: 20px; }
+}
+
+/* =============================================
+   FIXES: равные карточки и выравнивание секций
+   ============================================= */
+
+/* Контактные карточки — обёртка текста для выравнивания */
+.contact-card > span + * {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Секции — подзаголовок всегда корректно выравнен */
+.section > .container > .section-sub,
+.section-sub {
+  max-width: 600px;
+  line-height: 1.7;
+  margin-bottom: 40px;
+}
+
+/* Navbar — телефон скрывается раньше чтобы не ломать layout */
+@media (max-width: 1100px) {
+  .nav-phone { display: none !important; }
+}
+@media (min-width: 1101px) {
+  .nav-phone { display: inline !important; }
 }
