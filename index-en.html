@@ -47,6 +47,7 @@
     "alternateName": "Открытые Горизонты",
     "url": "https://o-horizons.com",
     "email": "info@o-horizons.com",
+    "telephone": "+79666660207",
     "sameAs": ["https://t.me/ohorizons"],
     "description": "IT outsourcing and IT infrastructure audit for business: 1C servers, backups, virtualisation, security.",
     "serviceType": "IT outsourcing",
@@ -146,8 +147,8 @@
         <input type="text" id="contactField" name="contact" placeholder="email@example.com or @username" required />
       </div>
       <div class="form-group">
-        <label for="message">Tell us about your challenge</label>
-        <textarea id="message" name="message" placeholder="What's the pain point? How many servers, users?"></textarea>
+        <label for="message">Tell us about the task</label>
+        <textarea id="message" name="message" placeholder="What is the problem? How many servers, users?"></textarea>
       </div>
       <div class="form-consent">
         <label class="consent-label">
@@ -159,6 +160,7 @@
         <strong>Our contacts:</strong>
         <span><a href="mailto:info@o-horizons.com">info@o-horizons.com</a></span>
         <span><a href="https://t.me/ohorizons" target="_blank">@ohorizons</a></span>
+        <span><a href="tel:+79666660207">+7 (966) 666-02-07</a></span>
       </div>
       <button type="submit" class="btn-submit" id="submitBtn">Send request</button>
       <div class="form-status" id="formStatus"></div>
@@ -178,7 +180,7 @@
       <a href="#pricing">Pricing</a>
       <a href="/calculator">Calculator</a>
       <a href="#about">About</a>
-      <a href="#contact" class="btn-nav">Contact us</a>
+      <a href="#contact" class="btn-nav">Contact</a>
     </nav>
     <a href="/" class="lang-switch">RU</a>
   </div>
@@ -190,15 +192,15 @@
     <div class="hero-text">
       <p class="hero-tag">IT outsourcing for business</p>
       <h1>Your infrastructure<br/>under reliable control</h1>
-      <p class="hero-sub">Complete management of your business IT infrastructure. We take care of everything — from servers to security. No downtime. No chaos.</p>
-      <p class="hero-sub">We start with an audit: check backups, servers, 1C and remote access, show risks in monetary terms and provide a clear action plan to keep your infrastructure from letting the business down.</p>
+      <p class="hero-sub">Full management of your business IT infrastructure. We handle everything — from servers to security. No downtime. No chaos.</p>
+      <p class="hero-sub">We start with an audit: we review backups, servers, 1C and remote access, quantify the risks in money and provide a clear action plan — so your infrastructure never lets the business down.</p>
       <div class="hero-actions">
         <button class="btn-primary" onclick="openModal()">Order an audit</button>
         <a href="#audits" class="btn-outline">About the audit</a>
       </div>
       <div class="hero-stats">
-        <div class="stat"><span>98%</span><p>service uptime</p></div>
-        <div class="stat"><span>50+</span><p>projects delivered</p></div>
+        <div class="stat"><span>98%</span><p>SLA uptime</p></div>
+        <div class="stat"><span>50+</span><p>completed projects</p></div>
         <div class="stat"><span>&lt; 1h</span><p>incident response</p></div>
       </div>
     </div>
@@ -221,109 +223,48 @@
     <p class="section-tag">What we do</p>
     <h2 class="section-title">Services</h2>
     <div class="services-grid">
-      <div class="service-card">
-        <div class="service-icon">🗄️</div>
-        <h3>1C Infrastructure Management</h3>
-        <p>Administration of 1C and MSSQL servers, configuration updates, access rights, data exchange and round-the-clock availability monitoring.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">💾</div>
-        <h3>Backup &amp; Recovery</h3>
-        <p>Veeam B&amp;R deployment using the 3-2-1 scheme, recovery testing, retention policies. RTO and RPO under control — data loss is excluded.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">⚡</div>
-        <h3>Virtualisation &amp; Server Infrastructure</h3>
-        <p>Deployment and management of VMware ESXi, Proxmox and Hyper-V. High-availability architecture, VM migration and resource management.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">🖥️</div>
-        <h3>System Administration</h3>
-        <p>Windows/Linux servers, Active Directory, GPO, RDS, Zabbix/Grafana. Full operational coverage — monitoring, incidents and maintenance.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">🔒</div>
-        <h3>Network Perimeter &amp; Security</h3>
-        <p>MikroTik, VPN, VLAN, NGFW, SIEM, 2FA, Fail2ban. Security perimeter built and maintained to SMB requirements.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">👔</div>
-        <h3>Fractional IT Director</h3>
-        <p>We act as your IT leadership: build processes, regulations, ticketing and reporting. Manage vendors and optimise the IT budget.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">📋</div>
-        <h3>Bitrix24 Support</h3>
-        <p>Setup and ongoing support of Bitrix24 portal: company structure, access rights, integrations, telephony, business processes and automation.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">📞</div>
-        <h3>Telephony &amp; Communications</h3>
-        <p>IP telephony, SIP, virtual PBX, call routing scenarios, call recording and integrations with CRM and Bitrix24.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">✉️</div>
-        <h3>Email &amp; Corporate Services</h3>
-        <p>Mail servers, Microsoft 365, Yandex 360, domains, SPF/DKIM/DMARC, migrations, email security and reliable message delivery.</p>
-      </div>
-      <div class="service-card">
-        <div class="service-icon">📹</div>
-        <h3>CCTV &amp; Office Infrastructure</h3>
-        <p>Video surveillance systems, local network, Wi-Fi, routing, switches, access points and other critical office and business services.</p>
-      </div>
+      <div class="service-card"><div class="service-icon">🗄️</div><h3>1C Infrastructure Support</h3><p>Administration of 1C and MSSQL servers, configuration updates, access rights, data exchanges and 24/7 availability monitoring.</p></div>
+      <div class="service-card"><div class="service-icon">💾</div><h3>Backup &amp; Recovery</h3><p>Deployment of Veeam B&amp;R to the 3-2-1 scheme, restore testing, retention policies. RTO and RPO under control — data loss excluded.</p></div>
+      <div class="service-card"><div class="service-icon">⚡</div><h3>Virtualisation &amp; Server Infrastructure</h3><p>Deployment and support of VMware ESXi, Hyper-V and Proxmox: resource planning, HA configurations, VM migrations and performance monitoring.</p></div>
+      <div class="service-card"><div class="service-icon">🔒</div><h3>Network Security &amp; Access</h3><p>Firewall policies, VPN for remote employees, network segmentation and incident monitoring — no vulnerabilities, no unauthorised access.</p></div>
+      <div class="service-card"><div class="service-icon">📋</div><h3>Bitrix24 Support</h3><p>Setup and ongoing support of Bitrix24 portal: company structure, access rights, integrations, telephony, business processes and automation.</p></div>
+      <div class="service-card"><div class="service-icon">📞</div><h3>Telephony &amp; Communications</h3><p>IP telephony, SIP, virtual PBX, call routing scenarios, call recording and integrations with CRM and Bitrix24.</p></div>
     </div>
   </div>
 </section>
 
-<!-- AUDITS -->
-<section class="section section-dark" id="audits">
+<!-- AUDIT TYPES -->
+<section class="section section-alt" id="audits">
   <div class="container">
-    <p class="section-tag">Entry product</p>
-    <h2 class="section-title">Comprehensive IT Infrastructure Audit</h2>
-    <p class="section-sub">Before making a decision — make sure you know the real state of your IT infrastructure.</p>
-    <p class="section-sub">An IT infrastructure audit uncovers the risks: where backups are not working, where servers are hitting resource limits, where remote access is insecure and what is worth handing over to IT outsourcing to reduce the load on your team.</p>
-
-    <div class="audit-card audit-card-featured" style="margin-bottom: 2rem; padding: 2rem; border-radius: 12px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);">
-      <h4 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Comprehensive IT Infrastructure Audit</h4>
-      <p style="margin-bottom: 1rem;">Full review of backups, servers, 1C and remote access — in one report. Outcome: a detailed picture of the current state and a concrete action plan.</p>
-      <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
-        <span class="audit-price" style="font-size: 1.4rem;">from ₽25,000</span>
-        <span style="opacity: 0.75; font-size: 0.9rem;">Audit cost is credited to the first month of managed services</span>
-        <button class="btn-primary" onclick="openModal()" style="margin-left: auto;">Order audit</button>
-      </div>
-    </div>
-
-    <p class="section-sub" style="margin-bottom: 1rem;">Or choose a specific area:</p>
-    <div class="audit-grid">
+    <p class="section-tag">Audits</p>
+    <h2 class="section-title">IT Audit Types</h2>
+    <p class="section-sub">Each audit delivers a clear report and action plan. Audit cost is credited against the first month of managed services.</p>
+    <div class="audits-grid">
       <div class="audit-card">
-        <h4>Backup &amp; Recovery Audit</h4>
-        <p>We verify the 3-2-1 scheme, Veeam/scripts, storage, recovery test — report with risks. In most cases backups are not actually recoverable.</p>
-        <span class="audit-price">from ₽25,000</span>
+        <h3>Comprehensive IT Audit</h3>
+        <p>Full infrastructure review: backups, servers, 1C and remote access. We document the current state, quantify the risks in money and prioritise tasks.</p>
+        <div class="audit-price">from ₽25,000</div>
       </div>
       <div class="audit-card">
-        <h4>1C Infrastructure Audit</h4>
-        <p>1C server, MSSQL, licences, RDP, updates, logs, performance — full analysis.</p>
-        <span class="audit-price">from ₽30,000</span>
+        <h3>Backup &amp; Recovery Audit</h3>
+        <p>We verify that backups are actually recoverable. Storage scheme, restore test, data loss risks and remediation recommendations.</p>
+        <div class="audit-price">from ₽25,000</div>
       </div>
       <div class="audit-card">
-        <h4>Virtualisation &amp; Server Audit</h4>
-        <p>Hypervisor state (ESXi/Proxmox/Hyper-V), VMs, resources, fault tolerance and configuration review.</p>
-        <span class="audit-price">from ₽50,000</span>
+        <h3>1C Infrastructure Audit</h3>
+        <p>Full analysis of 1C servers, MSSQL and database placement. Performance, rights, exchanges, backup and potential failure points.</p>
+        <div class="audit-price">from ₽30,000</div>
       </div>
       <div class="audit-card">
-        <h4>Security &amp; Remote Access Audit</h4>
-        <p>VPN, 2FA, AD, access rights, MikroTik, basic security risks — what is exposed and why it is dangerous.</p>
-        <span class="audit-price">from ₽30,000</span>
+        <h3>Virtualisation &amp; Server Audit</h3>
+        <p>Hypervisor state, VMs, resources and fault tolerance. Risks and recommendations on optimisation and redundancy.</p>
+        <div class="audit-price">from ₽50,000</div>
       </div>
-    </div>
-    <div class="audit-outcome">
-      <p class="audit-outcome-title">What you get after the audit:</p>
-      <ul class="audit-outcome-list">
-        <li>A plain-language report on the current infrastructure state and identified risks.</li>
-        <li>A 3–6 month work plan to bring the infrastructure up to standard.</li>
-        <li>A prioritised task list: what is critical, what can wait, where quick wins are.</li>
-        <li>Recommendations on which areas make sense to hand over to IT outsourcing and which to keep in-house.</li>
-      </ul>
+      <div class="audit-card">
+        <h3>Security &amp; Access Audit</h3>
+        <p>Perimeter assessment, VPN, 2FA, access policies and risks. We record vulnerabilities with prioritised remediation steps.</p>
+        <div class="audit-price">from ₽30,000</div>
+      </div>
     </div>
   </div>
 </section>
@@ -331,99 +272,90 @@
 <!-- PRICING -->
 <section class="section" id="pricing">
   <div class="container">
-    <p class="section-tag">Managed services</p>
-    <h2 class="section-title">Pricing</h2>
-    <p class="section-sub">Fixed monthly cost. No surprises — you pay for results, not hours.</p>
-    <div class="pricing-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+    <p class="section-tag">Pricing</p>
+    <h2 class="section-title">Managed Service Plans</h2>
+    <p class="section-sub">Fixed monthly fee instead of hourly rates and unpredictable invoices.</p>
+    <div class="pricing-grid">
       <div class="pricing-card">
-        <div class="pricing-header">
-          <h3>Office Base</h3>
-          <div class="price">from ₽25,000<span>/mo</span></div>
-        </div>
-        <ul class="pricing-list">
-          <li>✓ Support for up to 10 workstations</li>
-          <li>✓ Local network support</li>
-          <li>✓ Mail server support</li>
-          <li>✓ Remote user assistance</li>
-          <li>✗ 1C and MSSQL servers</li>
-          <li>✗ Backup control</li>
-          <li>✗ SLA guarantee</li>
+        <h3>Office Base</h3>
+        <p class="pricing-sub">Small office</p>
+        <div class="pricing-price">from ₽25,000/mo</div>
+        <ul class="pricing-features">
+          <li>Up to 10 workstations</li>
+          <li>LAN and mail server support</li>
+          <li>Basic monitoring</li>
+          <li>Response: next business day</li>
         </ul>
-        <button class="btn-card" onclick="openModal()">Discuss</button>
+        <button class="btn-primary btn-block" onclick="openModal()">Choose plan</button>
+      </div>
+      <div class="pricing-card pricing-card--featured">
+        <span class="pricing-badge">Popular</span>
+        <h3>Infra Standard</h3>
+        <p class="pricing-sub">Production segment</p>
+        <div class="pricing-price">from ₽45,000/mo</div>
+        <ul class="pricing-features">
+          <li>1C + MSSQL servers</li>
+          <li>VM and backup management</li>
+          <li>24/7 monitoring + alerts</li>
+          <li>Response: up to 4 hours</li>
+        </ul>
+        <button class="btn-primary btn-block" onclick="openModal()">Choose plan</button>
       </div>
       <div class="pricing-card">
-        <div class="pricing-header">
-          <h3>Infra Standard</h3>
-          <div class="price">from ₽45,000<span>/mo</span></div>
-        </div>
-        <ul class="pricing-list">
-          <li>✓ 1C server + MSSQL management</li>
-          <li>✓ Backup control</li>
-          <li>✓ Monitoring &amp; alerting (Zabbix)</li>
-          <li>✓ Configuration updates</li>
-          <li>✓ Scheduled maintenance</li>
-          <li>✓ Incident response within 2 hours</li>
-          <li>✗ SLA guarantee</li>
+        <h3>Infra Premium</h3>
+        <p class="pricing-sub">Critical infrastructure</p>
+        <div class="pricing-price">from ₽70,000/mo</div>
+        <ul class="pricing-features">
+          <li>Everything in Infra Standard</li>
+          <li>Full infrastructure management</li>
+          <li>SLA, priority support 24/7</li>
+          <li>Response: up to 1 hour</li>
         </ul>
-        <button class="btn-card" onclick="openModal()">Discuss</button>
-      </div>
-      <div class="pricing-card pricing-featured">
-        <div class="pricing-badge">Popular</div>
-        <div class="pricing-header">
-          <h3>Infra Premium</h3>
-          <div class="price">from ₽70,000<span>/mo</span></div>
-        </div>
-        <ul class="pricing-list">
-          <li>✓ Everything in Infra Standard</li>
-          <li>✓ SLA with uptime guarantee</li>
-          <li>✓ Monthly recovery tests</li>
-          <li>✓ Priority support 24/7</li>
-          <li>✓ IT management reporting</li>
-          <li>✓ Basic security protection</li>
-          <li>✓ Incident response within 1 hour</li>
-        </ul>
-        <button class="btn-card btn-card-white" onclick="openModal()">Discuss</button>
+        <button class="btn-primary btn-block" onclick="openModal()">Choose plan</button>
       </div>
       <div class="pricing-card">
-        <div class="pricing-header">
-          <h3>Virtual CIO</h3>
-          <div class="price">from ₽120,000<span>/mo</span></div>
-        </div>
-        <ul class="pricing-list">
-          <li>✓ Everything in Infra Premium</li>
-          <li>✓ Fractional IT director</li>
-          <li>✓ Vendor management</li>
-          <li>✓ IT budgeting &amp; strategy</li>
-          <li>✓ Regulations &amp; architecture</li>
-          <li>✓ IT development oversight</li>
+        <h3>Virtual CIO</h3>
+        <p class="pricing-sub">Full IT management</p>
+        <div class="pricing-price">from ₽120,000/mo</div>
+        <ul class="pricing-features">
+          <li>Everything in Infra Premium</li>
+          <li>Fractional IT Director</li>
+          <li>Vendor and budget management</li>
+          <li>IT strategy and roadmap</li>
         </ul>
-        <button class="btn-card" onclick="openModal()">Discuss</button>
+        <button class="btn-primary btn-block" onclick="openModal()">Choose plan</button>
       </div>
     </div>
-    <p class="pricing-note">* Cost depends on the number of servers, users and infrastructure complexity. Prices are VAT-exclusive. <a href="/calculator" style="color:#3b82f6;">Calculate your cost in the calculator →</a></p>
   </div>
 </section>
 
 <!-- ABOUT -->
-<section class="section section-dark" id="about">
-  <div class="container about-inner">
-    <div class="about-text">
-      <p class="section-tag">About us</p>
-      <h2>Who is behind Open Horizons</h2>
-      <p>Open Horizons is a team of infrastructure engineers experienced in building fault-tolerant IT systems for manufacturing, retail and service companies.</p>
-      <p>We specialise in business-critical infrastructure: 1C servers, MSSQL databases, Veeam backup schemes, virtualisation on VMware ESXi / Proxmox / Hyper-V, and network perimeters on MikroTik and NGFW.</p>
-      <p>Our principle: IT infrastructure must run like clockwork — and you should never have to think about it.</p>
-      <div class="about-stack">
-        <span>VMware ESXi</span><span>Proxmox</span><span>Hyper-V</span><span>Veeam B&amp;R</span>
-        <span>MSSQL</span><span>1C</span><span>MikroTik</span><span>Zabbix</span>
-        <span>Active Directory</span><span>Linux</span><span>Windows Server</span><span>NGFW</span>
+<section class="section section-alt" id="about">
+  <div class="container">
+    <p class="section-tag">About</p>
+    <h2 class="section-title">How we work</h2>
+    <p class="section-sub">We work where others struggle: 1C, MSSQL, Exchange, VMware, Proxmox, Bitrix24. We go deep into the niche — it’s our primary focus, not a side service.</p>
+    <div class="about-grid">
+      <div class="about-card">
+        <div class="about-icon">🔍</div>
+        <h3>Audit first</h3>
+        <p>Every project starts with an audit. We review backups, servers and remote access — and quantify the risks in money.</p>
       </div>
-    </div>
-    <div class="about-visual">
-      <div class="kpi-card"><span>98%</span><p>Average SLA uptime</p></div>
-      <div class="kpi-card"><span>&lt; 1h</span><p>Response to a critical incident</p></div>
-      <div class="kpi-card"><span>3-2-1</span><p>Backup scheme standard</p></div>
-      <div class="kpi-card"><span>0</span><p>Unrecoverable data losses</p></div>
+      <div class="about-card">
+        <div class="about-icon">📋</div>
+        <h3>Transparent plan</h3>
+        <p>Scope and SLA are fixed in the contract. Clear pricing, no hidden rates.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-icon">⚡</div>
+        <h3>Fast response</h3>
+        <p>We respond within an hour on critical incidents. The problem won’t wait — neither do we.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-icon">🤝</div>
+        <h3>Long-term partnership</h3>
+        <p>We don’t just fix things — we help build infrastructure that grows with your business.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -432,43 +364,40 @@
 <section class="section" id="faq">
   <div class="container">
     <p class="section-tag">FAQ</p>
-    <div class="faq-wrapper">
-      <h2 class="section-title">Frequently asked questions about IT audit and outsourcing</h2>
-      <p class="faq-intro">Short and to the point. Expand the questions that interest you instead of reading long walls of text.</p>
-      <div class="faq-list" role="list">
-        <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false"><span class="label">When does a company need an IT infrastructure audit?</span><span class="faq-icon">›</span></button>
-          <div class="faq-answer"><p>Most often when incidents start piling up, 1C slows down or backups have not been tested for years. We document the current state, quantify the risks and prioritise tasks. To go deeper, start with the <a href="#audits">Audits</a> section.</p></div>
-        </div>
-        <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false"><span class="label">How is an audit different from routine administration?</span><span class="faq-icon">›</span></button>
-          <div class="faq-answer"><p>Routine administration is about keeping systems running and putting out fires. An audit is a higher-level look at architecture, backups, security and processes. The outcome is a clear report and roadmap: what to fix first and which areas make sense to move to IT outsourcing under our <a href="#pricing">pricing plans</a>.</p></div>
-        </div>
-        <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false"><span class="label">What happens after the audit?</span><span class="faq-icon">›</span></button>
-          <div class="faq-answer"><p>We offer options: a one-off remediation project for critical risks or long-term managed services with a fixed fee and SLA. The easiest way to start is through the <a href="#contact">Contact</a> section — we will discuss your case and suggest a format.</p></div>
-        </div>
-        <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false"><span class="label">How much does the audit cost?</span><span class="faq-icon">›</span></button>
-          <div class="faq-answer"><p>A comprehensive IT infrastructure audit starts from ₽25,000 — the final price depends on infrastructure size. If you move to managed services, the audit cost is credited to the first month of service.</p></div>
-        </div>
-        <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false"><span class="label">How long does the audit take?</span><span class="faq-icon">›</span></button>
-          <div class="faq-answer"><p>Typically 3 to 5 business days, depending on infrastructure size: number of servers, VMs and areas to review. Smaller companies usually take 2 to 3 days.</p></div>
-        </div>
-        <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false"><span class="label">Do you need physical access to the servers?</span><span class="faq-icon">›</span></button>
-          <div class="faq-answer"><p>No. In most cases remote access is sufficient. We work via VPN or a secure tunnel — no on-site visit required. An on-site visit is available on request.</p></div>
-        </div>
-        <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false"><span class="label">What does IT outsourcing include?</span><span class="faq-icon">›</span></button>
-          <div class="faq-answer"><p>It depends on the plan: from workstation support and monitoring — to full management of infrastructure, 1C, security and a fractional IT director role. See the <a href="#pricing">Pricing</a> section for details.</p></div>
-        </div>
-        <div class="faq-item" role="listitem">
-          <button class="faq-question" type="button" aria-expanded="false"><span class="label">Can we hand over only part of the tasks?</span><span class="faq-icon">›</span></button>
-          <div class="faq-answer"><p>Yes. We can tailor the scope flexibly: monitoring and backups only, 1C infrastructure only, or specific areas. The final scope is fixed in the contract. Write to us — we will work out your case.</p></div>
-        </div>
-      </div>
+    <h2 class="section-title">Frequently Asked Questions</h2>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary>When does a company need an IT infrastructure audit?</summary>
+        <p>Most often when incidents start piling up, 1C slows down or backups have not been tested for years. We document the current state, quantify the risks and prioritise tasks.</p>
+      </details>
+      <details class="faq-item">
+        <summary>How is an audit different from routine administration?</summary>
+        <p>Routine administration is about keeping systems running and putting out fires. An audit is a higher-level look at architecture, backups, security and processes. The outcome is a clear report and roadmap.</p>
+      </details>
+      <details class="faq-item">
+        <summary>What happens after the audit?</summary>
+        <p>After the audit we offer options: a one-off remediation project for critical risks or long-term managed services with a fixed fee and SLA.</p>
+      </details>
+      <details class="faq-item">
+        <summary>How much does the audit cost?</summary>
+        <p>A comprehensive IT infrastructure audit starts from ₽25,000. If you move to managed services, the audit cost is credited to the first month.</p>
+      </details>
+      <details class="faq-item">
+        <summary>How long does the audit take?</summary>
+        <p>Typically 3 to 5 business days, depending on infrastructure size: number of servers, VMs and areas to review. Smaller companies usually take 2 to 3 days.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Do you need physical access to the servers?</summary>
+        <p>No. In most cases remote access is sufficient. We work via VPN or a secure tunnel without an on-site visit. On-site visits are available on request.</p>
+      </details>
+      <details class="faq-item">
+        <summary>What does IT outsourcing include?</summary>
+        <p>It depends on the plan: from monitoring and backup control through to full management of infrastructure, 1C, security and a fractional IT director role.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Can we hand over only part of the tasks?</summary>
+        <p>Yes. We can tailor the scope flexibly: monitoring and backups only, 1C infrastructure only, or specific areas. The final scope is fixed in the contract.</p>
+      </details>
     </div>
   </div>
 </section>
@@ -488,6 +417,10 @@
         <span>✈️</span>
         <div><strong>Telegram</strong><p>@ohorizons</p></div>
       </a>
+      <a href="tel:+79666660207" class="contact-card">
+        <span>📞</span>
+        <div><strong>Phone</strong><p>+7 (966) 666-02-07</p></div>
+      </a>
     </div>
     <button class="btn-primary btn-large" onclick="openModal()">Order an audit</button>
   </div>
@@ -499,134 +432,57 @@
     <p class="footer-copy">&#169; 2026 Open Horizons. IT outsourcing for business.</p>
     <div class="footer-share">
       <a href="https://t.me/share/url?url=https://o-horizons.com/en/&text=IT%20outsourcing%20and%20infrastructure%20audit" target="_blank" rel="noopener">Share on Telegram</a>
-      <span>&middot;</span>
-      <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://o-horizons.com/en/" target="_blank" rel="noopener">Share on LinkedIn</a>
     </div>
-    <a href="/" class="lang-switch">Смотреть на русском →</a>
   </div>
 </footer>
 
 <script>
-/* ---------- Cookie Banner ---------- */
-(function(){
   var banner = document.getElementById('cookieBanner');
-  if(!banner) return;
-  var consent = localStorage.getItem('cookieConsent');
-  if(consent) { banner.style.display='none'; return; }
-  banner.style.display='flex';
-  document.getElementById('cookieAccept').addEventListener('click', function(){
-    localStorage.setItem('cookieConsent','accepted');
-    banner.style.display='none';
-  });
-  document.getElementById('cookieDecline').addEventListener('click', function(){
-    localStorage.setItem('cookieConsent','declined');
-    banner.style.display='none';
-  });
-})();
+  if (localStorage.getItem('cookieConsent')) { banner.style.display = 'none'; }
+  document.getElementById('cookieAccept').addEventListener('click', function () { localStorage.setItem('cookieConsent', 'accepted'); banner.style.display = 'none'; });
+  document.getElementById('cookieDecline').addEventListener('click', function () { localStorage.setItem('cookieConsent', 'declined'); banner.style.display = 'none'; });
 
-/* ---------- Phone mask (international) ---------- */
-(function(){
   var inp = document.getElementById('phone');
-  if(!inp) return;
-  function formatIntl(raw){
-    var digits = raw.replace(/[^\d+]/g,'');
-    if(!digits) return '';
-    if(digits[0]!=='+') digits='+'+digits;
-    var plus = '+';
-    var nums = digits.slice(1).replace(/\D/g,'').slice(0,14);
-    if(!nums) return plus;
-    var r = plus;
-    r += nums.slice(0,3);
-    if(nums.length>3) r += ' (' + nums.slice(3,6);
-    if(nums.length>=7) r += ') ' + nums.slice(6,9);
-    else if(nums.length===6) r += ')';
-    if(nums.length>=10) r += '-' + nums.slice(9,11);
-    if(nums.length>=12) r += '-' + nums.slice(11,13);
-    return r;
-  }
-  inp.addEventListener('input', function(){
-    var pos = inp.selectionStart;
-    var prev = inp.value;
-    inp.value = formatIntl(inp.value);
-    var diff = inp.value.length - prev.length;
-    inp.setSelectionRange(pos+diff, pos+diff);
+  inp.addEventListener('input', function () {
+    var raw = this.value.replace(/\D/g, '');
+    if (!raw) return (this.value = '');
+    var out = '+';
+    if (raw.length > 0) out += raw.slice(0, 1);
+    if (raw.length > 1) out += raw.slice(1, 4).length ? ' (' + raw.slice(1, 4) : '';
+    if (raw.length > 4) out += ') ' + raw.slice(4, 7);
+    if (raw.length > 7) out += '-' + raw.slice(7, 9);
+    if (raw.length > 9) out += '-' + raw.slice(9, 11);
+    this.value = out;
   });
-  inp.addEventListener('focus', function(){ if(!inp.value) inp.value='+'; });
-  inp.addEventListener('blur', function(){ if(inp.value==='+') inp.value=''; });
-})();
+  inp.addEventListener('focus', function () { if (!this.value) this.value = '+'; });
+  inp.addEventListener('blur', function () { if (this.value === '+') this.value = ''; });
 
-/* ---------- Modal ---------- */
-function openModal(){
-  document.getElementById('auditModal').classList.add('active');
-  document.body.style.overflow='hidden';
-  document.getElementById('name').focus();
-}
-function closeModal(){
-  document.getElementById('auditModal').classList.remove('active');
-  document.body.style.overflow='';
-  document.getElementById('formStatus').textContent='';
-  document.getElementById('auditForm').reset();
-}
-document.getElementById('auditModal').addEventListener('click',function(e){
-  if(e.target===this)closeModal();
-});
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape')closeModal();
-});
+function openModal(){document.getElementById('auditModal').classList.add('active');document.body.style.overflow='hidden';document.getElementById('name').focus();}
+function closeModal(){document.getElementById('auditModal').classList.remove('active');document.body.style.overflow='';document.getElementById('formStatus').textContent='';document.getElementById('auditForm').reset();}
+document.getElementById('auditModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
 
-/* ---------- Form submit ---------- */
-document.getElementById('auditForm').addEventListener('submit',async function(e){
+document.getElementById('auditForm').addEventListener('submit', async function (e) {
   e.preventDefault();
-  var btn=document.getElementById('submitBtn'),status=document.getElementById('formStatus');
-  var consent=document.getElementById('consentCheck');
-  if(!consent.checked){
-    status.textContent='✗ Please agree to the privacy policy.';
-    status.className='form-status error';
-    return;
-  }
-  btn.disabled=true; btn.textContent='Sending...';
-  status.textContent=''; status.className='form-status';
-  var data={
-    name:document.getElementById('name').value,
-    company:document.getElementById('company').value,
-    phone:document.getElementById('phone').value,
-    contact:document.getElementById('contactField').value,
-    message:document.getElementById('message').value,
-    lang:'en'
+  var btn = document.getElementById('submitBtn'), status = document.getElementById('formStatus');
+  if (!document.getElementById('consentCheck').checked) { status.textContent = '✗ Please confirm your consent to the privacy policy.'; status.className = 'form-status error'; return; }
+  btn.disabled = true; btn.textContent = 'Sending…';
+  var data = {
+    name: document.getElementById('name').value,
+    company: document.getElementById('company').value,
+    phone: document.getElementById('phone').value,
+    contact: document.getElementById('contactField').value,
+    message: document.getElementById('message').value,
+    lang: 'en'
   };
-  try{
-    var res=await fetch('/api/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-    if(res.ok){
-      status.textContent='✓ Request sent! We will be in touch within one business day.';
-      status.classList.add('success');
-      this.reset();
-      btn.textContent='Send request'; btn.disabled=false;
-    }else throw new Error();
-  }catch{
-    status.textContent='✗ Could not send. Please write to us: info@o-horizons.com';
-    status.classList.add('error');
-    btn.textContent='Send request'; btn.disabled=false;
-  }
-});
-
-/* ---------- FAQ ---------- */
-var faqItems=document.querySelectorAll('.faq-item');
-faqItems.forEach(function(item){
-  var btn=item.querySelector('.faq-question');
-  btn.addEventListener('click',function(){
-    var isOpen=item.classList.contains('open');
-    faqItems.forEach(function(i){
-      i.classList.remove('open');
-      var b=i.querySelector('.faq-question');
-      if(b)b.setAttribute('aria-expanded','false');
-    });
-    if(!isOpen){ item.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
-  });
+  try {
+    var r = await fetch('/mailer/send.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    var j = await r.json();
+    if (j.ok) { status.textContent = '✓ Request sent. We will get back to you within one business day.'; status.className = 'form-status success'; document.getElementById('auditForm').reset(); }
+    else { status.textContent = '✗ Error: ' + (j.error || 'please try again later'); status.className = 'form-status error'; }
+  } catch (err) { status.textContent = '✗ Network unavailable. Please write to us directly.'; status.className = 'form-status error'; }
+  btn.disabled = false; btn.textContent = 'Send request';
 });
 </script>
-
-<!-- 1C:Dialog WebChat -->
-<script src="https://integrations.1cdialog.com/integration/webchat/198894:6jTnUYS4rCq7zy5V2RKxsFG8mPJ9d01z" async></script>
 
 </body>
 </html>
