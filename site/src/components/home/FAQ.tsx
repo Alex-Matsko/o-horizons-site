@@ -8,13 +8,13 @@ export default function FAQ() {
   const [open, setOpen] = useState<number | null>(null)
 
   return (
-    <section id="faq" className="py-20 px-6">
+    <section id="faq" className="py-20 px-6 lg:px-20">
       <div className="max-w-[1160px] mx-auto">
         <p className="text-xs font-semibold uppercase tracking-widest text-[#01696f] mb-2">{t('tag')}</p>
         <h2 className="text-2xl sm:text-3xl font-bold text-[#e2e8f0] mb-12">{t('title')}</h2>
         <div className="max-w-3xl space-y-2">
           {items.map((item, i) => (
-            <div key={i} className="bg-[#151820] border border-white/[0.07] rounded-xl overflow-hidden">
+            <div key={i} className="bg-[#151820] border border-white/15 rounded-xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.4)]">
               <button
                 onClick={() => setOpen(open === i ? null : i)}
                 className="w-full flex items-center justify-between px-5 py-4 text-left text-sm font-medium text-[#e2e8f0] hover:text-white transition-colors"

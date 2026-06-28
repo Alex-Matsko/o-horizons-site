@@ -8,7 +8,7 @@ export default function Pricing({ onOpenModal }: PricingProps) {
   const items = t.raw('items') as { name: string; subtitle: string; price: string; popular: boolean; features: string[] }[]
 
   return (
-    <section id="pricing" className="py-20 px-6">
+    <section id="pricing" className="py-20 px-6 lg:px-20">
       <div className="max-w-[1160px] mx-auto">
         <p className="text-xs font-semibold uppercase tracking-widest text-[#01696f] mb-2">{t('tag')}</p>
         <h2 className="text-2xl sm:text-3xl font-bold text-[#e2e8f0] mb-3">{t('title')}</h2>
@@ -20,7 +20,7 @@ export default function Pricing({ onOpenModal }: PricingProps) {
               className={`relative bg-[#151820] rounded-2xl p-6 flex flex-col border transition-colors ${
                 plan.popular
                   ? 'border-[#01696f] shadow-[0_0_30px_-10px] shadow-[#01696f]/40'
-                  : 'border-white/[0.07] hover:border-white/20'
+                  : 'border-white/15 hover:border-white/25 shadow-[0_2px_16px_rgba(0,0,0,0.4)]'
               }`}
             >
               {plan.popular && (

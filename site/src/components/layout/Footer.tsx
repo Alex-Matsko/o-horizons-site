@@ -9,7 +9,7 @@ export default function Footer({ locale }: { locale: string }) {
 
   return (
     <footer className="border-t border-white/[0.07] py-8 mt-auto">
-      <div className="max-w-[1160px] mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-[#64748b]">
+      <div className="max-w-[1160px] mx-auto px-6 lg:px-20 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-[#64748b]">
         <div className="flex items-center gap-2">
           <span className="text-[#3b82f6] text-lg">⬡</span>
           <span>Открытые <strong className="text-[#64748b]">Горизонты</strong></span>

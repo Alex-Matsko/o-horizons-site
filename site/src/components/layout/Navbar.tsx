@@ -31,7 +31,7 @@ export default function Navbar({ locale, onOpenModal }: NavbarProps) {
           : 'bg-[#0d0f14]/80 backdrop-blur-sm'
       }`}
     >
-      <div className="max-w-[1160px] mx-auto px-6 h-16 flex items-center justify-between gap-4">
+      <div className="max-w-[1160px] mx-auto px-6 lg:px-20 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0" aria-label="На главную">
           <span className="text-[#01696f] text-xl">⬡</span>

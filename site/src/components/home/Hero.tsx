@@ -9,8 +9,10 @@ export default function Hero({ onOpenModal }: HeroProps) {
   const card = t.raw('serverCard') as { lines: string[]; footer: string }
 
   return (
-    <section className="pt-28 pb-20 px-6">
-      <div className="max-w-[1160px] mx-auto grid lg:grid-cols-2 gap-12 items-center">
+    <section className="relative pt-28 pb-20 px-6 lg:px-20 overflow-hidden">
+      {/* Subtle background glow */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_20%_30%,rgba(1,105,111,0.12),transparent)]" />
+      <div className="relative max-w-[1160px] mx-auto grid lg:grid-cols-2 gap-12 items-center">
 
         {/* Text */}
         <div>
@@ -49,7 +51,7 @@ export default function Hero({ onOpenModal }: HeroProps) {
 
         {/* Server card visual */}
         <div className="hidden lg:flex justify-center">
-          <div className="bg-[#151820] border border-white/[0.07] rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+          <div className="bg-[#151820] border border-white/15 rounded-2xl p-6 w-full max-w-sm shadow-[0_8px_40px_rgba(0,0,0,0.6)]">
             <div className="space-y-3.5 mb-5">
               {card.lines.map((line, i) => (
                 <div key={i} className="flex items-center gap-2.5 text-sm text-[#94a3b8]">
