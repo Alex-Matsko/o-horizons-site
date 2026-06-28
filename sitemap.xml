@@ -13,11 +13,11 @@
   </url>
 
   <url>
-    <loc>https://o-horizons.com/index-en.html</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://o-horizons.com/index-en.html"/>
+    <loc>https://o-horizons.com/en/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://o-horizons.com/en/"/>
     <xhtml:link rel="alternate" hreflang="ru" href="https://o-horizons.com/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://o-horizons.com/"/>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-06-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

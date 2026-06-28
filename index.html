@@ -428,7 +428,7 @@ document.getElementById('auditForm').addEventListener('submit',async function(e)
   btn.disabled=true;btn.textContent='Отправка...';
   var data={name:document.getElementById('name').value,company:document.getElementById('company').value,phone:document.getElementById('phone').value,contact:document.getElementById('contactField').value,message:document.getElementById('message').value,lang:'ru'};
   try{
-    var r=await fetch('/mailer/send.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    var r=await fetch('/api/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
     var j=await r.json();
     if(j.ok){status.textContent='✓ Заявка отправлена. Свяжемся в течение рабочего дня.';status.className='form-status success';document.getElementById('auditForm').reset();}
     else{status.textContent='✗ Ошибка: '+(j.error||'попробуйте позже');status.className='form-status error';}
