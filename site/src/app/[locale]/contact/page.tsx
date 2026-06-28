@@ -18,7 +18,7 @@ export default function ContactPage() {
       <Navbar locale={locale} onOpenModal={() => setModalOpen(true)} />
       <main className="flex-1 pt-24 pb-20 px-6">
         <div className="max-w-[1160px] mx-auto text-center">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[#01696f] mb-2">{t('tag')}</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#3b82f6] mb-2">{t('tag')}</p>
           <h1 className="text-3xl font-bold text-[#e2e8f0] mb-4">{t('title')}</h1>
           <p className="text-[#64748b] mb-12 max-w-xl mx-auto">{t('sub')}</p>
           <div className="flex flex-col sm:flex-row justify-center gap-4 mb-10">
@@ -35,7 +35,7 @@ export default function ContactPage() {
               <div className="text-left"><p className="text-xs text-[#64748b]">{ct('phoneLabel')}</p><p className="text-sm font-medium text-[#e2e8f0]">{ct('phone')}</p></div>
             </a>
           </div>
-          <button onClick={() => setModalOpen(true)} className="px-8 py-3.5 bg-[#01696f] hover:bg-[#017f85] text-white font-medium rounded-xl transition-colors">
+          <button onClick={() => setModalOpen(true)} className="px-8 py-3.5 bg-[#3b82f6] hover:bg-[#2563eb] text-white font-medium rounded-xl transition-colors">
             {ct('cta')}
           </button>
         </div>

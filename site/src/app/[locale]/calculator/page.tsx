@@ -79,7 +79,7 @@ export default function CalculatorPage() {
         {/* Hero */}
         <section className="pt-28 pb-12 px-6 text-center" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.10) 0%, transparent 60%), #0d0f14' }}>
           <div className="max-w-2xl mx-auto">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#01696f] mb-3">{t('tag')}</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#3b82f6] mb-3">{t('tag')}</p>
             <h1 className="text-3xl sm:text-4xl font-bold text-[#e2e8f0] mb-3">{t('title')}</h1>
             <p className="text-[#64748b]">{t('sub')}</p>
           </div>
@@ -191,7 +191,7 @@ export default function CalculatorPage() {
                   <p className="text-xs text-green-400 leading-relaxed">{t('auditTip')}</p>
                 </div>
                 <div className="mt-5 space-y-2.5">
-                  <button onClick={() => setCalcModalOpen(true)} className="w-full py-3 bg-[#01696f] hover:bg-[#017f85] text-white font-medium rounded-xl transition-colors text-sm">
+                  <button onClick={() => setCalcModalOpen(true)} className="w-full py-3 bg-[#3b82f6] hover:bg-[#2563eb] text-white font-medium rounded-xl transition-colors text-sm">
                     {t('getCta')}
                   </button>
                   <a href={locale === 'ru' ? '/#pricing' : '/en/#pricing'} className="block w-full py-3 border border-white/20 text-[#94a3b8] hover:text-[#e2e8f0] font-medium rounded-xl transition-colors text-sm text-center">
@@ -206,7 +206,7 @@ export default function CalculatorPage() {
         {/* How it works */}
         <section className="py-20 px-6 bg-[#0a0c10]">
           <div className="max-w-[1160px] mx-auto">
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#01696f] mb-2">{t('howTag')}</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#3b82f6] mb-2">{t('howTag')}</p>
             <h2 className="text-2xl sm:text-3xl font-bold text-[#e2e8f0] mb-12">{t('howTitle')}</h2>
             <div className="grid sm:grid-cols-3 gap-6">
               {howSteps.map((step, i) => (
@@ -238,16 +238,16 @@ export default function CalculatorPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm text-[#94a3b8] mb-1">{t('fieldName')} *</label>
-                  <input value={formName} onChange={e => setFormName(e.target.value)} required className="w-full bg-[#0d0f14] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#e2e8f0] focus:outline-none focus:border-[#01696f]" />
+                  <input value={formName} onChange={e => setFormName(e.target.value)} required className="w-full bg-[#0d0f14] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#e2e8f0] focus:outline-none focus:border-[#3b82f6]" />
                 </div>
                 <div>
                   <label className="block text-sm text-[#94a3b8] mb-1">{t('fieldCompany')}</label>
-                  <input value={formCompany} onChange={e => setFormCompany(e.target.value)} className="w-full bg-[#0d0f14] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#e2e8f0] focus:outline-none focus:border-[#01696f]" />
+                  <input value={formCompany} onChange={e => setFormCompany(e.target.value)} className="w-full bg-[#0d0f14] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#e2e8f0] focus:outline-none focus:border-[#3b82f6]" />
                 </div>
               </div>
               <div>
                 <label className="block text-sm text-[#94a3b8] mb-1">{t('fieldContact')} *</label>
-                <input value={formContact} onChange={e => setFormContact(e.target.value)} required className="w-full bg-[#0d0f14] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#e2e8f0] focus:outline-none focus:border-[#01696f]" />
+                <input value={formContact} onChange={e => setFormContact(e.target.value)} required className="w-full bg-[#0d0f14] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#e2e8f0] focus:outline-none focus:border-[#3b82f6]" />
               </div>
               <div>
                 <label className="block text-sm text-[#94a3b8] mb-1">{t('fieldSummary')}</label>
@@ -255,14 +255,14 @@ export default function CalculatorPage() {
               </div>
               <div>
                 <label className="block text-sm text-[#94a3b8] mb-1">{t('fieldComment')}</label>
-                <textarea value={formComment} onChange={e => setFormComment(e.target.value)} rows={2} placeholder={t('commentPlaceholder')} className="w-full bg-[#0d0f14] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#e2e8f0] placeholder-[#475569] focus:outline-none focus:border-[#01696f] resize-none" />
+                <textarea value={formComment} onChange={e => setFormComment(e.target.value)} rows={2} placeholder={t('commentPlaceholder')} className="w-full bg-[#0d0f14] border border-white/10 rounded-lg px-3 py-2.5 text-sm text-[#e2e8f0] placeholder-[#475569] focus:outline-none focus:border-[#3b82f6] resize-none" />
               </div>
               <label className="flex items-start gap-2 cursor-pointer">
-                <input type="checkbox" checked={formConsent} onChange={e => setFormConsent(e.target.checked)} className="mt-0.5 accent-[#01696f]" />
+                <input type="checkbox" checked={formConsent} onChange={e => setFormConsent(e.target.checked)} className="mt-0.5 accent-[#3b82f6]" />
                 <span className="text-xs text-[#64748b]">Согласен(а) на обработку персональных данных</span>
               </label>
               {formStatus && <p className={`text-sm ${formStatus.ok ? 'text-green-400' : 'text-red-400'}`}>{formStatus.msg}</p>}
-              <button type="submit" disabled={formLoading} className="w-full py-3 bg-[#01696f] hover:bg-[#017f85] disabled:opacity-60 text-white font-medium rounded-xl transition-colors">
+              <button type="submit" disabled={formLoading} className="w-full py-3 bg-[#3b82f6] hover:bg-[#2563eb] disabled:opacity-60 text-white font-medium rounded-xl transition-colors">
                 {formLoading ? t('sending') : t('submitBtn')}
               </button>
             </form>

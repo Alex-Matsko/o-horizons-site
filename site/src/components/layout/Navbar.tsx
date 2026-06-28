@@ -27,17 +27,17 @@ export default function Navbar({ locale, onOpenModal }: NavbarProps) {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-[#0d0f14]/95 backdrop-blur-sm border-b border-white/[0.07] shadow-lg'
-          : 'bg-[#0d0f14]/80 backdrop-blur-sm'
+          ? 'bg-[#0d0f14]/95 backdrop-blur-sm border-b border-white/[0.06] shadow-lg'
+          : 'bg-[#0d0f14]/92 backdrop-blur-sm'
       }`}
     >
-      <div className="max-w-[1160px] mx-auto px-6 lg:px-20 h-16 flex items-center justify-between gap-4">
+      <div className="max-w-[1160px] mx-auto px-6 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0" aria-label="На главную">
-          <span className="text-[#01696f] text-xl">⬡</span>
-          <span className="text-sm font-medium text-[#e2e8f0] hidden sm:block">
+          <span className="text-[#3b82f6] text-xl leading-none">⬡</span>
+          <span className="text-sm font-semibold text-[#e2e8f0] hidden sm:block">
             Открытые{' '}
-            <strong className="text-[#e2e8f0]">Горизонты</strong>
+            <strong className="text-[#3b82f6]">Горизонты</strong>
           </span>
         </Link>
 
@@ -49,7 +49,7 @@ export default function Navbar({ locale, onOpenModal }: NavbarProps) {
           <a href={homeHref('about')} className="px-3 py-1.5 text-sm text-[#94a3b8] hover:text-[#e2e8f0] transition-colors">{t('about')}</a>
           <button
             onClick={onOpenModal}
-            className="ml-2 px-4 py-1.5 text-sm font-medium bg-[#01696f] hover:bg-[#017f85] text-white rounded-lg transition-colors"
+            className="ml-2 px-4 py-1.5 text-sm font-semibold bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded-lg transition-colors"
           >
             {t('contact')}
           </button>
@@ -57,13 +57,13 @@ export default function Navbar({ locale, onOpenModal }: NavbarProps) {
 
         {/* Right: phone + lang */}
         <div className="flex items-center gap-3 shrink-0">
-          <a href="tel:+79666660207" className="hidden lg:block text-sm text-[#94a3b8] hover:text-[#e2e8f0] transition-colors" aria-label="Позвонить">
+          <a href="tel:+79666660207" className="hidden lg:block text-sm font-semibold text-[#e2e8f0] hover:text-[#3b82f6] transition-colors" aria-label="Позвонить">
             {t('phone')}
           </a>
           <Link
             href={pathname}
             locale={altLocale}
-            className="px-2.5 py-1 text-xs font-semibold border border-white/20 text-[#94a3b8] hover:text-[#e2e8f0] hover:border-white/40 rounded transition-colors"
+            className="px-2.5 py-1 text-xs font-semibold border border-[#334155] text-[#64748b] hover:text-[#e2e8f0] hover:border-[#64748b] rounded transition-colors"
           >
             {t('lang')}
           </Link>

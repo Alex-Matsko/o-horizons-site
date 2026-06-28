@@ -19,7 +19,7 @@ function ArticlesContent({ locale, articles }: { locale: string; articles: { _id
       <Navbar locale={locale} />
       <main className="flex-1 pt-24 pb-20 px-6">
         <div className="max-w-[1160px] mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[#01696f] mb-2">{t('tag')}</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#3b82f6] mb-2">{t('tag')}</p>
           <h1 className="text-3xl font-bold text-[#e2e8f0] mb-3">{t('title')}</h1>
           <p className="text-[#64748b] mb-12">{t('sub')}</p>
           {articles.length === 0 ? (
@@ -31,7 +31,7 @@ function ArticlesContent({ locale, articles }: { locale: string; articles: { _id
                   <p className="text-xs text-[#475569] mb-2">{new Date(a.publishedAt).toLocaleDateString(locale)}</p>
                   <h2 className="text-base font-semibold text-[#e2e8f0] mb-2">{a.title}</h2>
                   <p className="text-sm text-[#64748b] leading-relaxed flex-1">{a.excerpt}</p>
-                  <span className="mt-4 text-sm text-[#01696f] font-medium">{t('readMore')} →</span>
+                  <span className="mt-4 text-sm text-[#3b82f6] font-medium">{t('readMore')} →</span>
                 </Link>
               ))}
             </div>

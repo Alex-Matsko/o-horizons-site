@@ -21,7 +21,7 @@ function ServicesContent({ locale }: { locale: string }) {
       <Navbar locale={locale} />
       <main className="flex-1 pt-24 pb-20 px-6">
         <div className="max-w-[1160px] mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-widest text-[#01696f] mb-2">{t('tag')}</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#3b82f6] mb-2">{t('tag')}</p>
           <h1 className="text-3xl font-bold text-[#e2e8f0] mb-3">{t('title')}</h1>
           <p className="text-[#64748b] mb-12">{t('sub')}</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">

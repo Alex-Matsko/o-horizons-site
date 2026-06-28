@@ -145,7 +145,8 @@ export default function ChatWidget() {
       {/* Bubble */}
       <button
         onClick={() => setIsOpen(v => !v)}
-        className="fixed bottom-6 right-6 z-40 w-14 h-14 bg-[#01696f] hover:bg-[#017f85] rounded-full shadow-lg flex items-center justify-center text-2xl transition-colors"
+        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full flex items-center justify-center text-2xl transition-all"
+        style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)', boxShadow: '0 8px 24px rgba(37,99,235,0.45)' }}
         aria-label="Открыть чат"
       >
         💬
@@ -160,7 +161,7 @@ export default function ChatWidget() {
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-[#0f172a] border-b border-white/[0.07]">
             <div className="flex items-center gap-2">
-              <span className="text-[#01696f] text-lg">⬡</span>
+              <span className="text-[#3b82f6] text-lg">⬡</span>
               <div>
                 <p className="text-sm font-semibold text-[#e2e8f0]">Открытые Горизонты</p>
                 <p className="text-xs text-[#64748b] flex items-center gap-1">
@@ -180,14 +181,14 @@ export default function ChatWidget() {
               <input
                 value={introName} onChange={e => setIntroName(e.target.value)}
                 type="text" placeholder="Ваше имя *" required autoComplete="name"
-                className="w-full bg-[#0d0f14] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e2e8f0] placeholder-[#475569] focus:outline-none focus:border-[#01696f]"
+                className="w-full bg-[#0d0f14] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e2e8f0] placeholder-[#475569] focus:outline-none focus:border-[#3b82f6]"
               />
               <input
                 value={introPhone} onChange={e => setIntroPhone(e.target.value)}
                 type="tel" placeholder="Телефон * (+7 ...)" required autoComplete="tel"
-                className="w-full bg-[#0d0f14] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e2e8f0] placeholder-[#475569] focus:outline-none focus:border-[#01696f]"
+                className="w-full bg-[#0d0f14] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e2e8f0] placeholder-[#475569] focus:outline-none focus:border-[#3b82f6]"
               />
-              <button type="submit" className="py-2 bg-[#01696f] hover:bg-[#017f85] text-white text-sm font-medium rounded-lg transition-colors">
+              <button type="submit" className="py-2 bg-[#3b82f6] hover:bg-[#2563eb] text-white text-sm font-medium rounded-lg transition-colors">
                 Начать чат →
               </button>
               <p className="text-[10px] text-[#475569]">Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности</p>
@@ -203,7 +204,7 @@ export default function ChatWidget() {
                   <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[80%] px-3 py-2 rounded-xl text-sm leading-relaxed ${
                       m.role === 'user'
-                        ? 'bg-[#01696f] text-white'
+                        ? 'rounded-br-sm text-white bg-gradient-to-br from-[#3b82f6] to-[#2563eb]'
                         : m.role === 'operator'
                         ? 'bg-[#3b82f6]/20 border border-[#3b82f6]/30 text-[#e2e8f0]'
                         : 'bg-[#0d0f14] border border-white/[0.07] text-[#94a3b8]'
@@ -229,12 +230,12 @@ export default function ChatWidget() {
                   onChange={e => setInputText(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() } }}
                   placeholder="Напишите сообщение..."
-                  className="flex-1 bg-[#0d0f14] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e2e8f0] placeholder-[#475569] focus:outline-none focus:border-[#01696f]"
+                  className="flex-1 bg-[#0d0f14] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e2e8f0] placeholder-[#475569] focus:outline-none focus:border-[#3b82f6]"
                 />
                 <button
                   onClick={sendMessage}
                   disabled={!inputText.trim()}
-                  className="px-3 py-2 bg-[#01696f] hover:bg-[#017f85] disabled:opacity-40 text-white rounded-lg transition-colors text-sm"
+                  className="px-3 py-2 bg-[#3b82f6] hover:bg-[#2563eb] disabled:opacity-40 text-white rounded-lg transition-colors text-sm"
                 >
                   ➤
                 </button>

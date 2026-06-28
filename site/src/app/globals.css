@@ -3,8 +3,8 @@
 @theme {
   --font-sans: 'Inter', sans-serif;
 
-  --color-brand:        #01696f;
-  --color-brand-hover:  #017f85;
+  --color-brand:        #3b82f6;
+  --color-brand-hover:  #2563eb;
   --color-accent:       #3b82f6;
 
   --color-surface:  #0d0f14;
@@ -15,8 +15,6 @@
   --color-secondary: #94a3b8;
   --color-muted:     #64748b;
 }
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
   scroll-behavior: smooth;
