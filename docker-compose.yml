@@ -31,7 +31,7 @@ services:
     container_name: o-horizons-nextjs
     env_file: ./site/.env.local
     restart: unless-stopped
-    expose:
-      - "3000"
+    ports:
+      - "3000:3000"
     depends_on:
       - mailer
