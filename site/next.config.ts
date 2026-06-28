@@ -1,8 +1,10 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
+import createNextIntlPlugin from 'next-intl/plugin'
+
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 
 const nextConfig: NextConfig = {
-  // i18n routing (ru/en) will be added in Stage 3 via next-intl with [locale] segments
-  // Domain and image config for Sanity CDN will be added in Stage 4
-};
+  output: 'standalone',
+}
 
-export default nextConfig;
+export default withNextIntl(nextConfig)
