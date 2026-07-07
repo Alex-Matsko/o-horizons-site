@@ -100,3 +100,18 @@ export interface SanityContactInfo {
   telegramLabel: string
   phoneLabel: string
 }
+
+export interface SanityProcessSteps {
+  _id: string
+  tag: string
+  title: string
+  items: { title: string; description: string }[]
+}
+
+export interface SanitySlaGuarantee {
+  _id: string
+  tag: string
+  title: string
+  sub: string
+  items: { title: string; description: string }[]
+}

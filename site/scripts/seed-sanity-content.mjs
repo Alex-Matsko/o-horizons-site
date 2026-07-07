@@ -65,6 +65,8 @@ function singletonDocs() {
       email: m.contact.email, telegram: m.contact.telegram, phone: m.contact.phone,
       emailLabel: m.contact.emailLabel, telegramLabel: m.contact.telegramLabel, phoneLabel: m.contact.phoneLabel,
     })
+    docs.push({ _id: `processSteps-${locale}`, _type: 'processSteps', language: locale, tag: m.processSteps.tag, title: m.processSteps.title, items: m.processSteps.items })
+    docs.push({ _id: `slaGuarantee-${locale}`, _type: 'slaGuarantee', language: locale, tag: m.slaGuarantee.tag, title: m.slaGuarantee.title, sub: m.slaGuarantee.sub, items: m.slaGuarantee.items })
   }
   return docs
 }
@@ -97,7 +99,7 @@ async function main() {
   const tx = client.transaction()
   for (const doc of singletonDocs()) tx.createOrReplace(doc)
   await tx.commit()
-  console.log(`Seeded ${locales.length * 7} singleton documents (hero, servicesSection, auditsSection, pricingSection, aboutSection, faqSection, contactInfo × ${locales.length} locales).`)
+  console.log(`Seeded ${locales.length * 9} singleton documents (hero, servicesSection, auditsSection, pricingSection, aboutSection, faqSection, contactInfo, processSteps, slaGuarantee × ${locales.length} locales).`)
 
   if (!force && await hasExistingRealServiceDocs()) {
     console.log('Found existing "service" documents not created by this script — skipping service seed. Re-run with --force to seed anyway.')

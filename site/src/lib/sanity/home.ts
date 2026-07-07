@@ -7,6 +7,8 @@ import {
   getAboutSection,
   getFaqSection,
   getContactInfo,
+  getProcessSteps,
+  getSlaGuarantee,
 } from './queries'
 
 export interface HeroContent {
@@ -69,11 +71,26 @@ export interface ContactContent {
   phoneLabel: string
 }
 
+export interface ProcessStepsContent {
+  tag: string
+  title: string
+  items: { title: string; description: string }[]
+}
+
+export interface SlaGuaranteeContent {
+  tag: string
+  title: string
+  sub: string
+  items: { title: string; description: string }[]
+}
+
 export interface HomeContent {
   hero: HeroContent
+  processSteps: ProcessStepsContent
   services: ServicesContent
   audits: AuditsContent
   pricing: PricingContent
+  slaGuarantee: SlaGuaranteeContent
   about: AboutContent
   faq: FaqContent
   contact: ContactContent
@@ -153,15 +170,33 @@ export async function getContactContent(locale: string): Promise<ContactContent>
   return (await loadMessages(locale)).contact
 }
 
+export async function getProcessStepsContent(locale: string): Promise<ProcessStepsContent> {
+  const doc = await getProcessSteps(locale)
+  if (doc) {
+    return { tag: doc.tag, title: doc.title, items: doc.items }
+  }
+  return (await loadMessages(locale)).processSteps
+}
+
+export async function getSlaGuaranteeContent(locale: string): Promise<SlaGuaranteeContent> {
+  const doc = await getSlaGuarantee(locale)
+  if (doc) {
+    return { tag: doc.tag, title: doc.title, sub: doc.sub, items: doc.items }
+  }
+  return (await loadMessages(locale)).slaGuarantee
+}
+
 export async function getHomeContent(locale: string): Promise<HomeContent> {
-  const [hero, services, audits, pricing, about, faq, contact] = await Promise.all([
+  const [hero, processSteps, services, audits, pricing, slaGuarantee, about, faq, contact] = await Promise.all([
     getHeroContent(locale),
+    getProcessStepsContent(locale),
     getServicesContent(locale),
     getAuditsContent(locale),
     getPricingContent(locale),
+    getSlaGuaranteeContent(locale),
     getAboutContent(locale),
     getFaqContent(locale),
     getContactContent(locale),
   ])
-  return { hero, services, audits, pricing, about, faq, contact }
+  return { hero, processSteps, services, audits, pricing, slaGuarantee, about, faq, contact }
 }

@@ -55,7 +55,8 @@
     "stats": [
       { "value": "98%", "label": "SLA uptime" },
       { "value": "50+", "label": "completed projects" },
-      { "value": "< 1h", "label": "incident response" }
+      { "value": "< 1h", "label": "incident response" },
+      { "value": "[YEAR]", "label": "in business" }
     ],
     "serverCard": {
       "lines": [
@@ -67,6 +68,24 @@
       ],
       "footer": "Can't get any greener 🟢"
     }
+  },
+  "processSteps": {
+    "tag": "Getting started",
+    "title": "How to start working with us",
+    "items": [
+      { "title": "Request & call", "description": "Leave a request — we call back within one business day to discuss the task and your infrastructure." },
+      { "title": "Audit", "description": "We audit your infrastructure: document the current state, risks, and remediation cost." },
+      { "title": "Contract & onboarding", "description": "The audit cost is credited to the first month. We sign a contract with a fixed SLA and get started." }
+    ]
+  },
+  "slaGuarantee": {
+    "tag": "SLA guarantee",
+    "title": "We're accountable for deadlines — not just promising",
+    "sub": "Response times are fixed in the contract for every plan. If we miss them, that's our liability, not your risk.",
+    "items": [
+      { "title": "Response time — in the contract, not just talk", "description": "From 1 hour to the next business day, depending on the plan. Fixed in the SLA." },
+      { "title": "Compensation for SLA breaches", "description": "[Specify the term: monthly discount, reduced rate, or a fixed amount per hour of delay]" }
+    ]
   },
   "services": {
     "tag": "What we do",
@@ -151,7 +170,8 @@
       { "q": "How long does the audit take?", "a": "Typically 3 to 5 business days, depending on infrastructure size: number of servers, VMs and areas to review. Smaller companies usually take 2 to 3 days." },
       { "q": "Do you need physical access to the servers?", "a": "No. In most cases remote access is sufficient. We work via VPN or a secure tunnel without an on-site visit. On-site visits are available on request." },
       { "q": "What does IT outsourcing include?", "a": "It depends on the plan: from monitoring and backup control through to full management of infrastructure, 1C, security and a fractional IT director role." },
-      { "q": "Can we hand over only part of the tasks?", "a": "Yes. We can tailor the scope flexibly: monitoring and backups only, 1C infrastructure only, or specific areas. The final scope is fixed in the contract." }
+      { "q": "Can we hand over only part of the tasks?", "a": "Yes. We can tailor the scope flexibly: monitoring and backups only, 1C infrastructure only, or specific areas. The final scope is fixed in the contract." },
+      { "q": "What's the difference between you and an in-house sysadmin?", "a": "An in-house sysadmin is one person with limited expertise and a single point of failure (vacation, sick leave). We're a team with experience across 1C, VMware, Proxmox and Bitrix24, a fixed-response SLA, and backup coverage if any one specialist is unavailable." }
     ]
   },
   "contact": {
