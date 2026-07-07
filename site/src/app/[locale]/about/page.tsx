@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server'
 import { useTranslations } from 'next-intl'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import { getAboutContent } from '@/lib/sanity/home'
 import type { Metadata } from 'next'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -10,10 +11,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: t('title'), description: t('description') }
 }
 
-function AboutContent({ locale }: { locale: string }) {
+function AboutContent({ locale, items }: { locale: string; items: { icon: string; title: string; description: string }[] }) {
   const t = useTranslations('pages.about')
-  const aboutT = useTranslations('about')
-  const items = aboutT.raw('items') as { icon: string; title: string; description: string }[]
 
   return (
     <>
@@ -44,5 +43,6 @@ function AboutContent({ locale }: { locale: string }) {
 
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
-  return <AboutContent locale={locale} />
+  const about = await getAboutContent(locale)
+  return <AboutContent locale={locale} items={about.items} />
 }
