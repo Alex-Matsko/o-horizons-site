@@ -1,5 +1,5 @@
 import { sanityFetch } from './client'
-import type { SanityArticle, SanityCase, SanityService } from './types'
+import type { SanityArticle, SanityCase, SanityService, SanityTestimonial } from './types'
 
 export async function getArticles(locale: string): Promise<SanityArticle[]> {
   const data = await sanityFetch<SanityArticle[]>(
@@ -44,4 +44,12 @@ export async function getService(slug: string, locale: string): Promise<SanitySe
     `*[_type == "service" && slug.current == $slug && language == $locale][0]`,
     { slug, locale }
   )
+}
+
+export async function getTestimonials(locale: string): Promise<SanityTestimonial[]> {
+  const data = await sanityFetch<SanityTestimonial[]>(
+    `*[_type == "testimonial" && language == $locale] | order(_createdAt desc) { _id, authorName, role, company, quote, rating }`,
+    { locale }
+  )
+  return data ?? []
 }

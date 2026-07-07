@@ -27,6 +27,10 @@
     "contact": {
       "title": "Contact Us — Open Horizons",
       "description": "Get in touch: email, Telegram, phone. Let's discuss your IT infrastructure."
+    },
+    "testimonials": {
+      "title": "Client Testimonials — Open Horizons",
+      "description": "Client testimonials on IT outsourcing and infrastructure audits with Open Horizons."
     }
   },
   "nav": {
@@ -291,6 +295,12 @@
       "tag": "Contact",
       "title": "Get in touch",
       "sub": "Let's discuss your infrastructure and find the best collaboration format."
+    },
+    "testimonials": {
+      "tag": "Testimonials",
+      "title": "What clients say",
+      "sub": "Feedback from companies that trusted us with their IT infrastructure.",
+      "empty": "Testimonials coming soon."
     }
   }
 }

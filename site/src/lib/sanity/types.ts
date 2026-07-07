@@ -25,3 +25,12 @@ export interface SanityService {
   shortDescription: string
   body?: unknown
 }
+
+export interface SanityTestimonial {
+  _id: string
+  authorName: string
+  role?: string
+  company?: string
+  quote: string
+  rating?: number
+}
