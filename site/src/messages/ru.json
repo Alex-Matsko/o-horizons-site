@@ -35,6 +35,9 @@
   },
   "nav": {
     "services": "Услуги",
+    "cases": "Кейсы",
+    "articles": "Статьи",
+    "testimonials": "Отзывы",
     "pricing": "Тарифы",
     "calculator": "Калькулятор",
     "about": "О нас",

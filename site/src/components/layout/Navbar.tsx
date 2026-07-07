@@ -42,14 +42,17 @@ export default function Navbar({ locale, onOpenModal }: NavbarProps) {
         </Link>
 
         {/* Nav links */}
-        <nav className="hidden md:flex items-center gap-1">
-          <a href={homeHref('services')} className="px-3 py-1.5 text-sm text-[#94a3b8] hover:text-[#e2e8f0] transition-colors">{t('services')}</a>
-          <a href={homeHref('pricing')} className="px-3 py-1.5 text-sm text-[#94a3b8] hover:text-[#e2e8f0] transition-colors">{t('pricing')}</a>
-          <Link href="/calculator" className="px-3 py-1.5 text-sm text-[#94a3b8] hover:text-[#e2e8f0] transition-colors">{t('calculator')}</Link>
-          <a href={homeHref('about')} className="px-3 py-1.5 text-sm text-[#94a3b8] hover:text-[#e2e8f0] transition-colors">{t('about')}</a>
+        <nav className="hidden lg:flex items-center">
+          <Link href="/services" className="px-2 py-1.5 text-sm whitespace-nowrap text-[#94a3b8] hover:text-[#e2e8f0] transition-colors">{t('services')}</Link>
+          <Link href="/cases" className="px-2 py-1.5 text-sm whitespace-nowrap text-[#94a3b8] hover:text-[#e2e8f0] transition-colors">{t('cases')}</Link>
+          <Link href="/articles" className="px-2 py-1.5 text-sm whitespace-nowrap text-[#94a3b8] hover:text-[#e2e8f0] transition-colors">{t('articles')}</Link>
+          <Link href="/testimonials" className="px-2 py-1.5 text-sm whitespace-nowrap text-[#94a3b8] hover:text-[#e2e8f0] transition-colors">{t('testimonials')}</Link>
+          <a href={homeHref('pricing')} className="px-2 py-1.5 text-sm whitespace-nowrap text-[#94a3b8] hover:text-[#e2e8f0] transition-colors">{t('pricing')}</a>
+          <Link href="/calculator" className="px-2 py-1.5 text-sm whitespace-nowrap text-[#94a3b8] hover:text-[#e2e8f0] transition-colors">{t('calculator')}</Link>
+          <Link href="/about" className="px-2 py-1.5 text-sm whitespace-nowrap text-[#94a3b8] hover:text-[#e2e8f0] transition-colors">{t('about')}</Link>
           <button
             onClick={onOpenModal}
-            className="ml-2 px-4 py-1.5 text-sm font-semibold bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded-lg transition-colors"
+            className="ml-2 px-4 py-1.5 text-sm font-semibold whitespace-nowrap bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded-lg transition-colors"
           >
             {t('contact')}
           </button>

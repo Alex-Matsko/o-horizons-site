@@ -35,6 +35,9 @@
   },
   "nav": {
     "services": "Services",
+    "cases": "Cases",
+    "articles": "Articles",
+    "testimonials": "Testimonials",
     "pricing": "Pricing",
     "calculator": "Calculator",
     "about": "About",
