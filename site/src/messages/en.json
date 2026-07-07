@@ -58,9 +58,9 @@
     "ctaOutline": "About the audit",
     "stats": [
       { "value": "98%", "label": "SLA uptime" },
-      { "value": "50+", "label": "completed projects" },
+      { "value": "50+", "label": "projects" },
       { "value": "< 1h", "label": "incident response" },
-      { "value": "since 2018", "label": "in business" }
+      { "value": "2018", "label": "founded" }
     ],
     "serverCard": {
       "lines": [
@@ -95,12 +95,12 @@
     "tag": "What we do",
     "title": "Services",
     "items": [
-      { "icon": "🗄️", "title": "1C Infrastructure Support", "description": "Administration of 1C and MSSQL servers, configuration updates, access rights, data exchanges and 24/7 availability monitoring." },
-      { "icon": "💾", "title": "Backup & Recovery", "description": "Deployment of Veeam B&R to the 3-2-1 scheme, restore testing, retention policies. RTO and RPO under control — data loss excluded." },
-      { "icon": "⚡", "title": "Virtualisation & Server Infrastructure", "description": "Deployment and support of VMware ESXi, Hyper-V and Proxmox: resource planning, HA configurations, VM migrations and performance monitoring." },
-      { "icon": "🔒", "title": "Network Security & Access", "description": "Firewall policies, VPN for remote employees, network segmentation and incident monitoring — no vulnerabilities, no unauthorised access." },
-      { "icon": "📋", "title": "Bitrix24 Support", "description": "Setup and ongoing support of Bitrix24 portal: company structure, access rights, integrations, telephony, business processes and automation." },
-      { "icon": "📞", "title": "Telephony & Communications", "description": "IP telephony, SIP, virtual PBX, call routing scenarios, call recording and integrations with CRM and Bitrix24." }
+      { "icon": "🗄️", "title": "1C Support", "description": "Your 1C runs fast and without failures: we manage the servers and databases, apply updates and control employee access. Accounting and warehouse never stall." },
+      { "icon": "💾", "title": "Data Loss Protection", "description": "We set up automatic backups of all critical data and regularly verify the copies actually restore. Losing a database or documents is off the table." },
+      { "icon": "⚡", "title": "Servers & Computing", "description": "Company servers run stably without overspending: we plan capacity for your workload, watch the load and fix issues before they stop the business." },
+      { "icon": "🔒", "title": "Breach & Leak Protection", "description": "Secure remote access for employees, control over who can access what, and continuous monitoring for suspicious activity across the company network." },
+      { "icon": "📋", "title": "Bitrix24 Support", "description": "We tune Bitrix24 to your processes: employee permissions, telephony, integrations and automation of routine operations — no in-house specialist needed." },
+      { "icon": "📞", "title": "Telephony & Communications", "description": "Customer communication without missed calls: office telephony, call recording, smart call routing and CRM integration." }
     ]
   },
   "audits": {
@@ -116,39 +116,40 @@
     ]
   },
   "pricing": {
-    "tag": "Pricing",
-    "title": "Managed Service Plans",
-    "sub": "Fixed monthly fee instead of hourly rates and unpredictable invoices.",
-    "popular": "Popular",
-    "cta": "Choose plan",
+    "tag": "Cost",
+    "title": "Cost Estimate Examples",
+    "sub": "Reference figures based on real client configurations. The exact price is fixed in the contract after an audit.",
+    "popular": "Typical case",
+    "cta": "Estimate your setup",
+    "note": "These are reference points: the final amount depends on your infrastructure. Estimate your own configuration in the calculator — it takes a minute.",
     "items": [
       {
-        "name": "Office Base",
-        "subtitle": "Small office",
+        "name": "Small office",
+        "subtitle": "up to 10 employees, no own servers",
         "price": "from ₽25,000/mo",
         "popular": false,
-        "features": ["Up to 10 workstations", "LAN and mail server support", "Basic monitoring", "Response: next business day"]
+        "features": ["Workstation and office network support", "Email and shared documents", "Backup control", "Business-hours helpdesk"]
       },
       {
-        "name": "Infra Standard",
-        "subtitle": "Production segment",
+        "name": "Company running 1C",
+        "subtitle": "1–2 servers, up to 30 employees",
         "price": "from ₽45,000/mo",
         "popular": true,
-        "features": ["1C + MSSQL servers", "VM and backup management", "24/7 monitoring + alerts", "Response: up to 4 hours"]
+        "features": ["Everything in Small office", "1C and database support", "24/7 server monitoring", "Incident fixed within 4 hours"]
       },
       {
-        "name": "Infra Premium",
-        "subtitle": "Critical infrastructure",
+        "name": "Manufacturing or multi-site",
+        "subtitle": "several servers, business-critical 1C",
         "price": "from ₽70,000/mo",
         "popular": false,
-        "features": ["Everything in Infra Standard", "Full infrastructure management", "SLA, priority support 24/7", "Response: up to 1 hour"]
+        "features": ["Full infrastructure management", "Secure links between sites", "Priority 24/7 support", "Incident fixed within 1 hour"]
       },
       {
-        "name": "Virtual CIO",
-        "subtitle": "Full IT management",
+        "name": "Outsourced IT director",
+        "subtitle": "strategy and full IT management",
         "price": "from ₽120,000/mo",
         "popular": false,
-        "features": ["Everything in Infra Premium", "Fractional IT Director", "Vendor and budget management", "IT strategy and roadmap"]
+        "features": ["Everything above", "IT budget planning", "Vendor and procurement management", "IT that scales with the business"]
       }
     ]
   },
@@ -221,7 +222,7 @@
   },
   "footer": {
     "copy": "© 2026 Open Horizons. IT outsourcing for business.",
-    "inn": "Open Horizons LLC · TIN 6685239460",
+    "inn": "Sole proprietor Alexander Matsko · TIN 667700710490",
     "shareLabel": "Share on Telegram",
     "privacy": "Privacy Policy",
     "oferta": "Terms"
@@ -249,7 +250,7 @@
     "note": "Preliminary estimate. Final cost is confirmed after an infrastructure audit.",
     "auditTip": "💡 If you choose an infrastructure audit, its cost is deducted from the first month of managed services.",
     "getCta": "Get a proposal",
-    "pricingCta": "View plans",
+    "pricingCta": "Cost examples",
     "modalTitle": "Get a proposal",
     "modalSub": "We will clarify the details and send an exact quote within 2 hours",
     "modalContacts": "Or write to us directly:",

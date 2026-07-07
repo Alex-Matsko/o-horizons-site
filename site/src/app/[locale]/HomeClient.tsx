@@ -27,7 +27,7 @@ export default function HomeClient({ locale, content }: { locale: string; conten
         <ProcessSteps data={content.processSteps} />
         <Services {...content.services} />
         <Audits data={content.audits} />
-        <Pricing data={content.pricing} onOpenModal={() => setModalOpen(true)} />
+        <Pricing data={content.pricing} />
         <SlaGuarantee data={content.slaGuarantee} />
         <AboutSection data={content.about} />
         <FAQ data={content.faq} />

@@ -13,7 +13,7 @@ function PolicyRu() {
       <p className="text-xs text-[#475569] mb-10">Последнее обновление: 7 апреля 2026 г.</p>
 
       <h2 className={h2}>1. Общие положения</h2>
-      <p className={p}>Настоящая Политика конфиденциальности (далее — «Политика») описывает, как компания «Открытые Горизонты» (далее — «Оператор», «мы») собирает, использует и защищает персональные данные пользователей сайта <a className={a} href="https://o-horizons.com">o-horizons.com</a> (далее — «Сайт»).</p>
+      <p className={p}>Настоящая Политика конфиденциальности (далее — «Политика») описывает, как Индивидуальный предприниматель Мацко Александр Вячеславович, работающий под брендом «Открытые Горизонты» (далее — «Оператор», «мы»), собирает, использует и защищает персональные данные пользователей сайта <a className={a} href="https://o-horizons.com">o-horizons.com</a> (далее — «Сайт»).</p>
       <p className={p}>Используя Сайт и отправляя формы обратной связи, вы соглашаетесь с условиями настоящей Политики.</p>
 
       <h2 className={h2}>2. Какие данные мы собираем</h2>
@@ -84,7 +84,7 @@ function PolicyEn() {
       <p className="text-xs text-[#475569] mb-10">Last updated: 7 April 2026</p>
 
       <h2 className={h2}>1. General</h2>
-      <p className={p}>This Privacy Policy describes how Open Horizons (the &quot;Company&quot;, &quot;we&quot;, &quot;us&quot;) collects, uses and protects personal data of visitors to <a className={a} href="https://o-horizons.com">o-horizons.com</a> (the &quot;Site&quot;). By using the Site and submitting contact forms you agree to this Policy.</p>
+      <p className={p}>This Privacy Policy describes how Alexander Matsko, sole proprietor, operating as Open Horizons (the &quot;Operator&quot;, &quot;we&quot;, &quot;us&quot;) collects, uses and protects personal data of visitors to <a className={a} href="https://o-horizons.com">o-horizons.com</a> (the &quot;Site&quot;). By using the Site and submitting contact forms you agree to this Policy.</p>
 
       <h2 className={h2}>2. Data we collect</h2>
       <p className={p}>When you submit a contact form we may receive:</p>

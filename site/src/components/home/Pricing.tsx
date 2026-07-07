@@ -1,9 +1,7 @@
-'use client'
+import { Link } from '@/i18n/navigation'
 import type { PricingContent } from '@/lib/sanity/home'
 
-interface PricingProps { data: PricingContent; onOpenModal: () => void }
-
-export default function Pricing({ data, onOpenModal }: PricingProps) {
+export default function Pricing({ data }: { data: PricingContent }) {
   return (
     <section id="pricing" className="py-[88px] px-6">
       <div className="max-w-[1160px] mx-auto">
@@ -22,7 +20,7 @@ export default function Pricing({ data, onOpenModal }: PricingProps) {
               style={plan.popular ? { background: 'linear-gradient(160deg, #1a2035, #151820)' } : undefined}
             >
               {plan.popular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3.5 py-0.5 bg-[#3b82f6] text-white text-[0.72rem] font-bold rounded-full uppercase tracking-wide">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3.5 py-0.5 bg-[#3b82f6] text-white text-[0.72rem] font-bold rounded-full uppercase tracking-wide whitespace-nowrap">
                   {data.popular}
                 </span>
               )}
@@ -37,16 +35,16 @@ export default function Pricing({ data, onOpenModal }: PricingProps) {
                   </li>
                 ))}
               </ul>
-              <button
-                onClick={onOpenModal}
-                className={`w-full py-3 rounded-[10px] text-[0.9rem] font-semibold transition-colors ${
+              <Link
+                href="/calculator"
+                className={`w-full py-3 rounded-[10px] text-[0.9rem] font-semibold text-center transition-colors ${
                   plan.popular
                     ? 'bg-[#3b82f6] hover:bg-[#2563eb] text-white'
                     : 'bg-[rgba(59,130,246,0.15)] text-[#3b82f6] border border-[rgba(59,130,246,0.3)] hover:bg-[rgba(59,130,246,0.25)]'
                 }`}
               >
                 {data.cta}
-              </button>
+              </Link>
             </div>
           ))}
         </div>
