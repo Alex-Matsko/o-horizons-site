@@ -1,5 +1,17 @@
 import { sanityFetch } from './client'
-import type { SanityArticle, SanityCase, SanityService, SanityTestimonial } from './types'
+import type {
+  SanityArticle,
+  SanityCase,
+  SanityService,
+  SanityTestimonial,
+  SanityHero,
+  SanityServicesSection,
+  SanityAuditsSection,
+  SanityPricingSection,
+  SanityAboutSection,
+  SanityFaqSection,
+  SanityContactInfo,
+} from './types'
 
 export async function getArticles(locale: string): Promise<SanityArticle[]> {
   const data = await sanityFetch<SanityArticle[]>(
@@ -52,4 +64,61 @@ export async function getTestimonials(locale: string): Promise<SanityTestimonial
     { locale }
   )
   return data ?? []
+}
+
+export async function getHero(locale: string): Promise<SanityHero | null> {
+  return sanityFetch<SanityHero>(
+    `*[_type == "hero" && language == $locale][0]`,
+    { locale }
+  )
+}
+
+export async function getServicesSection(locale: string): Promise<SanityServicesSection | null> {
+  return sanityFetch<SanityServicesSection>(
+    `*[_type == "servicesSection" && language == $locale][0]`,
+    { locale }
+  )
+}
+
+export async function getHomeServices(locale: string): Promise<SanityService[]> {
+  const data = await sanityFetch<SanityService[]>(
+    `*[_type == "service" && language == $locale] | order(_createdAt asc) [0...6] { _id, slug, title, icon, shortDescription }`,
+    { locale }
+  )
+  return data ?? []
+}
+
+export async function getAuditsSection(locale: string): Promise<SanityAuditsSection | null> {
+  return sanityFetch<SanityAuditsSection>(
+    `*[_type == "auditsSection" && language == $locale][0]`,
+    { locale }
+  )
+}
+
+export async function getPricingSection(locale: string): Promise<SanityPricingSection | null> {
+  return sanityFetch<SanityPricingSection>(
+    `*[_type == "pricingSection" && language == $locale][0]`,
+    { locale }
+  )
+}
+
+export async function getAboutSection(locale: string): Promise<SanityAboutSection | null> {
+  return sanityFetch<SanityAboutSection>(
+    `*[_type == "aboutSection" && language == $locale][0]`,
+    { locale }
+  )
+}
+
+export async function getFaqSection(locale: string): Promise<SanityFaqSection | null> {
+  return sanityFetch<SanityFaqSection>(
+    `*[_type == "faqSection" && language == $locale][0]`,
+    { locale }
+  )
+}
+
+export async function getContactInfo(locale: string): Promise<SanityContactInfo | null> {
+  return sanityFetch<SanityContactInfo>(
+    `*[_type == "contactInfo" && language == $locale][0]`,
+    { locale }
+  )
 }
