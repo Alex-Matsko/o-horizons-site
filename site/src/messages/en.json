@@ -300,7 +300,13 @@
       "empty": "Services coming soon.",
       "readMore": "Learn more",
       "backAll": "← All services",
-      "detailPlaceholder": "Detailed service description will appear here."
+      "detailPlaceholder": "Detailed service description will appear here.",
+      "forWhom": "Who it's for",
+      "problems": "Problems it solves",
+      "included": "What's included",
+      "result": "The outcome",
+      "ctaContact": "Discuss your task",
+      "ctaCalc": "Estimate the cost"
     },
     "articles": {
       "tag": "Articles",

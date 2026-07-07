@@ -5,6 +5,7 @@ import { readFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { createClient } from 'next-sanity'
+import { serviceDetails } from './service-details.mjs'
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url))
 const siteDir = path.resolve(scriptDir, '..')
@@ -84,6 +85,7 @@ function serviceSeedDocs() {
         slug: { _type: 'slug', current: `service-${i + 1}` },
         icon: item.icon,
         shortDescription: item.description,
+        ...(serviceDetails[locale]?.[i] ?? {}),
       })
     })
   }

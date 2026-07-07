@@ -23,6 +23,10 @@ export interface SanityService {
   title: string
   icon: string
   shortDescription: string
+  audience?: string
+  problems?: string[]
+  included?: string[]
+  result?: string
   body?: unknown
 }
 
