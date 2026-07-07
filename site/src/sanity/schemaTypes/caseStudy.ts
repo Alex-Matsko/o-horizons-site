@@ -1,4 +1,5 @@
 import { defineType, defineField } from 'sanity'
+import { slugIsUniqueWithinLanguage } from '../lib/slugIsUniqueWithinLanguage'
 
 export const caseStudy = defineType({
   name: 'caseStudy',
@@ -7,7 +8,7 @@ export const caseStudy = defineType({
   fields: [
     defineField({ name: 'language', title: 'Language', type: 'string', options: { list: ['ru', 'en'] }, initialValue: 'ru' }),
     defineField({ name: 'title', title: 'Title', type: 'string', validation: r => r.required() }),
-    defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'title' }, validation: r => r.required() }),
+    defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'title', isUnique: slugIsUniqueWithinLanguage }, validation: r => r.required() }),
     defineField({ name: 'excerpt', title: 'Excerpt', type: 'text', rows: 3 }),
     defineField({ name: 'industry', title: 'Industry', type: 'string' }),
     defineField({ name: 'result', title: 'Key result', type: 'string' }),
