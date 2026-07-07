@@ -269,6 +269,7 @@
       "tag": "Services",
       "title": "All services",
       "sub": "Full spectrum of IT outsourcing and infrastructure managed services.",
+      "empty": "Services coming soon.",
       "readMore": "Learn more"
     },
     "articles": {
