@@ -1,20 +1,17 @@
 'use client'
-import { useTranslations } from 'next-intl'
+import type { PricingContent } from '@/lib/sanity/home'
 
-interface PricingProps { onOpenModal: () => void }
+interface PricingProps { data: PricingContent; onOpenModal: () => void }
 
-export default function Pricing({ onOpenModal }: PricingProps) {
-  const t = useTranslations('pricing')
-  const items = t.raw('items') as { name: string; subtitle: string; price: string; popular: boolean; features: string[] }[]
-
+export default function Pricing({ data, onOpenModal }: PricingProps) {
   return (
     <section id="pricing" className="py-[88px] px-6">
       <div className="max-w-[1160px] mx-auto">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[#3b82f6] mb-3">{t('tag')}</p>
-        <h2 className="text-[2rem] font-bold text-[#f1f5f9] mb-4">{t('title')}</h2>
-        <p className="text-[#64748b] mb-10">{t('sub')}</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-[#3b82f6] mb-3">{data.tag}</p>
+        <h2 className="text-[2rem] font-bold text-[#f1f5f9] mb-4">{data.title}</h2>
+        <p className="text-[#64748b] mb-10">{data.sub}</p>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-5">
-          {items.map(plan => (
+          {data.items.map(plan => (
             <div
               key={plan.name}
               className={`relative bg-[#151820] rounded-2xl p-8 flex flex-col border transition-colors h-full ${
@@ -26,7 +23,7 @@ export default function Pricing({ onOpenModal }: PricingProps) {
             >
               {plan.popular && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3.5 py-0.5 bg-[#3b82f6] text-white text-[0.72rem] font-bold rounded-full uppercase tracking-wide">
-                  {t('popular')}
+                  {data.popular}
                 </span>
               )}
               <h3 className="text-[1.1rem] font-bold text-[#e2e8f0] mb-2">{plan.name}</h3>
@@ -48,12 +45,12 @@ export default function Pricing({ onOpenModal }: PricingProps) {
                     : 'bg-[rgba(59,130,246,0.15)] text-[#3b82f6] border border-[rgba(59,130,246,0.3)] hover:bg-[rgba(59,130,246,0.25)]'
                 }`}
               >
-                {t('cta')}
+                {data.cta}
               </button>
             </div>
           ))}
         </div>
-        <p className="text-xs text-[#475569] text-center">{t('note')}</p>
+        {data.note && <p className="text-xs text-[#475569] text-center">{data.note}</p>}
       </div>
     </section>
   )

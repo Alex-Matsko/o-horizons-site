@@ -1,20 +1,17 @@
 'use client'
-import { useTranslations } from 'next-intl'
 import { useState } from 'react'
+import type { FaqContent } from '@/lib/sanity/home'
 
-export default function FAQ() {
-  const t = useTranslations('faq')
-  const items = t.raw('items') as { q: string; a: string }[]
+export default function FAQ({ data }: { data: FaqContent }) {
   const [open, setOpen] = useState<number | null>(null)
 
   return (
     <section id="faq" className="py-[88px] px-6">
       <div className="max-w-[1160px] mx-auto">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[#3b82f6] mb-3">{t('tag')}</p>
-        <h2 className="text-[2rem] font-bold text-[#f1f5f9] mb-4">{t('title')}</h2>
-        <p className="text-[0.9rem] text-[#64748b] mb-7">{t('sub')}</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-[#3b82f6] mb-3">{data.tag}</p>
+        <h2 className="text-[2rem] font-bold text-[#f1f5f9] mb-4">{data.title}</h2>
         <div className="rounded-2xl border border-[rgba(148,163,184,0.15)] bg-[#0d0f14] overflow-hidden max-w-full">
-          {items.map((item, i) => (
+          {data.items.map((item, i) => (
             <div key={i} className={i > 0 ? 'border-t border-[rgba(255,255,255,0.05)]' : ''}>
               <button
                 onClick={() => setOpen(open === i ? null : i)}
