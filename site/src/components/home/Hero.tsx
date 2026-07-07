@@ -33,7 +33,7 @@ export default function Hero({ data, onOpenModal }: HeroProps) {
           </div>
 
           {/* Stats */}
-          <div className="flex flex-wrap gap-8">
+          <div className="flex flex-wrap gap-x-6 gap-y-4">
             {data.stats.map(s => (
               <div key={s.label}>
                 <span className="block text-[1.6rem] font-bold text-[#3b82f6]">{s.value}</span>

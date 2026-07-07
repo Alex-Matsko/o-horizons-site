@@ -34,6 +34,10 @@
     }
   },
   "nav": {
+    "brandA": "Open",
+    "brandB": "Horizons",
+    "menuAria": "Menu",
+    "homeAria": "Home",
     "services": "Services",
     "cases": "Cases",
     "articles": "Articles",
@@ -56,7 +60,7 @@
       { "value": "98%", "label": "SLA uptime" },
       { "value": "50+", "label": "completed projects" },
       { "value": "< 1h", "label": "incident response" },
-      { "value": "2018", "label": "in business since" }
+      { "value": "since 2018", "label": "in business" }
     ],
     "serverCard": {
       "lines": [
@@ -150,7 +154,7 @@
   },
   "about": {
     "tag": "About",
-    "title": "How we work",
+    "title": "Our principles",
     "sub": "We work where others struggle: 1C, MSSQL, Exchange, VMware, Proxmox, Bitrix24. We go deep into the niche — it's our primary focus, not a side service.",
     "items": [
       { "icon": "🔍", "title": "Audit first", "description": "Every project starts with an audit. We review backups, servers and remote access — and quantify the risks in money." },
@@ -293,21 +297,27 @@
       "title": "All services",
       "sub": "Full spectrum of IT outsourcing and infrastructure managed services.",
       "empty": "Services coming soon.",
-      "readMore": "Learn more"
+      "readMore": "Learn more",
+      "backAll": "← All services",
+      "detailPlaceholder": "Detailed service description will appear here."
     },
     "articles": {
       "tag": "Articles",
       "title": "Knowledge Base",
       "sub": "Useful materials on IT infrastructure and outsourcing.",
       "empty": "Articles coming soon.",
-      "readMore": "Read more"
+      "readMore": "Read more",
+      "backAll": "← All articles",
+      "detailPlaceholder": "Article content will appear here."
     },
     "cases": {
       "tag": "Cases",
       "title": "Completed Projects",
       "sub": "Examples of how we solve client challenges.",
       "empty": "Cases coming soon.",
-      "readMore": "Read"
+      "readMore": "Read",
+      "backAll": "← All cases",
+      "detailPlaceholder": "Detailed case description will appear here."
     },
     "about": {
       "tag": "About",

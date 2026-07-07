@@ -3,34 +3,52 @@ import { Link } from '@/i18n/navigation'
 
 export default function Footer({ locale }: { locale: string }) {
   const t = useTranslations('footer')
+  const nav = useTranslations('nav')
   const shareUrl = locale === 'ru'
     ? 'https://o-horizons.com/&text=IT-аутсорсинг%20и%20аудит%20инфраструктуры'
     : 'https://o-horizons.com/en/&text=IT%20outsourcing%20and%20infrastructure%20audit'
 
+  const navLinks = [
+    { href: '/services', label: nav('services') },
+    { href: '/cases', label: nav('cases') },
+    { href: '/articles', label: nav('articles') },
+    { href: '/testimonials', label: nav('testimonials') },
+    { href: '/calculator', label: nav('calculator') },
+    { href: '/about', label: nav('about') },
+    { href: '/contact', label: nav('contact') },
+  ] as const
+
   return (
     <footer className="bg-[#0a0c10] border-t border-white/[0.05] py-8 mt-auto">
-      <div className="max-w-[1160px] mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-[#64748b]">
-        <div className="flex items-center gap-2 font-semibold text-[#64748b]">
-          <span className="text-[#3b82f6] text-lg">⬡</span>
-          <span>Открытые <strong className="text-[#64748b]">Горизонты</strong></span>
-        </div>
-        <div className="text-center">
-          <p className="text-xs text-[#475569]">{t('copy')}</p>
-          <p className="text-xs mt-0.5 text-[#475569]">{t('inn')}</p>
-        </div>
-        <div className="flex items-center gap-3 text-xs text-[#475569]">
-          <Link href="/privacy-policy" className="hover:text-[#94a3b8] transition-colors">{t('privacy')}</Link>
-          <span>·</span>
-          <Link href="/oferta" className="hover:text-[#94a3b8] transition-colors">{t('oferta')}</Link>
-          <span>·</span>
-          <a
-            href={`https://t.me/share/url?url=${shareUrl}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-[#94a3b8] transition-colors"
-          >
-            Telegram
-          </a>
+      <div className="max-w-[1160px] mx-auto px-6 flex flex-col gap-6">
+        <nav className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-[#64748b]">
+          {navLinks.map(l => (
+            <Link key={l.href} href={l.href} className="hover:text-[#e2e8f0] transition-colors">{l.label}</Link>
+          ))}
+        </nav>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-[#64748b]">
+          <div className="flex items-center gap-2 font-semibold text-[#64748b]">
+            <span className="text-[#3b82f6] text-lg">⬡</span>
+            <span>{nav('brandA')} <strong className="text-[#64748b]">{nav('brandB')}</strong></span>
+          </div>
+          <div className="text-center">
+            <p className="text-xs text-[#475569]">{t('copy')}</p>
+            <p className="text-xs mt-0.5 text-[#475569]">{t('inn')}</p>
+          </div>
+          <div className="flex items-center gap-3 text-xs text-[#475569]">
+            <Link href="/privacy-policy" className="hover:text-[#94a3b8] transition-colors">{t('privacy')}</Link>
+            <span>·</span>
+            <Link href="/oferta" className="hover:text-[#94a3b8] transition-colors">{t('oferta')}</Link>
+            <span>·</span>
+            <a
+              href={`https://t.me/share/url?url=${shareUrl}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#94a3b8] transition-colors"
+            >
+              Telegram
+            </a>
+          </div>
         </div>
       </div>
     </footer>

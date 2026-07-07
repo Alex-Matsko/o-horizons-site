@@ -101,6 +101,11 @@ async function main() {
   await tx.commit()
   console.log(`Seeded ${locales.length * 9} singleton documents (hero, servicesSection, auditsSection, pricingSection, aboutSection, faqSection, contactInfo, processSteps, slaGuarantee × ${locales.length} locales).`)
 
+  if (process.argv.includes('--skip-services')) {
+    console.log('Skipping "service" documents (--skip-services).')
+    return
+  }
+
   if (!force && await hasExistingRealServiceDocs()) {
     console.log('Found existing "service" documents not created by this script — skipping service seed. Re-run with --force to seed anyway.')
     return
