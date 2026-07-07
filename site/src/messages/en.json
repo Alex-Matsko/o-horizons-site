@@ -56,7 +56,7 @@
       { "value": "98%", "label": "SLA uptime" },
       { "value": "50+", "label": "completed projects" },
       { "value": "< 1h", "label": "incident response" },
-      { "value": "[YEAR]", "label": "in business" }
+      { "value": "2018", "label": "in business since" }
     ],
     "serverCard": {
       "lines": [
@@ -84,7 +84,7 @@
     "sub": "Response times are fixed in the contract for every plan. If we miss them, that's our liability, not your risk.",
     "items": [
       { "title": "Response time — in the contract, not just talk", "description": "From 1 hour to the next business day, depending on the plan. Fixed in the SLA." },
-      { "title": "Compensation for SLA breaches", "description": "[Specify the term: monthly discount, reduced rate, or a fixed amount per hour of delay]" }
+      { "title": "Compensation for SLA breaches", "description": "If we breach the SLA, a reducing coefficient is applied to that month's fee. A missed deadline lowers your invoice — it doesn't just earn an apology." }
     ]
   },
   "services": {
