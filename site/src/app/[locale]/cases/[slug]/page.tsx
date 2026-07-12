@@ -5,6 +5,7 @@ import Footer from '@/components/layout/Footer'
 import { getCase } from '@/lib/sanity/queries'
 import { Link } from '@/i18n/navigation'
 import { buildMetadata } from '@/lib/seo'
+import PortableBody from '@/components/ui/PortableBody'
 import type { Metadata } from 'next'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
@@ -45,7 +46,11 @@ export default async function CasePage({ params }: { params: Promise<{ locale: s
             </div>
           )}
           {caseItem.excerpt && <p className="text-lg text-[#94a3b8] mb-8 leading-relaxed">{caseItem.excerpt}</p>}
-          <div className="text-[#475569] italic text-sm">{t('detailPlaceholder')}</div>
+          {caseItem.body && caseItem.body.length > 0 ? (
+            <PortableBody blocks={caseItem.body} />
+          ) : (
+            <div className="text-[#475569] italic text-sm">{t('detailPlaceholder')}</div>
+          )}
         </div>
       </main>
       <Footer locale={locale} />

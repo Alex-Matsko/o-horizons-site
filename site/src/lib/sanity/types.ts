@@ -1,10 +1,16 @@
+export interface PortableBlock {
+  _key: string
+  style?: string
+  children: { text: string }[]
+}
+
 export interface SanityArticle {
   _id: string
   slug: { current: string }
   title: string
   excerpt: string
   publishedAt: string
-  body?: unknown
+  body?: PortableBlock[]
 }
 
 export interface SanityCase {
@@ -14,7 +20,7 @@ export interface SanityCase {
   excerpt: string
   industry?: string
   result?: string
-  body?: unknown
+  body?: PortableBlock[]
 }
 
 export interface SanityService {
