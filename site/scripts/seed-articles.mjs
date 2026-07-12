@@ -41,14 +41,25 @@ let keyCounter = 0
 const nextKey = () => `k${keyCounter++}`
 
 function toBlocks(items) {
-  return items.map(item => ({
-    _type: 'block',
-    _key: nextKey(),
-    style: item.type === 'h3' ? 'h3' : 'normal',
-    markDefs: [],
-    ...(item.type === 'li' ? { listItem: 'bullet', level: 1 } : {}),
-    children: [{ _type: 'span', _key: nextKey(), text: item.text, marks: [] }],
-  }))
+  return items.map(item => {
+    if (item.type === 'stat') {
+      return { _type: 'statRow', _key: nextKey(), items: item.items }
+    }
+    if (item.type === 'callout') {
+      return { _type: 'callout', _key: nextKey(), title: item.title, text: item.text }
+    }
+    if (item.type === 'table') {
+      return { _type: 'compareTable', _key: nextKey(), headers: item.headers, rows: item.rows }
+    }
+    return {
+      _type: 'block',
+      _key: nextKey(),
+      style: item.type === 'h3' ? 'h3' : 'normal',
+      markDefs: [],
+      ...(item.type === 'li' ? { listItem: 'bullet', level: 1 } : {}),
+      children: [{ _type: 'span', _key: nextKey(), text: item.text, marks: [] }],
+    }
+  })
 }
 
 for (const locale of ['ru', 'en']) {

@@ -1,9 +1,32 @@
 export interface PortableBlock {
+  _type: 'block'
   _key: string
   style?: string
   listItem?: string
   children: { text: string }[]
 }
+
+export interface StatRowBlock {
+  _type: 'statRow'
+  _key: string
+  items: { value: string; label: string }[]
+}
+
+export interface CalloutBlock {
+  _type: 'callout'
+  _key: string
+  title?: string
+  text: string
+}
+
+export interface CompareTableBlock {
+  _type: 'compareTable'
+  _key: string
+  headers?: string[]
+  rows: { a: string; b: string }[]
+}
+
+export type ArticleBlock = PortableBlock | StatRowBlock | CalloutBlock | CompareTableBlock
 
 export interface SanityArticle {
   _id: string
@@ -11,7 +34,7 @@ export interface SanityArticle {
   title: string
   excerpt: string
   publishedAt: string
-  body?: PortableBlock[]
+  body?: ArticleBlock[]
 }
 
 export interface SanityCase {
