@@ -1,6 +1,7 @@
 export interface PortableBlock {
   _key: string
   style?: string
+  listItem?: string
   children: { text: string }[]
 }
 
