@@ -31,6 +31,14 @@
     "testimonials": {
       "title": "Client Testimonials — Open Horizons",
       "description": "Client testimonials on IT outsourcing and infrastructure audits with Open Horizons."
+    },
+    "oferta": {
+      "title": "Public Offer — Open Horizons",
+      "description": "Public offer for IT outsourcing services provided by Open Horizons."
+    },
+    "privacyPolicy": {
+      "title": "Privacy Policy — Open Horizons",
+      "description": "Personal data processing policy of Open Horizons."
     }
   },
   "nav": {

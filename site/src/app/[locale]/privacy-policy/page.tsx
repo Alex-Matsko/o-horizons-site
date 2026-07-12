@@ -1,5 +1,14 @@
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import { getTranslations } from 'next-intl/server'
+import { buildMetadata } from '@/lib/seo'
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'metadata.privacyPolicy' })
+  return buildMetadata({ locale, path: '/privacy-policy', title: t('title'), description: t('description') })
+}
 
 const h2 = 'text-lg font-semibold text-[#e2e8f0] mt-9 mb-3'
 const p = 'text-sm text-[#94a3b8] leading-[1.8]'

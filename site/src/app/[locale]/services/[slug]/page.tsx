@@ -4,6 +4,24 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { getService } from '@/lib/sanity/queries'
 import { Link } from '@/i18n/navigation'
+import { buildMetadata } from '@/lib/seo'
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
+  const { locale, slug } = await params
+  const [service, t] = await Promise.all([
+    getService(slug, locale),
+    getTranslations({ locale, namespace: 'metadata.services' }),
+  ])
+  if (!service) return buildMetadata({ locale, path: `/services/${slug}`, title: t('title'), description: t('description') })
+  const brand = locale === 'ru' ? 'Открытые Горизонты' : 'Open Horizons'
+  return buildMetadata({
+    locale,
+    path: `/services/${slug}`,
+    title: `${service.title} — ${brand}`,
+    description: service.shortDescription || t('description'),
+  })
+}
 
 export default async function ServicePage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
   const { locale, slug } = await params

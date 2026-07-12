@@ -4,12 +4,13 @@ import { Link } from '@/i18n/navigation'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { getServices } from '@/lib/sanity/queries'
+import { buildMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'metadata.services' })
-  return { title: t('title'), description: t('description') }
+  return buildMetadata({ locale, path: '/services', title: t('title'), description: t('description') })
 }
 
 function ServicesContent({ locale, services }: { locale: string; services: { _id: string; slug: { current: string }; title: string; icon: string; shortDescription: string }[] }) {

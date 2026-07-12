@@ -4,6 +4,24 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { getCase } from '@/lib/sanity/queries'
 import { Link } from '@/i18n/navigation'
+import { buildMetadata } from '@/lib/seo'
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
+  const { locale, slug } = await params
+  const [caseItem, t] = await Promise.all([
+    getCase(slug, locale),
+    getTranslations({ locale, namespace: 'metadata.cases' }),
+  ])
+  if (!caseItem) return buildMetadata({ locale, path: `/cases/${slug}`, title: t('title'), description: t('description') })
+  const brand = locale === 'ru' ? 'Открытые Горизонты' : 'Open Horizons'
+  return buildMetadata({
+    locale,
+    path: `/cases/${slug}`,
+    title: `${caseItem.title} — ${brand}`,
+    description: caseItem.excerpt || t('description'),
+  })
+}
 
 export default async function CasePage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
   const { locale, slug } = await params
