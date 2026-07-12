@@ -127,36 +127,31 @@
     "tag": "Cost",
     "title": "Cost Estimate Examples",
     "sub": "Reference figures based on real client configurations. The exact price is fixed in the contract after an audit.",
-    "popular": "Typical case",
     "cta": "Estimate your setup",
     "note": "These are reference points: the final amount depends on your infrastructure. Estimate your own configuration in the calculator — it takes a minute.",
     "items": [
       {
         "name": "Small office",
         "subtitle": "up to 10 employees, no own servers",
-        "price": "from ₽25,000/mo",
-        "popular": false,
+        "price": "from ₽10,000/mo",
         "features": ["Workstation and office network support", "Email and shared documents", "Backup control", "Business-hours helpdesk"]
       },
       {
-        "name": "Company running 1C",
+        "name": "Company with servers",
         "subtitle": "1–2 servers, up to 30 employees",
-        "price": "from ₽45,000/mo",
-        "popular": true,
-        "features": ["Everything in Small office", "1C and database support", "24/7 server monitoring", "Incident fixed within 4 hours"]
+        "price": "from ₽25,000/mo",
+        "features": ["Everything in Small office", "Server and corporate systems support", "24/7 server monitoring", "Incident fixed within 4 hours"]
       },
       {
         "name": "Manufacturing or multi-site",
         "subtitle": "several servers, business-critical 1C",
-        "price": "from ₽70,000/mo",
-        "popular": false,
+        "price": "from ₽45,000/mo",
         "features": ["Full infrastructure management", "Secure links between sites", "Priority 24/7 support", "Incident fixed within 1 hour"]
       },
       {
         "name": "Outsourced IT director",
         "subtitle": "strategy and full IT management",
-        "price": "from ₽120,000/mo",
-        "popular": false,
+        "price": "from ₽100,000/mo",
         "features": ["Everything above", "IT budget planning", "Vendor and procurement management", "IT that scales with the business"]
       }
     ]

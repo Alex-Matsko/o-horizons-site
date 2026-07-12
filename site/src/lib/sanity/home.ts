@@ -39,10 +39,9 @@ export interface PricingContent {
   tag: string
   title: string
   sub: string
-  popular: string
   cta: string
   note?: string
-  items: { name: string; subtitle: string; price: string; popular: boolean; features: string[] }[]
+  items: { name: string; subtitle: string; price: string; features: string[] }[]
 }
 
 export interface AboutContent {
@@ -135,7 +134,7 @@ export async function getPricingContent(locale: string): Promise<PricingContent>
   const doc = await getPricingSection(locale)
   if (doc) {
     return {
-      tag: doc.tag, title: doc.title, sub: doc.sub, popular: doc.popular,
+      tag: doc.tag, title: doc.title, sub: doc.sub,
       cta: doc.cta, note: doc.note, items: doc.items,
     }
   }

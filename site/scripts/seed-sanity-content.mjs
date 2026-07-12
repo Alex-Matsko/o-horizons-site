@@ -57,7 +57,7 @@ function singletonDocs() {
     docs.push({ _id: `hero-${locale}`, _type: 'hero', language: locale, ...m.hero })
     docs.push({ _id: `servicesSection-${locale}`, _type: 'servicesSection', language: locale, tag: m.services.tag, title: m.services.title })
     docs.push({ _id: `auditsSection-${locale}`, _type: 'auditsSection', language: locale, tag: m.audits.tag, title: m.audits.title, sub: m.audits.sub, items: m.audits.items })
-    docs.push({ _id: `pricingSection-${locale}`, _type: 'pricingSection', language: locale, tag: m.pricing.tag, title: m.pricing.title, sub: m.pricing.sub, popular: m.pricing.popular, cta: m.pricing.cta, note: m.pricing.note, items: m.pricing.items })
+    docs.push({ _id: `pricingSection-${locale}`, _type: 'pricingSection', language: locale, tag: m.pricing.tag, title: m.pricing.title, sub: m.pricing.sub, cta: m.pricing.cta, note: m.pricing.note, items: m.pricing.items })
     docs.push({ _id: `aboutSection-${locale}`, _type: 'aboutSection', language: locale, tag: m.about.tag, title: m.about.title, sub: m.about.sub, items: m.about.items })
     docs.push({ _id: `faqSection-${locale}`, _type: 'faqSection', language: locale, tag: m.faq.tag, title: m.faq.title, items: m.faq.items })
     docs.push({

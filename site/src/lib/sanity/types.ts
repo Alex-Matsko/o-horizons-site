@@ -76,10 +76,9 @@ export interface SanityPricingSection {
   tag: string
   title: string
   sub: string
-  popular: string
   cta: string
   note?: string
-  items: { name: string; subtitle: string; price: string; popular: boolean; features: string[] }[]
+  items: { name: string; subtitle: string; price: string; features: string[] }[]
 }
 
 export interface SanityAboutSection {
