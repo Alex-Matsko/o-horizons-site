@@ -223,7 +223,7 @@ async function ensureTelegramTopic(sessionId, name, phone) {
   if (!telegramEnabled) return null;
   if (telegramThreadsBySession[sessionId]) return telegramThreadsBySession[sessionId];
 
-  const topicName = `${name || 'Гость'} · ${phone || '—'}`.slice(0, 128);
+  const topicName = `[Чат] ${name || 'Гость'} · ${phone || '—'}`.slice(0, 128);
   const res = await tg('createForumTopic', { chat_id: TELEGRAM_CHAT_ID, name: topicName });
   if (!res.ok) return null;
 
@@ -246,6 +246,24 @@ async function sendTelegramText(sessionId, name, phone, text) {
   const threadId = await ensureTelegramTopic(sessionId, name, phone);
   if (!threadId) return;
   await tg('sendMessage', { chat_id: TELEGRAM_CHAT_ID, message_thread_id: threadId, text });
+}
+
+// Contact form (/api/send) — one-shot, no ongoing session/polling, so it
+// just gets its own topic per submission rather than reusing one by id.
+async function relayFormToTelegram({ name, company, phone, contact, message }) {
+  if (!telegramEnabled) return;
+  const topicName = `[Форма] ${name} · ${contact}`.slice(0, 128);
+  const res = await tg('createForumTopic', { chat_id: TELEGRAM_CHAT_ID, name: topicName });
+  if (!res.ok) return;
+
+  const threadId = res.result.message_thread_id;
+  const lines = ['👤 ' + name];
+  if (company) lines.push('🏢 ' + company);
+  if (phone)   lines.push('📞 ' + phone);
+  lines.push('✉️ ' + contact);
+  if (message) lines.push('💬 ' + message);
+
+  await tg('sendMessage', { chat_id: TELEGRAM_CHAT_ID, message_thread_id: threadId, text: lines.join('\n') });
 }
 
 /* ══════════════════════════════════════════════════════
@@ -599,6 +617,10 @@ app.post('/api/send', async (req, res) => {
     console.error('Mail error:', err.message);
     res.status(500).json({ error: 'Failed to send email' });
   }
+
+  relayFormToTelegram({ name, company, phone, contact, message }).catch(e =>
+    console.error('relayFormToTelegram:', e.message)
+  );
 });
 
 const PORT = process.env.PORT || 3000;
