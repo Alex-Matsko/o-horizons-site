@@ -18,6 +18,8 @@ services:
       args:
         NEXT_PUBLIC_SANITY_PROJECT_ID: ${NEXT_PUBLIC_SANITY_PROJECT_ID:-}
         NEXT_PUBLIC_SANITY_DATASET: ${NEXT_PUBLIC_SANITY_DATASET:-production}
+        NEXT_PUBLIC_YM_ID: ${NEXT_PUBLIC_YM_ID:-}
+        NEXT_PUBLIC_GA_ID: ${NEXT_PUBLIC_GA_ID:-}
     container_name: o-horizons-nextsite
     environment:
       - MAILER_URL=http://mailer:3000

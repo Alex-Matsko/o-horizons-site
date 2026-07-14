@@ -5,6 +5,7 @@ import { getMessages, getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
 import { OG_IMAGE_URL } from '@/lib/seo'
+import Analytics from '@/components/Analytics'
 import '../globals.css'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'], display: 'swap' })
@@ -71,6 +72,7 @@ export default async function LocaleLayout({
     <html lang={locale} className={inter.className}>
       <body className="min-h-screen flex flex-col bg-[#0d0f14]">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <Analytics />
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>
