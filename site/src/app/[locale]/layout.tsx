@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, getTranslations } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
+import { OG_IMAGE_URL } from '@/lib/seo'
 import '../globals.css'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'], display: 'swap' })
@@ -29,7 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       title: t('title'),
       description: t('description'),
       siteName,
-      images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: t('title') }],
+      images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: t('title') }],
       locale: locale === 'ru' ? 'ru_RU' : 'en_US',
     },
     icons: {
