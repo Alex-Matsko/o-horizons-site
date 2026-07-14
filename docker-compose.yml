@@ -34,10 +34,27 @@ services:
     container_name: o-horizons-mailer
     env_file: .env
     restart: unless-stopped
+    depends_on:
+      - xray
     expose:
       - "3000"
     volumes:
       - mailer-data:/app/data
+
+  # Local SOCKS5 egress for the mailer's Telegram API calls (api.telegram.org
+  # is blocked from RU IPs). Connects out through your own 3X-UI/Xray VPN —
+  # see xray/config.example.json for the config shape; the real
+  # xray/config.json (with your VLESS/Reality credentials) is gitignored,
+  # create it on the host directly.
+  xray:
+    image: ghcr.io/xtls/xray-core:latest
+    container_name: o-horizons-xray
+    restart: unless-stopped
+    volumes:
+      - ./xray/config.json:/etc/xray/config.json:ro
+    command: ["run", "-config", "/etc/xray/config.json"]
+    expose:
+      - "1080"
 
 volumes:
   mailer-data:

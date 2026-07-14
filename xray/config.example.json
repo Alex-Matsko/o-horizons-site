@@ -1,0 +1,40 @@
+{
+  "log": { "loglevel": "warning" },
+  "inbounds": [
+    {
+      "listen": "0.0.0.0",
+      "port": 1080,
+      "protocol": "socks",
+      "settings": { "auth": "noauth", "udp": true }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "REPLACE_WITH_VPN_SERVER_HOST",
+            "port": 443,
+            "users": [
+              { "id": "REPLACE_WITH_UUID", "encryption": "none" }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "grpc",
+        "grpcSettings": { "serviceName": "" },
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "REPLACE_WITH_CAMOUFLAGE_SNI",
+          "fingerprint": "chrome",
+          "publicKey": "REPLACE_WITH_REALITY_PUBLIC_KEY",
+          "shortId": "REPLACE_WITH_SHORT_ID",
+          "spiderX": "REPLACE_WITH_SPIDER_X",
+          "mldsa65Verify": "REPLACE_WITH_POST_QUANTUM_VERIFY_KEY"
+        }
+      }
+    }
+  ]
+}
