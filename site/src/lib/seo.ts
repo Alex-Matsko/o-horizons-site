@@ -26,7 +26,8 @@ export function buildMetadata({
       title,
       description,
       url,
-      images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
+      siteName: 'Открытые Горизонты · Open Horizons',
+      images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: title }],
       locale: locale === 'ru' ? 'ru_RU' : 'en_US',
     },
     alternates: {
