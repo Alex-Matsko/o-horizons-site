@@ -366,14 +366,19 @@ async function appendToChatLead({ sessionId, name, phone, history, event }) {
         text: '🔔 Пользователь запросил оператора',
       }});
     } else if (Array.isArray(history) && history.length) {
-      const last = history[history.length - 1];
-      if (last && last.text) {
+      // `history` here is the *new* entries since the last call (usually the
+      // user's message and, if the bot replied, its reply right after) — not
+      // the full conversation. Relay all of them, not just the last one, or
+      // whichever entry comes last (the bot's reply) silently swallows the
+      // user's own message.
+      for (const entry of history) {
+        if (!entry || !entry.text) continue;
         session.msgSeq += 1;
-        const prefix = last.role === 'user' ? '👤 ' : '🤖 ';
+        const prefix = entry.role === 'user' ? '👤 ' : '🤖 ';
         await post1C({ createMessage: {
           extId: convId + '-' + session.msgSeq,
           extConversationId: convId,
-          text: prefix + last.text,
+          text: prefix + entry.text,
         }});
       }
     }
@@ -387,10 +392,10 @@ async function appendToChatLead({ sessionId, name, phone, history, event }) {
     } else if (event === 'operator_requested') {
       await sendTelegramText(sessionId, name, phone, '🔔 Пользователь запросил оператора');
     } else if (Array.isArray(history) && history.length) {
-      const last = history[history.length - 1];
-      if (last && last.text) {
-        const prefix = last.role === 'user' ? '👤 ' : '🤖 ';
-        await sendTelegramText(sessionId, name, phone, prefix + last.text);
+      for (const entry of history) {
+        if (!entry || !entry.text) continue;
+        const prefix = entry.role === 'user' ? '👤 ' : '🤖 ';
+        await sendTelegramText(sessionId, name, phone, prefix + entry.text);
       }
     }
   } catch (e) {
@@ -431,18 +436,33 @@ function getBotReply(session, text) {
     };
   }
 
+  // Same canned reply twice in a row means the keyword matching isn't
+  // actually addressing the question — repeating it a third time would just
+  // look broken, so hand off to a human instead of looping.
+  const respond = (reply) => {
+    if (reply && session.lastBotReply === reply) {
+      session.operatorMode = true;
+      return {
+        reply: '🔔 Вижу, вопрос непростой — подключаю инженера, он ответит здесь в чате.',
+        operatorMode: true,
+      };
+    }
+    session.lastBotReply = reply;
+    return { reply };
+  };
+
   if (/^(привет|здравствуй|добрый|hello|hi\b|хай|ку\b)/.test(lower))
-    return { reply: 'Добрый день! Чем могу помочь? Расскажу о тарифах, аудите — или сразу соединю с инженером.' };
+    return respond('Добрый день! Чем могу помочь? Расскажу о тарифах, аудите — или сразу соединю с инженером.');
 
   if (lower === 'задать вопрос')
-    return { reply: 'Конечно! Напишите ваш вопрос — отвечу или подключу инженера.' };
+    return respond('Конечно! Напишите ваш вопрос — отвечу или подключу инженера.');
   const exact = BOT_REPLIES[lower];
-  if (exact) return { reply: exact };
+  if (exact) return respond(exact);
 
   for (const kw of KEYWORDS) {
     if (kw.words.some(w => lower.includes(w))) {
-      if (kw.reply) return { reply: kw.reply };
-      if (kw.key)   return { reply: BOT_REPLIES[kw.key] };
+      if (kw.reply) return respond(kw.reply);
+      if (kw.key)   return respond(BOT_REPLIES[kw.key]);
     }
   }
 
@@ -454,7 +474,7 @@ function getBotReply(session, text) {
     };
   }
 
-  return { reply: 'Уточните, пожалуйста: вас интересуют тарифы, аудит IT-инфраструктуры — или хотите сразу поговорить с инженером?' };
+  return respond('Уточните, пожалуйста: вас интересуют тарифы, аудит IT-инфраструктуры — или хотите сразу поговорить с инженером?');
 }
 
 /* ══════════════════════════════════════════════════════
