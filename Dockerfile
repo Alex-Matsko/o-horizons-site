@@ -1,9 +1,7 @@
 FROM nginx:1.27-alpine
 
-# Copy nginx config
+# Reverse proxy in front of the `site` (Next.js) and `mailer` services —
+# no static files are served from this image anymore.
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Copy all static site files
-COPY . /usr/share/nginx/html/
 
 EXPOSE 80

@@ -6,12 +6,26 @@ services:
     container_name: o-horizons-site
     ports:
       - "80:80"
-      - "443:443"
+    depends_on:
+      - site
+      - mailer
+    restart: unless-stopped
+
+  site:
+    build:
+      context: ./site
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SANITY_PROJECT_ID: ${NEXT_PUBLIC_SANITY_PROJECT_ID:-}
+        NEXT_PUBLIC_SANITY_DATASET: ${NEXT_PUBLIC_SANITY_DATASET:-production}
+    container_name: o-horizons-nextsite
+    environment:
+      - MAILER_URL=http://mailer:3000
     depends_on:
       - mailer
     restart: unless-stopped
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+    expose:
+      - "3000"
 
   mailer:
     build:
