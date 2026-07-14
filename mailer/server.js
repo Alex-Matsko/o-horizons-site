@@ -407,26 +407,87 @@ async function appendToChatLead({ sessionId, name, phone, history, event }) {
    Bot logic
 ══════════════════════════════════════════════════════ */
 const BOT_REPLIES = {
-  'узнать о тарифах': 'У нас 4 тарифа:\n\n• Офис Base — от 25 000 ₽/мес (до 10 ПК, сеть, почта)\n• Infra Standard — от 45 000 ₽/мес (серверы 1С, MSSQL, бэкапы)\n• Infra Premium — от 70 000 ₽/мес (SLA, 24/7)\n• Virtual CIO — от 120 000 ₽/мес (IT-директор на аутсорсе)\n\nТочную стоимость — на калькуляторе: https://o-horizons.com/calculator',
+  'узнать о тарифах': 'У нас 4 тарифа:\n\n• Офис Base — от 25 000 ₽/мес (до 10 ПК, сеть, почта)\n• Infra Standard — от 45 000 ₽/мес (серверы 1С, MSSQL, бэкапы)\n• Infra Premium — от 70 000 ₽/мес (SLA, 24/7)\n• Virtual CIO — от 120 000 ₽/мес (IT-директор на аутсорсе)\n\nТочную стоимость — на калькуляторе: https://o-horizons.com/calculator\nИли напишите "посчитать" — прикину стоимость прямо здесь, это займёт полминуты.',
   'заказать аудит':   'Отлично! Комплексный аудит — от 25 000 ₽. Проверяем бэкапы, серверы, 1С, удалённый доступ. Стоимость зачтётся в первый месяц сопровождения.',
   'задать вопрос':    null,
 };
 
 const OPERATOR_WORDS = ['оператор','инженер','человек','менеджер','специалист','живой','поддержк','связат','соедин','подключи'];
+const CALC_TRIGGER_WORDS = ['посчита', 'рассчита', 'расчет', 'расчёт', 'калькулятор'];
 
 const KEYWORDS = [
   { words: ['цен','тариф','стоит','сколько','прайс'], key: 'узнать о тарифах' },
   { words: ['аудит','проверк','провери'],              key: 'заказать аудит'   },
   { words: ['1с','1c','mssql','базы','сервер','бэкап','backup','виртуал','vmware','proxmox','инфраструктур','компьютер','рабочи'],
-    reply: 'Мы специализируемся именно на этом! Обслуживаем серверы 1С, MSSQL, Veeam, VMware/Proxmox и рабочие места. Расскажите подробнее — подберём тариф.' },
+    reply: 'Мы специализируемся именно на этом! Обслуживаем серверы 1С, MSSQL, Veeam, VMware/Proxmox и рабочие места. Расскажите подробнее — подберём тариф. Или напишите "посчитать" для быстрой прикидки стоимости.' },
   { words: ['безопасност','vpn','mikrotik','firewall','ngfw'],
     reply: 'Настройка VPN, MikroTik и NGFW — наш профиль. Хотите узнать стоимость или заказать аудит?' },
   { words: ['24/7','24х7','круглосуточ','постоянн'],
     reply: 'Тариф Infra Premium и Virtual CIO включают поддержку 24/7 с гарантированным SLA. Рассказать подробнее?' },
 ];
 
+/* ══════════════════════════════════════════════════════
+   Quick price estimate — same formula as /calculator (site/src/app/
+   [locale]/calculator/page.tsx), fixed at the SLA "Стандарт" (×1.0) and
+   "6 месяцев" (5% скидка) tiers since this is a 3-question chat estimate,
+   not the full form. No specific systems (1С, почта, бэкапы...) are
+   priced in here — the reply says so and links to the real calculator.
+══════════════════════════════════════════════════════ */
+function parseCalcNumber(text) {
+  const m = text.match(/\d+/);
+  if (m) return Math.max(0, parseInt(m[0], 10));
+  if (/нет|ноль/i.test(text)) return 0;
+  return null;
+}
+
+function calcQuickPrice({ physical, vms, users }) {
+  const subtotal = (physical * 4500 + vms * 1200 + users * 700) * 1.0; // SLA "Стандарт"
+  return Math.round(subtotal * (1 - 5 / 100) / 100) * 100; // "6 месяцев", скидка 5%
+}
+
+function handleCalcStep(session, text) {
+  const lower = text.toLowerCase();
+  if (OPERATOR_WORDS.some(w => lower.includes(w))) {
+    session.calc = null;
+    session.operatorMode = true;
+    return {
+      reply: '🔔 Понял, соединяю с инженером! Обычно отвечаем в течение нескольких минут. Напишите здесь — оператор увидит сообщение.',
+      operatorMode: true,
+    };
+  }
+
+  const n = parseCalcNumber(text);
+  if (n === null) return { reply: 'Не расслышал число — напишите просто цифрой, например: 3' };
+
+  const c = session.calc;
+  if (c.step === 0) {
+    c.physical = n;
+    c.step = 1;
+    return { reply: 'Понял. Сколько виртуальных машин (ВМ)?' };
+  }
+  if (c.step === 1) {
+    c.vms = n;
+    c.step = 2;
+    return { reply: 'И сколько рабочих мест (сотрудников)?' };
+  }
+
+  c.users = n;
+  const total = calcQuickPrice(c);
+  session.calc = null;
+  return {
+    reply: `Ориентировочно: ${total.toLocaleString('ru-RU')} ₽/мес (тариф "Стандарт", контракт на 6 месяцев, без учёта конкретных систем — 1С, почта, бэкапы и т.п. добавят к стоимости).\n\nТочный расчёт под вашу инфраструктуру: https://o-horizons.com/calculator`,
+  };
+}
+
 function getBotReply(session, text) {
   const lower = text.toLowerCase();
+
+  if (session.calc) return handleCalcStep(session, text.trim());
+
+  if (CALC_TRIGGER_WORDS.some(w => lower.includes(w))) {
+    session.calc = { step: 0 };
+    return { reply: 'Отлично! Сколько у вас физических серверов? (0, если нет)' };
+  }
 
   if (OPERATOR_WORDS.some(w => lower.includes(w))) {
     session.operatorMode = true;
