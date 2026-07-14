@@ -3,6 +3,8 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 
 interface ChatMsg { role: 'user' | 'bot' | 'operator'; text: string; ts: number }
 
+const OPERATOR_NAME = 'Иван'
+
 function genId() {
   return 'sid_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8)
 }
@@ -201,15 +203,23 @@ export default function ChatWidget() {
                   <p className="text-xs text-[#475569] text-center">Напишите сообщение или выберите тему:</p>
                 )}
                 {messages.map((m, i) => (
-                  <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] px-3 py-2 rounded-xl text-sm leading-relaxed ${
-                      m.role === 'user'
-                        ? 'rounded-br-sm text-white bg-gradient-to-br from-[#3b82f6] to-[#2563eb]'
-                        : m.role === 'operator'
-                        ? 'bg-[#3b82f6]/20 border border-[#3b82f6]/30 text-[#e2e8f0]'
-                        : 'bg-[#0d0f14] border border-white/[0.07] text-[#94a3b8]'
-                    }`}>
-                      {m.text}
+                  <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} ${m.role === 'operator' ? 'items-end gap-2' : ''}`}>
+                    {m.role === 'operator' && (
+                      <img src="/operator-avatar.svg" alt={OPERATOR_NAME} className="w-7 h-7 rounded-full flex-shrink-0" />
+                    )}
+                    <div className="flex flex-col max-w-[80%]">
+                      {m.role === 'operator' && (
+                        <span className="text-[10px] text-[#64748b] mb-0.5 ml-1">{OPERATOR_NAME}</span>
+                      )}
+                      <div className={`px-3 py-2 rounded-xl text-sm leading-relaxed ${
+                        m.role === 'user'
+                          ? 'rounded-br-sm text-white bg-gradient-to-br from-[#3b82f6] to-[#2563eb]'
+                          : m.role === 'operator'
+                          ? 'bg-[#3b82f6]/20 border border-[#3b82f6]/30 text-[#e2e8f0]'
+                          : 'bg-[#0d0f14] border border-white/[0.07] text-[#94a3b8]'
+                      }`}>
+                        {m.text}
+                      </div>
                     </div>
                   </div>
                 ))}
