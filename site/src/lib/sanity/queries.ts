@@ -11,8 +11,6 @@ import type {
   SanityAboutSection,
   SanityFaqSection,
   SanityContactInfo,
-  SanityProcessSteps,
-  SanitySlaGuarantee,
 } from './types'
 
 export async function getArticles(locale: string): Promise<SanityArticle[]> {
@@ -121,20 +119,6 @@ export async function getFaqSection(locale: string): Promise<SanityFaqSection | 
 export async function getContactInfo(locale: string): Promise<SanityContactInfo | null> {
   return sanityFetch<SanityContactInfo>(
     `*[_type == "contactInfo" && language == $locale][0]`,
-    { locale }
-  )
-}
-
-export async function getProcessSteps(locale: string): Promise<SanityProcessSteps | null> {
-  return sanityFetch<SanityProcessSteps>(
-    `*[_type == "processSteps" && language == $locale][0]`,
-    { locale }
-  )
-}
-
-export async function getSlaGuarantee(locale: string): Promise<SanitySlaGuarantee | null> {
-  return sanityFetch<SanitySlaGuarantee>(
-    `*[_type == "slaGuarantee" && language == $locale][0]`,
     { locale }
   )
 }

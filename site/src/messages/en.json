@@ -31,21 +31,9 @@
     "testimonials": {
       "title": "Client Testimonials — Open Horizons",
       "description": "Client testimonials on IT outsourcing and infrastructure audits with Open Horizons."
-    },
-    "oferta": {
-      "title": "Public Offer — Open Horizons",
-      "description": "Public offer for IT outsourcing services provided by Open Horizons."
-    },
-    "privacyPolicy": {
-      "title": "Privacy Policy — Open Horizons",
-      "description": "Personal data processing policy of Open Horizons."
     }
   },
   "nav": {
-    "brandA": "Open",
-    "brandB": "Horizons",
-    "menuAria": "Menu",
-    "homeAria": "Home",
     "services": "Services",
     "cases": "Cases",
     "articles": "Articles",
@@ -66,9 +54,8 @@
     "ctaOutline": "About the audit",
     "stats": [
       { "value": "98%", "label": "SLA uptime" },
-      { "value": "50+", "label": "projects" },
-      { "value": "< 1h", "label": "incident response" },
-      { "value": "2018", "label": "founded" }
+      { "value": "50+", "label": "completed projects" },
+      { "value": "< 1h", "label": "incident response" }
     ],
     "serverCard": {
       "lines": [
@@ -81,34 +68,16 @@
       "footer": "Can't get any greener 🟢"
     }
   },
-  "processSteps": {
-    "tag": "Getting started",
-    "title": "How to start working with us",
-    "items": [
-      { "title": "Request & call", "description": "Leave a request — we call back within one business day to discuss the task and your infrastructure." },
-      { "title": "Audit", "description": "We audit your infrastructure: document the current state, risks, and remediation cost." },
-      { "title": "Contract & onboarding", "description": "The audit cost is credited to the first month. We sign a contract with a fixed SLA and get started." }
-    ]
-  },
-  "slaGuarantee": {
-    "tag": "SLA guarantee",
-    "title": "We're accountable for deadlines — not just promising",
-    "sub": "Response times are fixed in the contract for every plan. If we miss them, that's our liability, not your risk.",
-    "items": [
-      { "title": "Response time — in the contract, not just talk", "description": "From 1 hour to the next business day, depending on the plan. Fixed in the SLA." },
-      { "title": "Compensation for SLA breaches", "description": "If we breach the SLA, a reducing coefficient is applied to that month's fee. A missed deadline lowers your invoice — it doesn't just earn an apology." }
-    ]
-  },
   "services": {
     "tag": "What we do",
     "title": "Services",
     "items": [
-      { "icon": "🗄️", "title": "1C Support", "description": "Your 1C runs fast and without failures: we manage the servers and databases, apply updates and control employee access. Accounting and warehouse never stall." },
-      { "icon": "💾", "title": "Data Loss Protection", "description": "We set up automatic backups of all critical data and regularly verify the copies actually restore. Losing a database or documents is off the table." },
-      { "icon": "⚡", "title": "Servers & Computing", "description": "Company servers run stably without overspending: we plan capacity for your workload, watch the load and fix issues before they stop the business." },
-      { "icon": "🔒", "title": "Breach & Leak Protection", "description": "Secure remote access for employees, control over who can access what, and continuous monitoring for suspicious activity across the company network." },
-      { "icon": "📋", "title": "Bitrix24 Support", "description": "We tune Bitrix24 to your processes: employee permissions, telephony, integrations and automation of routine operations — no in-house specialist needed." },
-      { "icon": "📞", "title": "Telephony & Communications", "description": "Customer communication without missed calls: office telephony, call recording, smart call routing and CRM integration." }
+      { "icon": "🗄️", "title": "1C Infrastructure Support", "description": "Administration of 1C and MSSQL servers, configuration updates, access rights, data exchanges and 24/7 availability monitoring." },
+      { "icon": "💾", "title": "Backup & Recovery", "description": "Deployment of Veeam B&R to the 3-2-1 scheme, restore testing, retention policies. RTO and RPO under control — data loss excluded." },
+      { "icon": "⚡", "title": "Virtualisation & Server Infrastructure", "description": "Deployment and support of VMware ESXi, Hyper-V and Proxmox: resource planning, HA configurations, VM migrations and performance monitoring." },
+      { "icon": "🔒", "title": "Network Security & Access", "description": "Firewall policies, VPN for remote employees, network segmentation and incident monitoring — no vulnerabilities, no unauthorised access." },
+      { "icon": "📋", "title": "Bitrix24 Support", "description": "Setup and ongoing support of Bitrix24 portal: company structure, access rights, integrations, telephony, business processes and automation." },
+      { "icon": "📞", "title": "Telephony & Communications", "description": "IP telephony, SIP, virtual PBX, call routing scenarios, call recording and integrations with CRM and Bitrix24." }
     ]
   },
   "audits": {
@@ -124,41 +93,45 @@
     ]
   },
   "pricing": {
-    "tag": "Cost",
-    "title": "Cost Estimate Examples",
-    "sub": "Reference figures based on real client configurations. The exact price is fixed in the contract after an audit.",
-    "cta": "Estimate your setup",
-    "note": "These are reference points: the final amount depends on your infrastructure. Estimate your own configuration in the calculator — it takes a minute.",
+    "tag": "Pricing",
+    "title": "Managed Service Plans",
+    "sub": "Fixed monthly fee instead of hourly rates and unpredictable invoices.",
+    "popular": "Popular",
+    "cta": "Choose plan",
     "items": [
       {
-        "name": "Small office",
-        "subtitle": "up to 10 employees, no own servers",
-        "price": "from ₽10,000/mo",
-        "features": ["Workstation and office network support", "Email and shared documents", "Backup control", "Business-hours helpdesk"]
-      },
-      {
-        "name": "Company with servers",
-        "subtitle": "1–2 servers, up to 30 employees",
+        "name": "Office Base",
+        "subtitle": "Small office",
         "price": "from ₽25,000/mo",
-        "features": ["Everything in Small office", "Server and corporate systems support", "24/7 server monitoring", "Incident fixed within 4 hours"]
+        "popular": false,
+        "features": ["Up to 10 workstations", "LAN and mail server support", "Basic monitoring", "Response: next business day"]
       },
       {
-        "name": "Manufacturing or multi-site",
-        "subtitle": "several servers, business-critical 1C",
+        "name": "Infra Standard",
+        "subtitle": "Production segment",
         "price": "from ₽45,000/mo",
-        "features": ["Full infrastructure management", "Secure links between sites", "Priority 24/7 support", "Incident fixed within 1 hour"]
+        "popular": true,
+        "features": ["1C + MSSQL servers", "VM and backup management", "24/7 monitoring + alerts", "Response: up to 4 hours"]
       },
       {
-        "name": "Outsourced IT director",
-        "subtitle": "strategy and full IT management",
-        "price": "from ₽100,000/mo",
-        "features": ["Everything above", "IT budget planning", "Vendor and procurement management", "IT that scales with the business"]
+        "name": "Infra Premium",
+        "subtitle": "Critical infrastructure",
+        "price": "from ₽70,000/mo",
+        "popular": false,
+        "features": ["Everything in Infra Standard", "Full infrastructure management", "SLA, priority support 24/7", "Response: up to 1 hour"]
+      },
+      {
+        "name": "Virtual CIO",
+        "subtitle": "Full IT management",
+        "price": "from ₽120,000/mo",
+        "popular": false,
+        "features": ["Everything in Infra Premium", "Fractional IT Director", "Vendor and budget management", "IT strategy and roadmap"]
       }
     ]
   },
   "about": {
     "tag": "About",
-    "title": "Our principles",
+    "title": "How we work",
     "sub": "We work where others struggle: 1C, MSSQL, Exchange, VMware, Proxmox, Bitrix24. We go deep into the niche — it's our primary focus, not a side service.",
     "items": [
       { "icon": "🔍", "title": "Audit first", "description": "Every project starts with an audit. We review backups, servers and remote access — and quantify the risks in money." },
@@ -178,8 +151,7 @@
       { "q": "How long does the audit take?", "a": "Typically 3 to 5 business days, depending on infrastructure size: number of servers, VMs and areas to review. Smaller companies usually take 2 to 3 days." },
       { "q": "Do you need physical access to the servers?", "a": "No. In most cases remote access is sufficient. We work via VPN or a secure tunnel without an on-site visit. On-site visits are available on request." },
       { "q": "What does IT outsourcing include?", "a": "It depends on the plan: from monitoring and backup control through to full management of infrastructure, 1C, security and a fractional IT director role." },
-      { "q": "Can we hand over only part of the tasks?", "a": "Yes. We can tailor the scope flexibly: monitoring and backups only, 1C infrastructure only, or specific areas. The final scope is fixed in the contract." },
-      { "q": "What's the difference between you and an in-house sysadmin?", "a": "An in-house sysadmin is one person with limited expertise and a single point of failure (vacation, sick leave). We're a team with experience across 1C, VMware, Proxmox and Bitrix24, a fixed-response SLA, and backup coverage if any one specialist is unavailable." }
+      { "q": "Can we hand over only part of the tasks?", "a": "Yes. We can tailor the scope flexibly: monitoring and backups only, 1C infrastructure only, or specific areas. The final scope is fixed in the contract." }
     ]
   },
   "contact": {
@@ -225,7 +197,7 @@
   },
   "footer": {
     "copy": "© 2026 Open Horizons. IT outsourcing for business.",
-    "inn": "Sole proprietor Alexander Matsko · TIN 667700710490",
+    "inn": "Open Horizons LLC · TIN 6685239460",
     "shareLabel": "Share on Telegram",
     "privacy": "Privacy Policy",
     "oferta": "Terms"
@@ -253,7 +225,7 @@
     "note": "Preliminary estimate. Final cost is confirmed after an infrastructure audit.",
     "auditTip": "💡 If you choose an infrastructure audit, its cost is deducted from the first month of managed services.",
     "getCta": "Get a proposal",
-    "pricingCta": "Cost examples",
+    "pricingCta": "View plans",
     "modalTitle": "Get a proposal",
     "modalSub": "We will clarify the details and send an exact quote within 2 hours",
     "modalContacts": "Or write to us directly:",
@@ -301,33 +273,21 @@
       "title": "All services",
       "sub": "Full spectrum of IT outsourcing and infrastructure managed services.",
       "empty": "Services coming soon.",
-      "readMore": "Learn more",
-      "backAll": "← All services",
-      "detailPlaceholder": "Detailed service description will appear here.",
-      "forWhom": "Who it's for",
-      "problems": "Problems it solves",
-      "included": "What's included",
-      "result": "The outcome",
-      "ctaContact": "Discuss your task",
-      "ctaCalc": "Estimate the cost"
+      "readMore": "Learn more"
     },
     "articles": {
       "tag": "Articles",
       "title": "Knowledge Base",
       "sub": "Useful materials on IT infrastructure and outsourcing.",
       "empty": "Articles coming soon.",
-      "readMore": "Read more",
-      "backAll": "← All articles",
-      "detailPlaceholder": "Article content will appear here."
+      "readMore": "Read more"
     },
     "cases": {
       "tag": "Cases",
       "title": "Completed Projects",
       "sub": "Examples of how we solve client challenges.",
       "empty": "Cases coming soon.",
-      "readMore": "Read",
-      "backAll": "← All cases",
-      "detailPlaceholder": "Detailed case description will appear here."
+      "readMore": "Read"
     },
     "about": {
       "tag": "About",

@@ -9,7 +9,6 @@ services:
       - "443:443"
     depends_on:
       - mailer
-      - nextjs
     restart: unless-stopped
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt:ro
@@ -23,15 +22,3 @@ services:
     restart: unless-stopped
     expose:
       - "3000"
-
-  nextjs:
-    build:
-      context: ./site
-      dockerfile: Dockerfile
-    container_name: o-horizons-nextjs
-    env_file: ./site/.env.local
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    depends_on:
-      - mailer

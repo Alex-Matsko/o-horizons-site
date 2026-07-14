@@ -22,10 +22,15 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     openGraph: {
       title: t('title'),
       description: t('description'),
+      url: locale === 'ru' ? 'https://o-horizons.com/' : 'https://o-horizons.com/en/',
       images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
       locale: locale === 'ru' ? 'ru_RU' : 'en_US',
     },
     icons: { icon: '/favicon.png' },
+    alternates: {
+      canonical: locale === 'ru' ? 'https://o-horizons.com/' : 'https://o-horizons.com/en/',
+      languages: { ru: 'https://o-horizons.com/', en: 'https://o-horizons.com/en/' },
+    },
   }
 }
 

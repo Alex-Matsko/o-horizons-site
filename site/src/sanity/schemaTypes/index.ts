@@ -9,8 +9,6 @@ import { pricingSection } from './pricingSection'
 import { aboutSection } from './aboutSection'
 import { faqSection } from './faqSection'
 import { contactInfo } from './contactInfo'
-import { processSteps } from './processSteps'
-import { slaGuarantee } from './slaGuarantee'
 
 export const schemaTypes = [
   article,
@@ -24,6 +22,4 @@ export const schemaTypes = [
   aboutSection,
   faqSection,
   contactInfo,
-  processSteps,
-  slaGuarantee,
 ]

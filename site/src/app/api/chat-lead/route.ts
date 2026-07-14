@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
-  const mailerUrl = process.env.MAILER_URL || 'http://mailer:3001'
+  const mailerUrl = process.env.MAILER_URL || 'http://mailer:3000'
   try {
     const body = await req.json()
-    const res = await fetch(`${mailerUrl}/chat-lead`, {
+    const res = await fetch(`${mailerUrl}/api/chat-lead`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),

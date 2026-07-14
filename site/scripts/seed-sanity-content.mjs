@@ -5,7 +5,6 @@ import { readFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { createClient } from 'next-sanity'
-import { serviceDetails } from './service-details.mjs'
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url))
 const siteDir = path.resolve(scriptDir, '..')
@@ -57,7 +56,7 @@ function singletonDocs() {
     docs.push({ _id: `hero-${locale}`, _type: 'hero', language: locale, ...m.hero })
     docs.push({ _id: `servicesSection-${locale}`, _type: 'servicesSection', language: locale, tag: m.services.tag, title: m.services.title })
     docs.push({ _id: `auditsSection-${locale}`, _type: 'auditsSection', language: locale, tag: m.audits.tag, title: m.audits.title, sub: m.audits.sub, items: m.audits.items })
-    docs.push({ _id: `pricingSection-${locale}`, _type: 'pricingSection', language: locale, tag: m.pricing.tag, title: m.pricing.title, sub: m.pricing.sub, cta: m.pricing.cta, note: m.pricing.note, items: m.pricing.items })
+    docs.push({ _id: `pricingSection-${locale}`, _type: 'pricingSection', language: locale, tag: m.pricing.tag, title: m.pricing.title, sub: m.pricing.sub, popular: m.pricing.popular, cta: m.pricing.cta, items: m.pricing.items })
     docs.push({ _id: `aboutSection-${locale}`, _type: 'aboutSection', language: locale, tag: m.about.tag, title: m.about.title, sub: m.about.sub, items: m.about.items })
     docs.push({ _id: `faqSection-${locale}`, _type: 'faqSection', language: locale, tag: m.faq.tag, title: m.faq.title, items: m.faq.items })
     docs.push({
@@ -66,8 +65,6 @@ function singletonDocs() {
       email: m.contact.email, telegram: m.contact.telegram, phone: m.contact.phone,
       emailLabel: m.contact.emailLabel, telegramLabel: m.contact.telegramLabel, phoneLabel: m.contact.phoneLabel,
     })
-    docs.push({ _id: `processSteps-${locale}`, _type: 'processSteps', language: locale, tag: m.processSteps.tag, title: m.processSteps.title, items: m.processSteps.items })
-    docs.push({ _id: `slaGuarantee-${locale}`, _type: 'slaGuarantee', language: locale, tag: m.slaGuarantee.tag, title: m.slaGuarantee.title, sub: m.slaGuarantee.sub, items: m.slaGuarantee.items })
   }
   return docs
 }
@@ -85,7 +82,6 @@ function serviceSeedDocs() {
         slug: { _type: 'slug', current: `service-${i + 1}` },
         icon: item.icon,
         shortDescription: item.description,
-        ...(serviceDetails[locale]?.[i] ?? {}),
       })
     })
   }
@@ -101,12 +97,7 @@ async function main() {
   const tx = client.transaction()
   for (const doc of singletonDocs()) tx.createOrReplace(doc)
   await tx.commit()
-  console.log(`Seeded ${locales.length * 9} singleton documents (hero, servicesSection, auditsSection, pricingSection, aboutSection, faqSection, contactInfo, processSteps, slaGuarantee × ${locales.length} locales).`)
-
-  if (process.argv.includes('--skip-services')) {
-    console.log('Skipping "service" documents (--skip-services).')
-    return
-  }
+  console.log(`Seeded ${locales.length * 7} singleton documents (hero, servicesSection, auditsSection, pricingSection, aboutSection, faqSection, contactInfo × ${locales.length} locales).`)
 
   if (!force && await hasExistingRealServiceDocs()) {
     console.log('Found existing "service" documents not created by this script — skipping service seed. Re-run with --force to seed anyway.')
