@@ -36,7 +36,6 @@ app.use('/api/chat',       rateLimit({ windowMs: 60*1000, max: 60 }));
 app.use('/api/chat-lead',  rateLimit({ windowMs: 60*1000, max: 30 }));
 app.use('/api/chat-poll',  rateLimit({ windowMs: 60*1000, max: 120 }));
 app.use('/api/1c-events',  rateLimit({ windowMs: 60*1000, max: 300 }));
-app.use('/api/telegram-webhook', rateLimit({ windowMs: 60*1000, max: 300 }));
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -105,17 +104,21 @@ async function ensureConversation(sessionId, name) {
    иначе бот не увидит ответы менеджера внутри темы).
 
    api.telegram.org заблокирован для исходящих запросов из РФ —
-   исходящие вызовы (createForumTopic/sendMessage) идут через
+   все вызовы (createForumTopic/sendMessage/getUpdates) идут через
    TELEGRAM_PROXY_URL, если он задан: http(s)://user:pass@host:port
-   или socks5://user:pass@host:port. Входящий вебхук от Telegram
-   в проксировании не нуждается — соединение инициирует сам
-   Telegram, а не наш сервер.
+   или socks5://user:pass@host:port.
+
+   Ответы менеджера получаем через long polling (getUpdates), а НЕ
+   через webhook: DPI в РФ режет IP-диапазоны Telegram в обе стороны,
+   поэтому Telegram физически не может достучаться до нашего сервера
+   вебхуком (проверено — Connection timed out), даже если наш исходящий
+   трафик уже ходит через прокси. Long polling — это исходящий запрос
+   с нашей стороны, тем же путём, что уже работает.
 ══════════════════════════════════════════════════════ */
 const https = require('https');
 
 const TELEGRAM_BOT_TOKEN     = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID       = process.env.TELEGRAM_CHAT_ID;
-const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
 const TELEGRAM_HOST          = 'api.telegram.org';
 const TELEGRAM_PATH_PREFIX   = `/bot${TELEGRAM_BOT_TOKEN}`;
 const telegramEnabled        = Boolean(TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID);
@@ -161,39 +164,55 @@ const sessionIdByThread = new Map(
   Object.entries(telegramThreadsBySession).map(([sid, tid]) => [tid, sid])
 );
 
-function tg(method, params) {
+function tg(method, params, timeoutMs = 10_000) {
   return new Promise((resolve) => {
     const body = JSON.stringify(params);
+    let settled = false;
+    let attachedSocket = null;
+
+    // With a keep-alive/pooled agent the underlying socket outlives any
+    // single request — leaving our error listener attached after we're
+    // done would pile one up per poll cycle (thousands over a day) until
+    // Node starts warning about a listener leak. Always detach on settle.
+    const detach = () => {
+      if (attachedSocket) attachedSocket.removeListener('error', fail);
+    };
+    const fail = (e) => {
+      if (settled) return;
+      settled = true;
+      detach();
+      console.error('Telegram', method, 'request error:', e.code || e.message);
+      resolve({ ok: false, description: e.code || e.message });
+    };
+
     const req = https.request({
       hostname: TELEGRAM_HOST,
       path: `${TELEGRAM_PATH_PREFIX}/${method}`,
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) },
       agent: telegramAgent,
-      timeout: 10_000,
+      timeout: timeoutMs,
     }, (res) => {
       let raw = '';
       res.on('data', (chunk) => { raw += chunk; });
       res.on('end', () => {
+        if (settled) return;
+        settled = true;
+        detach();
         let data;
         try { data = JSON.parse(raw); } catch { data = { ok: false, description: 'invalid JSON from Telegram: ' + raw.slice(0, 200) }; }
-        if (data.ok) console.log('Telegram', method, '→ ok');
-        else console.error('Telegram', method, 'failed:', data.description);
+        // getUpdates succeeds continuously while polling — logging every
+        // cycle would flood the log for no reason, so only log its failures.
+        if (data.ok && method !== 'getUpdates') console.log('Telegram', method, '→ ok');
+        else if (!data.ok) console.error('Telegram', method, 'failed:', data.description);
         resolve(data);
       });
     });
-    let settled = false;
-    const fail = (e) => {
-      if (settled) return;
-      settled = true;
-      console.error('Telegram', method, 'request error:', e.code || e.message);
-      resolve({ ok: false, description: e.code || e.message });
-    };
     req.on('error', fail);
     // Proxy agents can hand back a socket that errors before it's fully
     // attached to `req` — catch it here too so it never reaches
     // process.on('uncaughtException').
-    req.on('socket', (socket) => socket.on('error', fail));
+    req.on('socket', (socket) => { attachedSocket = socket; socket.on('error', fail); });
     req.on('timeout', () => { req.destroy(); fail({ message: 'timeout' }); });
     req.write(body);
     req.end();
@@ -227,6 +246,89 @@ async function sendTelegramText(sessionId, name, phone, text) {
   const threadId = await ensureTelegramTopic(sessionId, name, phone);
   if (!threadId) return;
   await tg('sendMessage', { chat_id: TELEGRAM_CHAT_ID, message_thread_id: threadId, text });
+}
+
+/* ══════════════════════════════════════════════════════
+   Receiving the manager's replies — long polling, not a webhook
+   ─────────────────────────────────────────────────────
+   The manager replies inside the client's topic; we find the
+   sessionId by message_thread_id and push the text into that
+   session's inboxQueue, same as every other channel does — the
+   frontend already picks it up via GET /api/chat-poll.
+══════════════════════════════════════════════════════ */
+const OFFSET_FILE = path.join(__dirname, 'data', 'telegram-offset.json');
+
+function loadTelegramOffset() {
+  try {
+    return JSON.parse(fs.readFileSync(OFFSET_FILE, 'utf8')).offset || 0;
+  } catch {
+    return 0;
+  }
+}
+function saveTelegramOffset(offset) {
+  try {
+    fs.mkdirSync(path.dirname(OFFSET_FILE), { recursive: true });
+    fs.writeFileSync(OFFSET_FILE, JSON.stringify({ offset }));
+  } catch (e) {
+    console.error('saveTelegramOffset:', e.message);
+  }
+}
+
+function handleTelegramMessage(message) {
+  if (!message || !message.text || message.from?.is_bot) return;
+  if (String(message.chat?.id) !== String(TELEGRAM_CHAT_ID)) return;
+
+  const threadId = message.message_thread_id;
+  if (!threadId) return; // сообщение вне какой-либо темы — игнорируем
+
+  const sessionId = sessionIdByThread.get(threadId);
+  if (!sessionId) return;
+
+  const session = getSession(sessionId);
+  session.operatorMode = true;
+  session.inboxQueue.push({
+    id: Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+    text: message.text.slice(0, 2000),
+    ts: Date.now(),
+  });
+  if (session.inboxQueue.length > 50) session.inboxQueue = session.inboxQueue.slice(-50);
+  console.log('telegram operator → session', sessionId, ':', message.text.slice(0, 80));
+}
+
+let telegramOffset = loadTelegramOffset();
+
+async function pollTelegramUpdates() {
+  if (!telegramEnabled) return;
+  let ok = false;
+  try {
+    // long-poll timeout=25s on Telegram's side; our own request timeout
+    // must be comfortably longer than that.
+    const data = await tg('getUpdates', { offset: telegramOffset, timeout: 25, allowed_updates: ['message'] }, 35_000);
+    ok = data.ok;
+    if (data.ok && Array.isArray(data.result)) {
+      for (const update of data.result) {
+        telegramOffset = update.update_id + 1;
+        handleTelegramMessage(update.message);
+      }
+      if (data.result.length) saveTelegramOffset(telegramOffset);
+    }
+  } catch (e) {
+    console.error('Telegram poll error:', e.message);
+  } finally {
+    // A successful call already paced itself via Telegram's own long-poll
+    // wait (up to 25s). An instant failure (bad token, proxy down, etc.)
+    // would otherwise retry in a tight busy-loop hammering the API —
+    // back off a few seconds before trying again.
+    if (ok) setImmediate(pollTelegramUpdates);
+    else setTimeout(pollTelegramUpdates, 5_000);
+  }
+}
+
+if (telegramEnabled) {
+  // Clear any stale webhook registration first — Telegram refuses to serve
+  // getUpdates while a webhook is set, and the old one is unreachable
+  // anyway (RU networks block inbound connections from Telegram's IPs).
+  tg('deleteWebhook', { drop_pending_updates: true }).finally(pollTelegramUpdates);
 }
 
 async function appendToChatLead({ sessionId, name, phone, history, event }) {
@@ -427,47 +529,6 @@ app.post('/api/1c-events', (req, res) => {
 
   // ── Любые другие события (createConversation ACK и др.) — просто 200 ──
   return res.status(200).json({ ok: true });
-});
-
-/* ══════════════════════════════════════════════════════
-   POST /api/telegram-webhook
-   ─────────────────────────────────────────────────────
-   Регистрируется как webhook бота:
-   https://api.telegram.org/bot<TOKEN>/setWebhook
-     ?url=https://o-horizons.com/api/telegram-webhook
-     &secret_token=<TELEGRAM_WEBHOOK_SECRET>
-
-   Менеджер отвечает прямо в теме (topic) клиента в группе —
-   находим sessionId по message_thread_id и кладём текст в
-   inboxQueue, откуда его заберёт GET /api/chat-poll.
-══════════════════════════════════════════════════════ */
-app.post('/api/telegram-webhook', (req, res) => {
-  if (TELEGRAM_WEBHOOK_SECRET) {
-    const provided = req.get('X-Telegram-Bot-Api-Secret-Token');
-    if (provided !== TELEGRAM_WEBHOOK_SECRET) return res.sendStatus(401);
-  }
-
-  res.sendStatus(200); // ack сразу — Telegram ждёт быстрый ответ
-
-  const message = (req.body || {}).message;
-  if (!message || !message.text || message.from?.is_bot) return;
-  if (String(message.chat?.id) !== String(TELEGRAM_CHAT_ID)) return;
-
-  const threadId = message.message_thread_id;
-  if (!threadId) return; // сообщение вне какой-либо темы — игнорируем
-
-  const sessionId = sessionIdByThread.get(threadId);
-  if (!sessionId) return;
-
-  const session = getSession(sessionId);
-  session.operatorMode = true;
-  session.inboxQueue.push({
-    id: Date.now() + '-' + Math.random().toString(36).slice(2, 6),
-    text: message.text.slice(0, 2000),
-    ts: Date.now(),
-  });
-  if (session.inboxQueue.length > 50) session.inboxQueue = session.inboxQueue.slice(-50);
-  console.log('telegram operator → session', sessionId, ':', message.text.slice(0, 80));
 });
 
 /* ══════════════════════════════════════════════════════
