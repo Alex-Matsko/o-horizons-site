@@ -2,6 +2,8 @@ if (process.env.SMTP_TLS_REJECT_UNAUTHORIZED === 'false') {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 }
 
+const fs         = require('fs');
+const path       = require('path');
 const express    = require('express');
 const nodemailer = require('nodemailer');
 const cors       = require('cors');
@@ -21,6 +23,7 @@ app.use('/api/chat',       rateLimit({ windowMs: 60*1000, max: 60 }));
 app.use('/api/chat-lead',  rateLimit({ windowMs: 60*1000, max: 30 }));
 app.use('/api/chat-poll',  rateLimit({ windowMs: 60*1000, max: 120 }));
 app.use('/api/1c-events',  rateLimit({ windowMs: 60*1000, max: 300 }));
+app.use('/api/telegram-webhook', rateLimit({ windowMs: 60*1000, max: 300 }));
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -80,8 +83,88 @@ async function ensureConversation(sessionId, name) {
   return convId;
 }
 
+/* ══════════════════════════════════════════════════════
+   Telegram integration — one forum topic per client
+   ─────────────────────────────────────────────────────
+   Требует супергруппу с включёнными "Темами" (Topics) и
+   бота, добавленного туда админом с правом "Manage Topics"
+   (и с отключённым privacy mode через @BotFather /setprivacy,
+   иначе бот не увидит ответы менеджера внутри темы).
+══════════════════════════════════════════════════════ */
+const TELEGRAM_BOT_TOKEN     = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID       = process.env.TELEGRAM_CHAT_ID;
+const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
+const TELEGRAM_API           = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
+const telegramEnabled        = Boolean(TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID);
+
+const THREADS_FILE = path.join(__dirname, 'data', 'telegram-threads.json');
+
+function loadTelegramThreads() {
+  try {
+    return JSON.parse(fs.readFileSync(THREADS_FILE, 'utf8'));
+  } catch {
+    return {};
+  }
+}
+function saveTelegramThreads(map) {
+  try {
+    fs.mkdirSync(path.dirname(THREADS_FILE), { recursive: true });
+    fs.writeFileSync(THREADS_FILE, JSON.stringify(map));
+  } catch (e) {
+    console.error('saveTelegramThreads:', e.message);
+  }
+}
+
+// sessionId -> message_thread_id, persisted to disk so a mailer restart
+// doesn't fragment an in-progress client conversation into a new topic.
+const telegramThreadsBySession = loadTelegramThreads();
+const sessionIdByThread = new Map(
+  Object.entries(telegramThreadsBySession).map(([sid, tid]) => [tid, sid])
+);
+
+async function tg(method, params) {
+  const r = await fetch(`${TELEGRAM_API}/${method}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+  });
+  const data = await r.json();
+  if (!data.ok) console.error('Telegram', method, 'failed:', data.description);
+  return data;
+}
+
+async function ensureTelegramTopic(sessionId, name, phone) {
+  if (!telegramEnabled) return null;
+  if (telegramThreadsBySession[sessionId]) return telegramThreadsBySession[sessionId];
+
+  const topicName = `${name || 'Гость'} · ${phone || '—'}`.slice(0, 128);
+  const res = await tg('createForumTopic', { chat_id: TELEGRAM_CHAT_ID, name: topicName });
+  if (!res.ok) return null;
+
+  const threadId = res.result.message_thread_id;
+  telegramThreadsBySession[sessionId] = threadId;
+  sessionIdByThread.set(threadId, sessionId);
+  saveTelegramThreads(telegramThreadsBySession);
+
+  await tg('sendMessage', {
+    chat_id: TELEGRAM_CHAT_ID,
+    message_thread_id: threadId,
+    text: `👤 ${name || '—'}\n📞 ${phone || '—'}\n🌐 Новый чат с сайта`,
+  });
+
+  return threadId;
+}
+
+async function sendTelegramText(sessionId, name, phone, text) {
+  if (!telegramEnabled || !text) return;
+  const threadId = await ensureTelegramTopic(sessionId, name, phone);
+  if (!threadId) return;
+  await tg('sendMessage', { chat_id: TELEGRAM_CHAT_ID, message_thread_id: threadId, text });
+}
+
 async function appendToChatLead({ sessionId, name, phone, history, event }) {
   const session = getSession(sessionId);
+
   try {
     const convId = await ensureConversation(sessionId, name);
 
@@ -89,20 +172,13 @@ async function appendToChatLead({ sessionId, name, phone, history, event }) {
       const body = ['━━━ НОВЫЙ ЧАТ ━━━', '👤 ' + (name || '—'), '📞 ' + (phone || '—')].join('\n');
       await post1C({ createMessage: { extId: convId + '-0', extConversationId: convId, text: body } });
       session.msgSeq = 0;
-      return;
-    }
-
-    if (event === 'operator_requested') {
+    } else if (event === 'operator_requested') {
       await post1C({ createMessage: {
         extId: convId + '-op-' + Date.now(),
         extConversationId: convId,
         text: '🔔 Пользователь запросил оператора',
       }});
-      return;
-    }
-
-    // event === 'message'
-    if (Array.isArray(history) && history.length) {
+    } else if (Array.isArray(history) && history.length) {
       const last = history[history.length - 1];
       if (last && last.text) {
         session.msgSeq += 1;
@@ -115,7 +191,23 @@ async function appendToChatLead({ sessionId, name, phone, history, event }) {
       }
     }
   } catch (e) {
-    console.error('appendToChatLead:', e.message);
+    console.error('appendToChatLead (1C):', e.message);
+  }
+
+  try {
+    if (event === 'chat_started') {
+      await ensureTelegramTopic(sessionId, name, phone);
+    } else if (event === 'operator_requested') {
+      await sendTelegramText(sessionId, name, phone, '🔔 Пользователь запросил оператора');
+    } else if (Array.isArray(history) && history.length) {
+      const last = history[history.length - 1];
+      if (last && last.text) {
+        const prefix = last.role === 'user' ? '👤 ' : '🤖 ';
+        await sendTelegramText(sessionId, name, phone, prefix + last.text);
+      }
+    }
+  } catch (e) {
+    console.error('appendToChatLead (Telegram):', e.message);
   }
 }
 
@@ -268,6 +360,47 @@ app.post('/api/1c-events', (req, res) => {
 
   // ── Любые другие события (createConversation ACK и др.) — просто 200 ──
   return res.status(200).json({ ok: true });
+});
+
+/* ══════════════════════════════════════════════════════
+   POST /api/telegram-webhook
+   ─────────────────────────────────────────────────────
+   Регистрируется как webhook бота:
+   https://api.telegram.org/bot<TOKEN>/setWebhook
+     ?url=https://o-horizons.com/api/telegram-webhook
+     &secret_token=<TELEGRAM_WEBHOOK_SECRET>
+
+   Менеджер отвечает прямо в теме (topic) клиента в группе —
+   находим sessionId по message_thread_id и кладём текст в
+   inboxQueue, откуда его заберёт GET /api/chat-poll.
+══════════════════════════════════════════════════════ */
+app.post('/api/telegram-webhook', (req, res) => {
+  if (TELEGRAM_WEBHOOK_SECRET) {
+    const provided = req.get('X-Telegram-Bot-Api-Secret-Token');
+    if (provided !== TELEGRAM_WEBHOOK_SECRET) return res.sendStatus(401);
+  }
+
+  res.sendStatus(200); // ack сразу — Telegram ждёт быстрый ответ
+
+  const message = (req.body || {}).message;
+  if (!message || !message.text || message.from?.is_bot) return;
+  if (String(message.chat?.id) !== String(TELEGRAM_CHAT_ID)) return;
+
+  const threadId = message.message_thread_id;
+  if (!threadId) return; // сообщение вне какой-либо темы — игнорируем
+
+  const sessionId = sessionIdByThread.get(threadId);
+  if (!sessionId) return;
+
+  const session = getSession(sessionId);
+  session.operatorMode = true;
+  session.inboxQueue.push({
+    id: Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+    text: message.text.slice(0, 2000),
+    ts: Date.now(),
+  });
+  if (session.inboxQueue.length > 50) session.inboxQueue = session.inboxQueue.slice(-50);
+  console.log('telegram operator → session', sessionId, ':', message.text.slice(0, 80));
 });
 
 /* ══════════════════════════════════════════════════════

@@ -36,3 +36,8 @@ services:
     restart: unless-stopped
     expose:
       - "3000"
+    volumes:
+      - mailer-data:/app/data
+
+volumes:
+  mailer-data:
