@@ -90,12 +90,24 @@ async function ensureConversation(sessionId, name) {
    бота, добавленного туда админом с правом "Manage Topics"
    (и с отключённым privacy mode через @BotFather /setprivacy,
    иначе бот не увидит ответы менеджера внутри темы).
+
+   api.telegram.org заблокирован для исходящих запросов из РФ —
+   исходящие вызовы (createForumTopic/sendMessage) идут через
+   TELEGRAM_PROXY_URL, если он задан (http(s)-прокси, вида
+   http://user:pass@host:port). Входящий вебхук от Telegram
+   в проксировании не нуждается — соединение инициирует сам
+   Telegram, а не наш сервер.
 ══════════════════════════════════════════════════════ */
+const { ProxyAgent } = require('undici');
+
 const TELEGRAM_BOT_TOKEN     = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID       = process.env.TELEGRAM_CHAT_ID;
 const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
 const TELEGRAM_API           = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
 const telegramEnabled        = Boolean(TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID);
+const telegramDispatcher     = process.env.TELEGRAM_PROXY_URL
+  ? new ProxyAgent(process.env.TELEGRAM_PROXY_URL)
+  : undefined;
 
 const THREADS_FILE = path.join(__dirname, 'data', 'telegram-threads.json');
 
@@ -127,6 +139,7 @@ async function tg(method, params) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(params),
+    ...(telegramDispatcher ? { dispatcher: telegramDispatcher } : {}),
   });
   const data = await r.json();
   if (!data.ok) console.error('Telegram', method, 'failed:', data.description);
