@@ -3,9 +3,11 @@ import { useState } from 'react'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import Hero from '@/components/home/Hero'
+import ProcessSteps from '@/components/home/ProcessSteps'
 import Services from '@/components/home/Services'
 import Audits from '@/components/home/Audits'
 import Pricing from '@/components/home/Pricing'
+import SlaGuarantee from '@/components/home/SlaGuarantee'
 import AboutSection from '@/components/home/AboutSection'
 import FAQ from '@/components/home/FAQ'
 import ContactSection from '@/components/home/ContactSection'
@@ -22,9 +24,11 @@ export default function HomeClient({ locale, content }: { locale: string; conten
       <Navbar locale={locale} onOpenModal={() => setModalOpen(true)} />
       <main className="flex-1">
         <Hero data={content.hero} onOpenModal={() => setModalOpen(true)} />
+        <ProcessSteps data={content.processSteps} />
         <Services {...content.services} />
         <Audits data={content.audits} />
-        <Pricing data={content.pricing} onOpenModal={() => setModalOpen(true)} />
+        <Pricing data={content.pricing} />
+        <SlaGuarantee data={content.slaGuarantee} />
         <AboutSection data={content.about} />
         <FAQ data={content.faq} />
         <ContactSection data={content.contact} onOpenModal={() => setModalOpen(true)} />

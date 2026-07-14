@@ -1,10 +1,40 @@
+export interface PortableBlock {
+  _type: 'block'
+  _key: string
+  style?: string
+  listItem?: string
+  children: { text: string }[]
+}
+
+export interface StatRowBlock {
+  _type: 'statRow'
+  _key: string
+  items: { value: string; label: string }[]
+}
+
+export interface CalloutBlock {
+  _type: 'callout'
+  _key: string
+  title?: string
+  text: string
+}
+
+export interface CompareTableBlock {
+  _type: 'compareTable'
+  _key: string
+  headers?: string[]
+  rows: { a: string; b: string }[]
+}
+
+export type ArticleBlock = PortableBlock | StatRowBlock | CalloutBlock | CompareTableBlock
+
 export interface SanityArticle {
   _id: string
   slug: { current: string }
   title: string
   excerpt: string
   publishedAt: string
-  body?: unknown
+  body?: ArticleBlock[]
 }
 
 export interface SanityCase {
@@ -14,7 +44,7 @@ export interface SanityCase {
   excerpt: string
   industry?: string
   result?: string
-  body?: unknown
+  body?: PortableBlock[]
 }
 
 export interface SanityService {
@@ -23,6 +53,10 @@ export interface SanityService {
   title: string
   icon: string
   shortDescription: string
+  audience?: string
+  problems?: string[]
+  included?: string[]
+  result?: string
   body?: unknown
 }
 
@@ -66,10 +100,9 @@ export interface SanityPricingSection {
   tag: string
   title: string
   sub: string
-  popular: string
   cta: string
   note?: string
-  items: { name: string; subtitle: string; price: string; popular: boolean; features: string[] }[]
+  items: { name: string; subtitle: string; price: string; features: string[] }[]
 }
 
 export interface SanityAboutSection {
@@ -99,4 +132,19 @@ export interface SanityContactInfo {
   emailLabel: string
   telegramLabel: string
   phoneLabel: string
+}
+
+export interface SanityProcessSteps {
+  _id: string
+  tag: string
+  title: string
+  items: { title: string; description: string }[]
+}
+
+export interface SanitySlaGuarantee {
+  _id: string
+  tag: string
+  title: string
+  sub: string
+  items: { title: string; description: string }[]
 }

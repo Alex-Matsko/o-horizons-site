@@ -33,11 +33,11 @@ export default function Hero({ data, onOpenModal }: HeroProps) {
           </div>
 
           {/* Stats */}
-          <div className="flex flex-wrap gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {data.stats.map(s => (
-              <div key={s.label}>
-                <span className="block text-[1.6rem] font-bold text-[#3b82f6]">{s.value}</span>
-                <p className="text-xs text-[#64748b] mt-0.5">{s.label}</p>
+              <div key={s.label} className="bg-[#151820] border border-[rgba(255,255,255,0.07)] rounded-xl px-2 py-4 text-center flex flex-col justify-center">
+                <span className="block text-[1.5rem] leading-none font-bold text-[#3b82f6] whitespace-nowrap">{s.value}</span>
+                <p className="text-xs text-[#64748b] mt-1.5 whitespace-nowrap">{s.label}</p>
               </div>
             ))}
           </div>

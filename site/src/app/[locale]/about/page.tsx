@@ -3,12 +3,13 @@ import { useTranslations } from 'next-intl'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { getAboutContent } from '@/lib/sanity/home'
+import { buildMetadata } from '@/lib/seo'
 import type { Metadata } from 'next'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'metadata.about' })
-  return { title: t('title'), description: t('description') }
+  return buildMetadata({ locale, path: '/about', title: t('title'), description: t('description') })
 }
 
 function AboutContent({ locale, items }: { locale: string; items: { icon: string; title: string; description: string }[] }) {
