@@ -2,6 +2,19 @@ if (process.env.SMTP_TLS_REJECT_UNAUTHORIZED === 'false') {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 }
 
+// Proxy agents (https-proxy-agent / socks-proxy-agent) can, on a failed
+// upstream connection, emit 'error' on an internal socket before Node has
+// finished wiring it to the in-flight https.request — bypassing our own
+// req.on('error', ...) handler entirely and crashing the whole process as
+// an "unhandled 'error' event". A single flaky Telegram proxy must never
+// take down email/1C:Dialog, so this is a deliberate last-resort net for
+// that specific known class of error (always network/connect failures —
+// anything else still means a real, unexpected bug, but we have no way to
+// tell them apart here since uncaughtException loses the call-site context).
+process.on('uncaughtException', (err) => {
+  console.error('uncaughtException (kept process alive):', err.code || err.message);
+});
+
 const fs         = require('fs');
 const path       = require('path');
 const express    = require('express');
@@ -157,6 +170,7 @@ function tg(method, params) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) },
       agent: telegramAgent,
+      timeout: 10_000,
     }, (res) => {
       let raw = '';
       res.on('data', (chunk) => { raw += chunk; });
@@ -167,10 +181,19 @@ function tg(method, params) {
         resolve(data);
       });
     });
-    req.on('error', (e) => {
-      console.error('Telegram', method, 'request error:', e.message);
-      resolve({ ok: false, description: e.message });
-    });
+    let settled = false;
+    const fail = (e) => {
+      if (settled) return;
+      settled = true;
+      console.error('Telegram', method, 'request error:', e.code || e.message);
+      resolve({ ok: false, description: e.code || e.message });
+    };
+    req.on('error', fail);
+    // Proxy agents can hand back a socket that errors before it's fully
+    // attached to `req` — catch it here too so it never reaches
+    // process.on('uncaughtException').
+    req.on('socket', (socket) => socket.on('error', fail));
+    req.on('timeout', () => { req.destroy(); fail({ message: 'timeout' }); });
     req.write(body);
     req.end();
   });
