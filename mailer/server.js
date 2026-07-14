@@ -177,7 +177,8 @@ function tg(method, params) {
       res.on('end', () => {
         let data;
         try { data = JSON.parse(raw); } catch { data = { ok: false, description: 'invalid JSON from Telegram: ' + raw.slice(0, 200) }; }
-        if (!data.ok) console.error('Telegram', method, 'failed:', data.description);
+        if (data.ok) console.log('Telegram', method, '→ ok');
+        else console.error('Telegram', method, 'failed:', data.description);
         resolve(data);
       });
     });
