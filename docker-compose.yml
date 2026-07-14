@@ -55,6 +55,10 @@ services:
     command: ["run", "-config", "/etc/xray/config.json"]
     expose:
       - "1080"
+    ports:
+      # Also reachable from the host itself (127.0.0.1 only) — lets git/curl/
+      # docker on the host use the same SOCKS5 egress, not just containers.
+      - "127.0.0.1:1080:1080"
 
 volumes:
   mailer-data:
