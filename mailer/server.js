@@ -93,21 +93,35 @@ async function ensureConversation(sessionId, name) {
 
    api.telegram.org заблокирован для исходящих запросов из РФ —
    исходящие вызовы (createForumTopic/sendMessage) идут через
-   TELEGRAM_PROXY_URL, если он задан (http(s)-прокси, вида
-   http://user:pass@host:port). Входящий вебхук от Telegram
+   TELEGRAM_PROXY_URL, если он задан: http(s)://user:pass@host:port
+   или socks5://user:pass@host:port. Входящий вебхук от Telegram
    в проксировании не нуждается — соединение инициирует сам
    Telegram, а не наш сервер.
 ══════════════════════════════════════════════════════ */
-const { ProxyAgent } = require('undici');
+const https = require('https');
 
 const TELEGRAM_BOT_TOKEN     = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID       = process.env.TELEGRAM_CHAT_ID;
 const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
-const TELEGRAM_API           = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
+const TELEGRAM_HOST          = 'api.telegram.org';
+const TELEGRAM_PATH_PREFIX   = `/bot${TELEGRAM_BOT_TOKEN}`;
 const telegramEnabled        = Boolean(TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID);
-const telegramDispatcher     = process.env.TELEGRAM_PROXY_URL
-  ? new ProxyAgent(process.env.TELEGRAM_PROXY_URL)
-  : undefined;
+
+let telegramAgent;
+if (process.env.TELEGRAM_PROXY_URL) {
+  try {
+    const proxyUrl = new URL(process.env.TELEGRAM_PROXY_URL);
+    if (proxyUrl.protocol.startsWith('socks')) {
+      const { SocksProxyAgent } = require('socks-proxy-agent');
+      telegramAgent = new SocksProxyAgent(proxyUrl);
+    } else {
+      const { HttpsProxyAgent } = require('https-proxy-agent');
+      telegramAgent = new HttpsProxyAgent(proxyUrl);
+    }
+  } catch (e) {
+    console.error('Invalid TELEGRAM_PROXY_URL, ignoring (Telegram calls will go direct):', e.message);
+  }
+}
 
 const THREADS_FILE = path.join(__dirname, 'data', 'telegram-threads.json');
 
@@ -134,16 +148,32 @@ const sessionIdByThread = new Map(
   Object.entries(telegramThreadsBySession).map(([sid, tid]) => [tid, sid])
 );
 
-async function tg(method, params) {
-  const r = await fetch(`${TELEGRAM_API}/${method}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(params),
-    ...(telegramDispatcher ? { dispatcher: telegramDispatcher } : {}),
+function tg(method, params) {
+  return new Promise((resolve) => {
+    const body = JSON.stringify(params);
+    const req = https.request({
+      hostname: TELEGRAM_HOST,
+      path: `${TELEGRAM_PATH_PREFIX}/${method}`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) },
+      agent: telegramAgent,
+    }, (res) => {
+      let raw = '';
+      res.on('data', (chunk) => { raw += chunk; });
+      res.on('end', () => {
+        let data;
+        try { data = JSON.parse(raw); } catch { data = { ok: false, description: 'invalid JSON from Telegram: ' + raw.slice(0, 200) }; }
+        if (!data.ok) console.error('Telegram', method, 'failed:', data.description);
+        resolve(data);
+      });
+    });
+    req.on('error', (e) => {
+      console.error('Telegram', method, 'request error:', e.message);
+      resolve({ ok: false, description: e.message });
+    });
+    req.write(body);
+    req.end();
   });
-  const data = await r.json();
-  if (!data.ok) console.error('Telegram', method, 'failed:', data.description);
-  return data;
 }
 
 async function ensureTelegramTopic(sessionId, name, phone) {
