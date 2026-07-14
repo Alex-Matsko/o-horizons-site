@@ -9,6 +9,19 @@ function genId() {
   return 'sid_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8)
 }
 
+function formatPhone(raw: string) {
+  const digits = raw.replace(/\D/g, '')
+  if (!digits) return ''
+  const d = digits[0] !== '7' ? '7' + digits : digits
+  const n = d.slice(1)
+  let out = '+7'
+  if (n.length > 0) out += ' (' + n.slice(0, 3)
+  if (n.length > 3) out += ') ' + n.slice(3, 6)
+  if (n.length > 6) out += '-' + n.slice(6, 8)
+  if (n.length > 8) out += '-' + n.slice(8, 10)
+  return out
+}
+
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
   const [identified, setIdentified] = useState(false)
@@ -186,8 +199,10 @@ export default function ChatWidget() {
                 className="w-full bg-[#0d0f14] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e2e8f0] placeholder-[#475569] focus:outline-none focus:border-[#3b82f6]"
               />
               <input
-                value={introPhone} onChange={e => setIntroPhone(e.target.value)}
-                type="tel" placeholder="Телефон * (+7 ...)" required autoComplete="tel"
+                value={introPhone} onChange={e => setIntroPhone(formatPhone(e.target.value))}
+                onFocus={e => { if (!e.currentTarget.value) setIntroPhone('+7') }}
+                onBlur={e => { if (e.currentTarget.value === '+7') setIntroPhone('') }}
+                type="tel" placeholder="Телефон * (+7 ...)" inputMode="tel" required autoComplete="tel"
                 className="w-full bg-[#0d0f14] border border-white/10 rounded-lg px-3 py-2 text-sm text-[#e2e8f0] placeholder-[#475569] focus:outline-none focus:border-[#3b82f6]"
               />
               <button type="submit" className="py-2 bg-[#3b82f6] hover:bg-[#2563eb] text-white text-sm font-medium rounded-lg transition-colors">
